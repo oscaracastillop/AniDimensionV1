@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Consola de Administración</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="stylesheet" href="../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container">
+        <!-- HEADER -->
+        <div class="admin-header">
+            <div class="admin-title-box">
+                <div>
+                    <h1 class="admin-title">CONSOLA DE ADMINISTRACIÓN</h1>
+                    <div class="admin-subtitle">PANEL DE CONTROL CENTRAL - SELECCIÓN DE MÓDULOS DEL SISTEMA</div>
+                </div>
+            </div>
+
+            <div id="admin-user-status" class="admin-badge">
+                ⚡ SUPER ADMIN (SA)
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (UNIFICADO) -->
+        <div class="admin-scroll-content">
+
+            <!-- GRID DE MÓDULOS DE ADMINISTRACIÓN (FORMA Y ALTURA IDÉNTICAS A DUELOS) -->
+            <div class="admin-modules-grid">
+
+                <!-- MÓDULO 1: USUARIOS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/users.png" alt="Módulo de Usuarios" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Módulo de Usuarios</div>
+                        <div class="admin-module-desc">
+                            Gestión integral de duelistas: Creación de cuentas oficiales, edición de perfiles, control de países y administración de estados activos y sanciones.
+                        </div>
+                    </div>
+
+                    <a href="/views/admin/users/users.html" class="btn-module-access">
+                        <span>Ingresar a Usuarios</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 2: EVENTOS & TORNEOS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge upcoming">Próximamente</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/events.png" alt="Eventos y Torneos" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Eventos & Torneos</div>
+                        <div class="admin-module-desc">
+                            Configuración de copas oficiales OCG, salas especiales con multiplicador de experiencia, gestión de premios en StarShips y anuncios del Lobby.
+                        </div>
+                    </div>
+
+                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                </div>
+
+                <!-- MÓDULO 3: CARTAS Y SOBRES OCG -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/cards.png" alt="Base de Cartas OCG" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Base de Cartas y Sobres OCG</div>
+                        <div class="admin-module-desc">
+                            Gerencia de sobres y expansiones: ajuste de precios, activado/inactivado de sobres, texto de oferta en amarillo, control de cartas con bugs (bloqueo en mazo) y drops de NPCs.
+                        </div>
+                    </div>
+
+                    <a href="/views/admin/cards/cards.html" class="btn-module-access">
+                        <span>Gestionar Sobres</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 4: AUDITORÍA Y LOGS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge upcoming">Próximamente</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/audit.png" alt="Auditoría y Métricas" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Auditoría & Métricas</div>
+                        <div class="admin-module-desc">
+                            Monitoreo en tiempo real de registros de duelos, auditoría de transacciones en tienda, tráfico de red WebSockets y logs de base de datos MSSQL.
+                        </div>
+                    </div>
+
+                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                </div>
+
+                <!-- MÓDULO 5: AVATARES -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/avatars.png" alt="Gestión de Avatares" class="admin-card-img" onerror="this.onerror=null; this.src='../../assets/images/packs/lob_pack.jpg';">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Gestión de Avatares</div>
+                        <div class="admin-module-desc">
+                            Catálogo de avatares anime holográficos, potenciómetros de EXP, StarShips y Suerte %, configuración de banners de ofertas y personalización de precios.
+                        </div>
+                    </div>
+
+                    <a href="avatars/avatars.html" class="btn-module-access">
+                        <span>Gestión de Avatares</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 6: POTENCIADORES (NUEVO) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge upcoming">Próximamente</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/potenciadores.png" alt="Potenciadores y Drops" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Potenciadores & Drops</div>
+                        <div class="admin-module-desc">
+                            Configuración de orbes de experiencia OCG, multiplicadores de recompensas StarShips, ratios de drops de sobres y dados 3D cósmicos.
+                        </div>
+                    </div>
+
+                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                </div>
+
+                <!-- MÓDULO 7: VIP (NUEVO) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge vip">VIP AD</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/vip.png" alt="Pase VIP y Beneficios" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Pase VIP & Beneficios</div>
+                        <div class="admin-module-desc">
+                            Administración del pase de temporada VIP AD, asignación de beneficios legendarios, multiplicadores de experiencia y salas privadas exclusivas.
+                        </div>
+                    </div>
+
+                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                </div>
+
+            </div> <!-- Fin admin-modules-grid -->
+
+        </div> <!-- Fin admin-scroll-content -->
+
+    </div>
+
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.Session && !window.Session.requireAuth('../login/login.html')) return;
+
+            const user = window.Session ? window.Session.getUser() : null;
+            if (user) {
+                const badge = document.getElementById('admin-user-status');
+                if (badge) badge.textContent = user.isAdmin ? '⚡ SUPER ADMIN (SA)' : '⚡ DUELISTA AUTORIZADO';
+            }
+
+            try {
+                const res = await fetch('/api/admin/users');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.users) {
+                        const countEl = document.getElementById('admin-total-users-val');
+                        if (countEl) countEl.textContent = data.users.length;
+                    }
+                }
+            } catch (e) {
+                console.error('Error al cargar total de usuarios:', e);
+            }
+        });
+    </script>
+</body>
+</html>

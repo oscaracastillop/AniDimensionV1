@@ -1,0 +1,404 @@
+/* ==========================================================================
+   ANI-DIMENSION: ESTILOS MAESTROS DE RANKINGS (3 SECCIONES TOP 15 + KPIS)
+   FONDO BLANCO DEGRADADO + HEADER FRANJA COMPLETA DE LADO A LADO
+   BORDES RECTOS SIN REDONDEAR (SHARP CYBER LOOK) | 5px MÁRGENES
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+html,
+body {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+/* ==========================================================================
+   1. ARQUITECTURA DE PANTALLA FIJA (FONDO DEGRADADO BLANCO)
+   ========================================================================== */
+.rankings-page-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+    box-sizing: border-box !important;
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+}
+
+/* ==========================================================================
+   2. CONTENEDOR CENTRAL DESLIZABLE (5px IZQ, 5px DER, 10px TOP)
+   ========================================================================== */
+.rankings-scroll-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 5px 20px 5px !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.rankings-scroll-content::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* ==========================================================================
+   3. BARRA DE KPIS (MÉTRICAS OFICIALES EN CABECERA)
+   ========================================================================== */
+.rankings-kpis-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
+    margin: 0 0 10px 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.rank-kpi-card {
+    background: #091122 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    padding: 6px 12px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+    box-sizing: border-box !important;
+}
+
+.rank-kpi-label {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 2px !important;
+}
+
+.rank-kpi-value {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    color: #fff !important;
+}
+
+/* ==========================================================================
+   4. CUADRÍCULA DE 3 COLUMNAS: NIVEL (ANGOSTO), VICTORIAS (ANGOSTO), CLANES (ANCHO)
+   ========================================================================== */
+.rankings-columns-grid {
+    display: grid !important;
+    grid-template-columns: 0.75fr 0.75fr 1.85fr !important; /* NIVEL Y VICTORIAS ANGOSTOS, CLANES MÁS ANCHO */
+    gap: 12px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    align-items: start !important;
+}
+
+/* TARJETA CONTENEDORA DE CADA TABLERO TOP 15 (RECTA Y CYBER) */
+.rank-board-card {
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22), 0 0 12px rgba(0, 240, 255, 0.12) !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.rank-board-card.board-level {
+    border-color: rgba(0, 240, 255, 0.5) !important;
+}
+
+.rank-board-card.board-wins {
+    border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+.rank-board-card.board-clans {
+    border-color: rgba(255, 215, 0, 0.5) !important;
+}
+
+/* ENCABEZADO DE CADA TABLERO TOP 15 (SIN ICONOS) */
+.rank-board-header {
+    padding: 8px 12px;
+    background: #091122;
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rank-board-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+    color: #fff !important;
+    text-transform: uppercase !important;
+    margin: 0 !important;
+}
+
+.rank-board-badge {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    padding: 2px 7px !important;
+    border-radius: 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.badge-cyan {
+    background: rgba(0, 240, 255, 0.15) !important;
+    border: 1px solid rgba(0, 240, 255, 0.5) !important;
+    color: #00f0ff !important;
+}
+
+.badge-emerald {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border: 1px solid rgba(16, 185, 129, 0.5) !important;
+    color: #10b981 !important;
+}
+
+.badge-gold {
+    background: rgba(255, 215, 0, 0.15) !important;
+    border: 1px solid rgba(255, 215, 0, 0.5) !important;
+    color: #ffd700 !important;
+}
+
+/* ==========================================================================
+   TABLA COMPLETA PARA 20 FILAS (SIN SCROLL INTERNO, APROVECHA SCROLL GLOBAL)
+   ========================================================================== */
+.rank-table-wrap {
+    width: 100%;
+    overflow: visible;
+}
+
+.rank-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.rank-table thead th {
+    background: rgba(9, 17, 34, 0.95);
+    color: #94a3b8;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 7px 8px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.rank-table tbody td {
+    padding: 5.5px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10.5px;
+    vertical-align: middle;
+}
+
+.board-clans .rank-table th,
+.board-clans .rank-table td {
+    padding: 5.5px 6px !important;
+}
+
+.rank-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.rank-table tbody tr:hover {
+    background: rgba(0, 240, 255, 0.08);
+}
+
+/* BADGES DE POSICIÓN (#1 AL #15) */
+.pos-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    width: 24px;
+    height: 16px;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    box-sizing: border-box;
+}
+
+.pos-1 {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(217, 119, 6, 0.55));
+    border: 1px solid #ffd700;
+    color: #ffd700;
+}
+
+.pos-2 {
+    background: linear-gradient(135deg, rgba(226, 232, 240, 0.2), rgba(148, 163, 184, 0.45));
+    border: 1px solid #e2e8f0;
+    color: #ffffff;
+}
+
+.pos-3 {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(194, 65, 12, 0.45));
+    border: 1px solid #f97316;
+    color: #fb923c;
+}
+
+.pos-normal {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: #94a3b8;
+}
+
+/* VALORES NUMÉRICOS DE RANKING (SIN RECUADRO, MISMO TAMAÑO QUE DUELISTA) */
+.rank-stat-val {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 10.5px !important;
+    font-weight: 500 !important;
+    display: inline-block;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    text-shadow: none !important;
+}
+
+.val-cyan {
+    color: #00f0ff !important;
+}
+
+.val-emerald {
+    color: #10b981 !important;
+}
+
+.val-gold {
+    color: #ffd700 !important;
+}
+
+/* NOMBRES DE DUELISTAS Y CLANES EN LETRA SENCILLA (SIN NEGRITA) */
+.duelist-name {
+    font-weight: 400 !important; /* LETRA SENCILLA */
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    display: inline-block;
+}
+
+.clan-name {
+    font-weight: 400 !important; /* LETRA SENCILLA */
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+    display: inline-block;
+}
+
+/* COLORES CORRESPONDIENTES A LAS 3 PRIMERAS POSICIONES (TOP 3) */
+.duelist-name.name-top-1,
+.clan-name.name-top-1 {
+    color: #ffd700 !important; /* ORO */
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+.duelist-name.name-top-2,
+.clan-name.name-top-2 {
+    color: #ffffff !important; /* PLATA */
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.duelist-name.name-top-3,
+.clan-name.name-top-3 {
+    color: #fb923c !important; /* BRONCE */
+    text-shadow: 0 0 8px rgba(251, 146, 60, 0.4);
+}
+
+.clan-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    color: #38bdf8;
+    margin-left: 3px;
+    font-weight: 600;
+}
+
+/* RESPONSIVE LANDSCAPE Y DISPOSITIVOS MÓVILES (1 SOLA LÍNEA PARA KPIS Y RANKINGS) */
+@media (max-width: 932px) {
+    .rankings-kpis-grid {
+        grid-template-columns: repeat(4, 1fr) !important; /* 4 KPIS EN 1 SOLA LÍNEA */
+        gap: 6px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .rank-kpi-card {
+        padding: 4px 6px !important;
+    }
+
+    .rank-kpi-label {
+        font-size: 6.5px !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    .rank-kpi-value {
+        font-size: 11px !important;
+    }
+
+    .rankings-columns-grid {
+        grid-template-columns: 0.75fr 0.75fr 1.85fr !important; /* 3 TABLEROS EN 1 SOLA LÍNEA, CLANES MÁS ANCHO */
+        gap: 8px !important;
+    }
+
+    .rank-board-header {
+        padding: 6px 8px !important;
+    }
+
+    .rank-board-title {
+        font-size: 9px !important;
+        letter-spacing: 0.4px !important;
+    }
+
+    .rank-table thead th {
+        font-size: 7px !important;
+        padding: 5px 4px !important;
+    }
+
+    .rank-table tbody td {
+        font-size: 9px !important;
+        padding: 3.5px 4px !important;
+    }
+
+    .rank-stat-val {
+        font-size: 9px !important;
+    }
+}

@@ -1,0 +1,226 @@
+/* ANI-DIMENSION: ESTILOS DE GERENCIA DE SOBRES Y CARTAS */
+.cards-admin-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid #cbd5e1;
+}
+
+.cards-tab-btn {
+    padding: 8px 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cards-tab-btn:hover {
+    background: #cbd5e1;
+    color: #0f172a;
+}
+
+.cards-tab-btn.active {
+    background: #0f172a;
+    color: #00f0ff;
+    border-color: #00f0ff;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.tab-content-panel {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tab-content-panel.active {
+    display: flex;
+}
+
+.panel-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: 0.5px;
+}
+
+/* GERENCIA DE SOBRES GRID */
+.packs-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.pack-admin-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.pack-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pack-title-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.form-group-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-label-custom {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.form-input-custom {
+    padding: 6px 10px;
+    font-size: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    outline: none;
+}
+
+.offer-yellow-preview {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #eab308;
+    background: #0f172a;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.btn-save-pack {
+    padding: 8px 12px;
+    background: #10b981;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-save-pack:hover {
+    background: #059669;
+}
+
+/* CONTROL DE CARTAS Y BUGS */
+.cards-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-search-box {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    width: 260px;
+    outline: none;
+}
+
+.cards-alert-info {
+    background: #fffbebf8;
+    border: 1px solid #fef08a;
+    color: #854d0e;
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+.cards-admin-table-container {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    overflow-x: auto;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.cards-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+}
+
+.cards-table th {
+    background: #0f172a;
+    color: #38bdf8;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.cards-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.badge-card-status {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9.5px;
+    font-weight: 800;
+}
+
+.badge-card-status.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-card-status.inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* DROPS DE NPCS */
+.drops-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.drop-npc-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.drop-npc-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: #0f172a;
+}

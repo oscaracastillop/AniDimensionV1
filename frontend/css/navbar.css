@@ -1,0 +1,296 @@
+/* ==========================================================================
+   ANI-DIMENSION: NAVBAR INFERIOR FIJO COMPACTO CON ICONOS LINEALES NEÓN
+   ========================================================================== */
+
+.neon-footer-navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px !important;
+    padding: 2px 0 !important;
+    background: rgba(7, 12, 22, 0.96) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+.neon-nav-container {
+    width: 100%;
+    max-width: 1100px;
+    height: 100% !important;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 6px !important;
+    box-sizing: border-box;
+}
+
+.neon-nav-item {
+    flex: 1;
+    max-width: 110px !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column !important; /* ICONO ARRIBA, TEXTO ULTRA-COMPACTO ABAJO */
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1px !important;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    padding: 1px 4px !important;
+    color: #64748b;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Indicador de pestaña activa superior */
+.neon-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: transparent;
+    border-radius: 0 0 2px 2px;
+    transition: all 0.25s ease;
+}
+
+/* Iconos vectoriales lineales */
+.neon-nav-icon {
+    width: 16px !important;
+    height: 16px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+}
+
+.neon-nav-icon svg {
+    width: 15px !important;
+    height: 15px !important;
+    stroke: currentColor;
+    stroke-width: 1.8 !important;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: all 0.25s ease;
+}
+
+.neon-nav-label {
+    font-size: 9px !important; /* ~0.65rem idéntico a lobby */
+    font-weight: 700;
+    letter-spacing: 0.2px !important;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    margin-top: 1px !important;
+    line-height: 1 !important;
+}
+
+/* Hover general */
+.neon-nav-item:hover {
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   PERSONALIZACIONES NEÓN POR MENÚ
+   ========================================================================== */
+
+/* 1. LOBBY (Cyan Neón) */
+.neon-nav-item.nav-lobby:hover,
+.neon-nav-item.nav-lobby.active {
+    color: #00f0ff;
+}
+.neon-nav-item.nav-lobby:hover .neon-nav-icon,
+.neon-nav-item.nav-lobby.active .neon-nav-icon {
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.8));
+}
+.neon-nav-item.nav-lobby.active::before {
+    background: #00f0ff;
+    box-shadow: 0 0 10px #00f0ff;
+}
+
+/* 2. RANKINS (Oro Neón) */
+.neon-nav-item.nav-rankings:hover,
+.neon-nav-item.nav-rankings.active {
+    color: #ffd700;
+}
+.neon-nav-item.nav-rankings:hover .neon-nav-icon,
+.neon-nav-item.nav-rankings.active .neon-nav-icon {
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
+}
+.neon-nav-item.nav-rankings.active::before {
+    background: #ffd700;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+/* 3. DUELOS (Cyan Eléctrico Neón) */
+.neon-nav-item.nav-duels:hover,
+.neon-nav-item.nav-duels.active {
+    color: #38bdf8;
+}
+.neon-nav-item.nav-duels:hover .neon-nav-icon,
+.neon-nav-item.nav-duels.active .neon-nav-icon {
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+}
+.neon-nav-item.nav-duels.active::before {
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+}
+
+/* 4. TIENDA (Esmeralda / Neón Verde) */
+.neon-nav-item.nav-tienda:hover,
+.neon-nav-item.nav-tienda.active {
+    color: #10b981;
+}
+.neon-nav-item.nav-tienda:hover .neon-nav-icon,
+.neon-nav-item.nav-tienda.active .neon-nav-icon {
+    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.8));
+}
+.neon-nav-item.nav-tienda.active::before {
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+}
+
+/* 5. ADMINISTRACION (Ámbar Neón) */
+.neon-nav-item.nav-admin:hover,
+.neon-nav-item.nav-admin.active {
+    color: #f59e0b;
+}
+.neon-nav-item.nav-admin:hover .neon-nav-icon,
+.neon-nav-item.nav-admin.active .neon-nav-icon {
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+}
+.neon-nav-item.nav-admin.active::before {
+    background: #f59e0b;
+    box-shadow: 0 0 10px #f59e0b;
+}
+
+/* 6. PERFIL (Violeta Neón) */
+.neon-nav-item.nav-perfil:hover,
+.neon-nav-item.nav-perfil.active {
+    color: #c084fc;
+}
+.neon-nav-item.nav-perfil:hover .neon-nav-icon,
+.neon-nav-item.nav-perfil.active .neon-nav-icon {
+    filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.8));
+}
+.neon-nav-item.nav-perfil.active::before {
+    background: #c084fc;
+    box-shadow: 0 0 10px #c084fc;
+}
+
+/* 7. SALIR (Rubí Neón) */
+.neon-nav-item.nav-salir:hover,
+.neon-nav-item.nav-salir.active {
+    color: #ff385c;
+}
+.neon-nav-item.nav-salir:hover .neon-nav-icon,
+.neon-nav-item.nav-salir.active .neon-nav-icon {
+    filter: drop-shadow(0 0 7px rgba(255, 56, 92, 0.85));
+}
+.neon-nav-item.nav-salir.active::before {
+    background: #ff385c;
+    box-shadow: 0 0 10px #ff385c;
+}
+
+/* ==========================================================================
+   MODAL OCG / DIÁLOGO GENÉRICO Y RANKINGS EN MODAL NEÓN
+   ========================================================================== */
+
+.neon-menu-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 6, 12, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    animation: neonFadeIn 0.2s ease-out;
+}
+
+.neon-menu-modal {
+    background: linear-gradient(145deg, #0d1527, #070b14);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    box-shadow: 0 0 35px rgba(0, 229, 255, 0.25);
+    border-radius: 12px;
+    padding: 22px;
+    width: 650px;
+    max-width: 96vw;
+    max-height: 88vh;
+    overflow-y: auto;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+}
+
+@keyframes neonFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ICONOS LINEALES REUTILIZABLES PARA TITULOS Y BOTONES DE VISTAS */
+.neon-inline-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+.neon-inline-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@media (max-width: 932px), (max-height: 500px) {
+    .neon-footer-navbar {
+        height: 40px;
+        padding: 2px 0;
+    }
+    .neon-nav-container {
+        padding: 0 4px;
+    }
+    .neon-nav-item {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1px 4px;
+        gap: 1px;
+        max-width: 100px;
+    }
+    .neon-nav-icon {
+        width: 16px;
+        height: 16px;
+    }
+    .neon-nav-icon svg {
+        width: 15px;
+        height: 15px;
+    }
+    .neon-nav-label {
+        font-size: 9px;
+        letter-spacing: 0.2px;
+        margin-top: 1px;
+        line-height: 1;
+    }
+}

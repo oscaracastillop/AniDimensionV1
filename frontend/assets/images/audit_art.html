@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Outfit:wght@400;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 600px;
+    height: 350px;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 30%, #031c19 0%, #020f0d 60%, #010605 100%);
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .grid-floor {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 150px;
+    background: 
+      linear-gradient(to top, rgba(16, 185, 129, 0.25), transparent),
+      repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(16, 185, 129, 0.12) 15px, rgba(16, 185, 129, 0.12) 16px),
+      repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(16, 185, 129, 0.1) 30px, rgba(16, 185, 129, 0.1) 31px);
+    transform: perspective(300px) rotateX(45deg);
+    transform-origin: bottom;
+  }
+  .glow {
+    position: absolute;
+    width: 460px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, transparent 70%);
+  }
+  .matrix-box {
+    position: relative;
+    z-index: 2;
+    width: 530px;
+    height: 250px;
+    border: 1.5px solid rgba(16, 185, 129, 0.65);
+    background: rgba(3, 16, 14, 0.85);
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.35), inset 0 0 25px rgba(16, 185, 129, 0.15);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+  }
+  .top-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+  .top-status-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #10b981;
+    letter-spacing: 1.5px;
+  }
+  .top-status-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    background: rgba(0, 240, 255, 0.2);
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    padding: 2px 8px;
+  }
+  .metrics-row {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+  }
+  .metric-tile {
+    flex: 1;
+    background: rgba(4, 25, 20, 0.7);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .tile-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+  .tile-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #10b981;
+    margin: 4px 0;
+  }
+  .tile-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    overflow: hidden;
+  }
+  .tile-bar-fill {
+    height: 100%;
+    background: #10b981;
+  }
+  .waveform {
+    margin-top: 10px;
+    height: 38px;
+    width: 100%;
+    border-top: 1px solid rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    padding-top: 6px;
+  }
+  .bar-stream {
+    flex: 1;
+    background: linear-gradient(to top, #10b981, #00f0ff);
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="grid-floor"></div>
+  <div class="matrix-box">
+    <div class="top-status">
+      <span class="top-status-title">ANI DIMENSION • TELEMETRY & AUDIT</span>
+      <span class="top-status-badge">SYSTEM HEALTH: 100%</span>
+    </div>
+    <div class="metrics-row">
+      <div class="metric-tile">
+        <span class="tile-label">WEBSOCKET PACKETS</span>
+        <span class="tile-val">48,290 /s</span>
+        <div class="tile-bar"><div class="tile-bar-fill" style="width: 85%;"></div></div>
+      </div>
+      <div class="metric-tile">
+        <span class="tile-label">DATABASE QUERIES</span>
+        <span class="tile-val" style="color: #00f0ff;">0.42 ms</span>
+        <div class="tile-bar"><div class="tile-bar-fill" style="width: 95%; background:#00f0ff;"></div></div>
+      </div>
+      <div class="metric-tile">
+        <span class="tile-label">SECURITY AUDIT</span>
+        <span class="tile-val" style="color: #ffd700;">OK (0 ALERTS)</span>
+        <div class="tile-bar"><div class="tile-bar-fill" style="width: 100%; background:#ffd700;"></div></div>
+      </div>
+    </div>
+    <div class="waveform">
+      <div class="bar-stream" style="height: 35%;"></div>
+      <div class="bar-stream" style="height: 65%;"></div>
+      <div class="bar-stream" style="height: 45%;"></div>
+      <div class="bar-stream" style="height: 90%;"></div>
+      <div class="bar-stream" style="height: 75%;"></div>
+      <div class="bar-stream" style="height: 50%;"></div>
+      <div class="bar-stream" style="height: 85%;"></div>
+      <div class="bar-stream" style="height: 60%;"></div>
+      <div class="bar-stream" style="height: 95%;"></div>
+      <div class="bar-stream" style="height: 40%;"></div>
+      <div class="bar-stream" style="height: 80%;"></div>
+      <div class="bar-stream" style="height: 70%;"></div>
+    </div>
+  </div>
+</body>
+</html>

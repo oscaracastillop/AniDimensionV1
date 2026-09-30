@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Registro de Duelista</title>
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/auth.css">
+</head>
+<body style="margin:0; padding:0; overflow:hidden;">
+
+    <div id="login-overlay">
+        <div class="login-wrapper">
+
+            <!-- DRAGÓN NEGRO DE OJOS ROJOS (LADO IZQUIERDO) -->
+            <div class="login-dragon login-dragon-left" id="login-dragon-red">
+                <img src="../../assets/red_eyes_dragon.png" alt="Red-Eyes Black Dragon" class="dragon-img dragon-red-eyes">
+            </div>
+
+            <!-- CONTENEDOR CENTRAL: REGISTRO -->
+            <div class="login-center-container">
+                <h1 class="login-main-title">ANI-DIMENSION</h1>
+                <div class="login-subtitle">REGISTRO DE NUEVO DUELISTA OCG</div>
+
+                <div class="login-card">
+                    <div class="auth-tabs">
+                        <span class="auth-tab-btn" style="color:var(--accent-gold); text-shadow:0 0 12px rgba(245,158,11,0.5);">NUEVO REGISTRO</span>
+                    </div>
+
+                    <div id="auth-register-panel">
+                        <div class="auth-input-group">
+                            <label class="auth-input-label">NICK DE DUELISTA (3-15 CHARS)</label>
+                            <input type="text" id="regUsernameInput" class="auth-input" maxlength="15" placeholder="Nick de una palabra" autocomplete="username" onkeydown="if(event.key===' ') event.preventDefault();">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-input-label">CORREO ELECTRÓNICO</label>
+                            <input type="email" id="regEmailInput" class="auth-input" placeholder="ejemplo@correo.com" autocomplete="email">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-input-label">CONTRASEÑA</label>
+                            <input type="password" id="regPasswordInput" class="auth-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-input-label">PAÍS CON BANDERA</label>
+                            <select id="regCountryInput" class="auth-input">
+                                <option value="">-- Cargando países con banderas... --</option>
+                            </select>
+                        </div>
+
+                        <div id="register-alert-box" style="display:none; font-size:10px; margin-bottom:6px; padding:5px 8px; border-radius:6px; text-align:left;"></div>
+
+                        <button id="btn-register-submit" class="btn-act-vertical" style="background:linear-gradient(135deg, rgba(245,158,11,0.25), rgba(217,119,6,0.5)); border-color:var(--accent-gold); box-shadow:0 0 20px rgba(245,158,11,0.3);" onclick="performRegister()">CREAR MI CUENTA</button>
+
+                        <div class="auth-toggle-wrapper">
+                            <a href="../login/login.html" class="auth-toggle-link" style="color:var(--accent-gold);">¿Ya tienes cuenta? Iniciar Sesión aquí</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DRAGÓN BLANCO DE OJOS AZULES (LADO DERECHO) -->
+            <div class="login-dragon login-dragon-right" id="login-dragon-blue">
+                <img src="../../assets/blue_eyes_dragon.png" alt="Blue-Eyes White Dragon" class="dragon-img dragon-blue-eyes">
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/views/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Edición Dedicada de Sobre (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css">
+    <link rel="stylesheet" href="../../../css/shop.css?v=2.4">
+    <link rel="stylesheet" href="../../../css/admin.css">
+    <link rel="stylesheet" href="cards.css?v=2.4">
+    <link rel="stylesheet" href="../../../css/navbar.css">
+    <style>
+        .admin-detail-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .cards-catalog-scroll {
+            flex: 1;
+            padding: 10px 16px 90px 16px;
+            overflow-y: auto;
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .admin-showcase-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            background: rgba(9, 13, 22, 0.9);
+            border: 1.5px solid rgba(245, 158, 11, 0.4);
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 4px 0 10px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .admin-form-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .admin-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .admin-input-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #94a3b8;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .admin-text-input {
+            padding: 6px 10px;
+            font-size: 11.5px;
+            font-family: 'Outfit', sans-serif;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 4px;
+            color: #fff;
+            outline: none;
+        }
+
+        .admin-text-input:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-update-pack {
+            padding: 9px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11.5px;
+            font-weight: 900;
+            color: #ffffff;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-update-pack:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.9);
+        }
+
+        .filter-rarity-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 0 10px 0;
+            overflow-x: auto;
+            margin-bottom: 8px;
+        }
+
+        .rarity-btn {
+            padding: 5px 11px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9.5px;
+            font-weight: 800;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .rarity-btn:hover, .rarity-btn.active {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: #00f0ff;
+            color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        #card-search-input {
+            margin-left: auto;
+            padding: 5px 10px;
+            font-size: 10.5px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 4px;
+            color: #fff;
+            outline: none;
+            width: 180px;
+            flex-shrink: 0;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            gap: 10px;
+        }
+
+        .catalog-card-item {
+            background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99));
+            border: 1.2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            position: relative;
+            transition: all 0.2s ease;
+            min-height: 205px;
+            justify-content: space-between;
+        }
+
+        .admin-card-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 4px;
+            padding: 3px 5px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 8.5px;
+            font-weight: 700;
+            color: #cbd5e1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-label input {
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+
+        @media (max-width: 768px), (max-height: 500px) {
+            .cards-catalog-scroll {
+                padding: 6px 10px 85px 10px;
+            }
+
+            .admin-showcase-panel {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 7px;
+            }
+
+            .catalog-card-item {
+                min-height: 175px;
+                padding: 4px;
+            }
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-detail-container">
+        <!-- CONTENEDOR DESLIZABLE UNIFICADO -->
+        <div class="cards-catalog-scroll">
+            
+            <!-- HEADER (SUBE CON EL SCROLL) -->
+            <div class="shop-header" style="display:flex; justify-content:space-between; align-items:center; padding:4px 2px 10px 2px; border-bottom:1px solid rgba(245, 158, 11, 0.3); margin-bottom:8px;">
+                <div class="shop-title-box" style="display:flex; align-items:center; gap:10px;">
+                    <a href="cards.html" class="btn-shop-back" title="Volver a la Lista de Sobres Admin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </a>
+                    <div>
+                        <h1 class="shop-title" id="admin-pack-detail-title" style="font-family:'Orbitron', sans-serif; font-size:16px; font-weight:900; color:#ffd700; margin:0; text-shadow:0 0 10px rgba(255,215,0,0.5);">PANEL DE CONFIGURACIÓN DEL SOBRE</h1>
+                        <div class="shop-subtitle" id="admin-pack-detail-subtitle" style="font-size:10px; color:#94a3b8; margin-top:2px;">GESTIÓN DE PRECIO, BANNER Y CONTROL INDIVIDUAL DE CARTAS Y DROPS DE NPCS</div>
+                    </div>
+                </div>
+
+                <div class="shop-balance-pill" style="background:rgba(15,23,42,0.85); border:1px solid #f59e0b; color:#f59e0b; font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; padding:4px 12px; border-radius:20px;">
+                    ⚙️ EDICIÓN ADMIN
+                </div>
+            </div>
+
+            <!-- PANEL DE EDICIÓN DEL SOBRE -->
+            <div id="admin-showcase-panel" class="admin-showcase-panel"></div>
+
+            <!-- FILTROS Y BUSCADOR DE CARTAS -->
+            <div class="filter-rarity-bar">
+                <button class="rarity-btn active" onclick="filterAdminRarity('ALL')">Todas (<span id="count-all">0</span>)</button>
+                <button class="rarity-btn" onclick="filterAdminRarity('SECRET_RARE')">💎 Secret Rare (<span id="count-secret">0</span>)</button>
+                <button class="rarity-btn" onclick="filterAdminRarity('ULTRA_RARE')">🌟 Ultra Rare (<span id="count-ultra">0</span>)</button>
+                <button class="rarity-btn" onclick="filterAdminRarity('SUPER_RARE')">✨ Super Rare (<span id="count-super">0</span>)</button>
+                <button class="rarity-btn" onclick="filterAdminRarity('RARE')">🔹 Rare (<span id="count-rare">0</span>)</button>
+                <button class="rarity-btn" onclick="filterAdminRarity('COMMON')">📄 Common (<span id="count-common">0</span>)</button>
+                <input type="text" id="card-search-input" placeholder="Buscar por nombre o ID..." oninput="filterAdminCards()">
+            </div>
+
+            <!-- REJILLA DESLIZABLE DE CARTAS Y SUS CONTROLES -->
+            <div id="admin-cards-grid-container" class="cards-grid"></div>
+        </div>
+    </div>
+
+    <!-- NAVBAR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/data/packs-data.js"></script>
+    <script src="../../../js/views/admin-cards-detail.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('administracion');
+        });
+    </script>
+</body>
+</html>

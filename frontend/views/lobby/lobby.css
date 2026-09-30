@@ -1,0 +1,465 @@
+/* ==========================================================================
+   ANI-DIMENSION: LOBBY INFORMATIVO Y DE EVENTOS (UNIFIED DESIGN SYSTEM)
+   FONDO BLANCO DEGRADADO + SECCIONES FLOTANTES DIRECTAS SIN CONTENEDOR GIGANTE
+   TARJETAS NEGRAS INDIVIDUALES FLOTANTES + BORDES RECTOS | 5px MÁRGENES
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+html,
+body {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    color: #0f172a;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+/* ==========================================================================
+   1. ARQUITECTURA DE PANTALLA FIJA (FONDO DEGRADADO BLANCO)
+   ========================================================================== */
+#welcome-lobby-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    color: #0f172a;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    z-index: 10;
+}
+
+.lobby-main-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box !important;
+    background: transparent !important;
+}
+
+/* ==========================================================================
+   HEADER SUPERIOR FRANJA DE LADO A LADO COMPLETA (LIKE NAVBAR)
+   ========================================================================== */
+.lobby-info-header,
+.lobby-header-banner {
+    width: 100% !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+    padding: 6px 16px !important;
+    background: #091122 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    border-radius: 0 !important; /* RECTO DE LADO A LADO */
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22), 0 2px 10px rgba(0, 240, 255, 0.12) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box !important;
+    z-index: 10;
+}
+
+.lobby-portal-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: clamp(13px, 1.6vw, 16px) !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    color: #fff !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+    margin: 0 !important;
+    line-height: 1.1 !important;
+}
+
+.lobby-portal-subtitle {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 9.5px !important;
+    font-weight: 500 !important;
+    color: #94a3b8 !important;
+    margin-top: 1px !important;
+    letter-spacing: 0.3px !important;
+    line-height: 1.1 !important;
+}
+
+.lobby-balance-pill {
+    background: #0e172a !important;
+    border: 1.5px solid rgba(255, 215, 0, 0.5) !important;
+    border-radius: 0 !important; /* RECTO */
+    padding: 4px 12px !important;
+    font-size: 10.5px !important;
+    font-weight: 800 !important;
+    color: var(--accent-gold, #ffd700) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    flex-shrink: 0 !important;
+}
+
+/* ==========================================================================
+   2. CONTENEDOR CENTRAL DESLIZABLE (5px IZQ, 5px DER, 8px TOP)
+   SIN CONTENEDOR ENVOLVENTE - ALINEACIÓN START PARA NO ESTIRAR
+   ========================================================================== */
+.lobby-grid-sections {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 5px 24px 5px !important; /* 5px IZQ, 5px DER */
+    margin: 0 !important;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start !important; /* NO ESTIRA ABAJO */
+    width: 100%;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.lobby-grid-sections::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* COLUMNAS TRANSPARENTES (FLOTANDO EN EL FONDO BLANCO, SIN CONTENEDOR) */
+.lobby-column,
+.lobby-box,
+.lobby-section-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+/* TÍTULO DE SECCIÓN CON LA MISMA TIPOGRAFÍA ORBITRON DEL SISTEMA (SIN LÍNEA, SIN ICONOS) */
+.lobby-section-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: clamp(12px, 1.2vw, 14.5px) !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    color: #0f172a !important;
+    text-transform: uppercase !important;
+    display: block !important;
+    margin: 0 0 10px 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   TARJETAS NEGRAS INDIVIDUALES FLOTANTES (EVENTOS Y AVISOS)
+   ========================================================================== */
+.event-card {
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(255, 215, 0, 0.45) !important;
+    border-left: 4px solid #f59e0b !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    padding: 10px 14px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2), 0 0 10px rgba(255, 215, 0, 0.1) !important;
+    transition: all 0.22s ease-in-out !important;
+    box-sizing: border-box !important;
+    color: #fff !important;
+}
+
+.event-card:hover {
+    transform: translateY(-2px) scale(1.008) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28), 0 0 16px rgba(255, 215, 0, 0.25) !important;
+    border-color: #ffd700 !important;
+}
+
+.event-badge {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    padding: 2px 6px !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    letter-spacing: 0.5px !important;
+    display: inline-block;
+    text-transform: uppercase !important;
+}
+
+.event-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: clamp(11.5px, 1.2vh, 13.5px) !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    margin: 6px 0 4px 0 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+}
+
+.event-desc {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: clamp(10px, 1.15vh, 11.5px) !important;
+    color: #94a3b8 !important;
+    line-height: 1.4 !important;
+    margin-bottom: 6px !important;
+    font-weight: 400 !important;
+}
+
+.event-reward {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: clamp(9.5px, 1.1vh, 11px) !important;
+    font-weight: 700 !important;
+    color: var(--accent-gold, #f59e0b) !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* ==========================================================================
+   TARJETAS NEGRAS INDIVIDUALES FLOTANTES (NOTAS DE VERSIÓN Y PARCHES)
+   ========================================================================== */
+.update-item {
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    border-left: 4px solid #00f0ff !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    padding: 10px 14px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 240, 255, 0.1) !important;
+    transition: all 0.22s ease-in-out !important;
+    box-sizing: border-box !important;
+    color: #fff !important;
+}
+
+.update-item:hover {
+    transform: translateY(-2px) scale(1.008) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28), 0 0 16px rgba(255, 215, 0, 0.25) !important;
+    border-color: #00f0ff !important;
+}
+
+.update-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.update-version {
+    font-family: 'Orbitron', sans-serif !important;
+    background: rgba(0, 240, 255, 0.15) !important;
+    color: var(--accent-cyan, #00f0ff) !important;
+    border: 1px solid rgba(0, 240, 255, 0.4) !important;
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    padding: 2px 6px !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    letter-spacing: 0.5px !important;
+}
+
+.update-date {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 9.5px !important;
+    color: #64748b !important;
+}
+
+.update-title-text {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    margin-bottom: 5px !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+}
+
+.update-highlights {
+    margin: 0;
+    padding-left: 16px;
+    color: #94a3b8;
+    font-size: 10.5px;
+    font-family: 'Outfit', sans-serif !important;
+    line-height: 1.4;
+}
+
+.update-highlights li {
+    margin-bottom: 3px;
+}
+
+/* ==========================================================================
+   3. REFACTORIZACIÓN MÓVIL HORIZONTAL COMPACTO (HASTA 932px)
+      Header Franja De Lado A Lado Completa | 5px Márgenes | Bordes Rectos
+   ========================================================================== */
+@media (max-width: 932px) and (orientation: landscape) {
+
+    #welcome-lobby-overlay {
+        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    }
+
+    .lobby-main-container {
+        padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+    }
+
+    .lobby-info-header,
+    .lobby-header-banner {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 4px 12px !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+        border-radius: 0 !important;
+    }
+
+    .lobby-portal-title {
+        font-size: 12px !important;
+    }
+
+    .lobby-portal-subtitle {
+        font-size: 7.5px !important;
+        margin-top: 1px;
+    }
+
+    .lobby-grid-sections {
+        padding: 8px 5px 20px 5px !important; /* 5px IZQ, 5px DER */
+        gap: 12px !important;
+        align-items: start !important;
+    }
+
+    .lobby-column,
+    .lobby-box,
+    .lobby-section-card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    .lobby-section-title {
+        font-size: 11px !important;
+        color: #0f172a !important;
+        margin-bottom: 6px !important;
+    }
+
+    .event-card,
+    .update-item {
+        padding: 8px 10px !important;
+        margin-bottom: 8px !important;
+        border-radius: 0 !important;
+    }
+
+    .neon-footer-navbar {
+        height: 40px !important;
+    }
+
+    .neon-nav-icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .neon-nav-label {
+        font-size: 0.65rem !important;
+        margin-top: 2px !important;
+    }
+}
+
+/* ==========================================================================
+   4. REFACTORIZACIÓN MÓVIL HORIZONTAL PANORÁMICO / ULTRA-WIDE (933px a 2400px)
+      Especial para celulares con resolución 1612x720, 1600x720, 972px, 1024px o ratio 20:9
+      Header Franja De Lado A Lado Completa | 5px Márgenes | Bordes Rectos
+   ========================================================================== */
+@media (min-width: 933px) and (max-width: 2400px) and (orientation: landscape),
+       (min-width: 933px) and (max-height: 750px) and (orientation: landscape) {
+
+    #welcome-lobby-overlay {
+        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    }
+
+    .lobby-main-container {
+        padding-bottom: calc(44px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+    }
+
+    .lobby-info-header,
+    .lobby-header-banner {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 5px 16px !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+        border-radius: 0 !important;
+    }
+
+    .lobby-portal-title {
+        font-size: 13.5px !important;
+    }
+
+    .lobby-grid-sections {
+        padding: 10px 5px 24px 5px !important; /* 5px IZQ, 5px DER */
+        gap: 16px !important;
+        align-items: start !important;
+    }
+
+    .lobby-column,
+    .lobby-box,
+    .lobby-section-card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    .lobby-section-title {
+        font-size: 13px !important;
+        color: #0f172a !important;
+    }
+
+    .event-card,
+    .update-item {
+        padding: 10px 12px !important;
+        margin-bottom: 10px !important;
+        border-radius: 0 !important;
+    }
+
+    .neon-footer-navbar {
+        height: 40px !important;
+    }
+
+    .neon-nav-icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .neon-nav-label {
+        font-size: 0.65rem !important;
+        margin-top: 2px !important;
+    }
+}

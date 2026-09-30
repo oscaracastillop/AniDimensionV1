@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Perfil de Duelista</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+
+    <div class="profile-page-container">
+        <!-- HEADER SUPERIOR DE LADO A LADO COMPLETO (LIKE NAVBAR) -->
+        <div class="profile-header">
+            <div class="profile-title-box">
+                <div>
+                    <h1 class="profile-title">PERFIL DE DUELISTA</h1>
+                    <div class="profile-subtitle">RANGO OCG OFICIAL • COMPETIDOR LIGA MUNDIAL</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (5px IZQ, 5px DER) -->
+        <div class="profile-scroll-content">
+            <!-- TARJETA PRINCIPAL DE PERFIL -->
+            <div class="profile-card-main">
+                <div class="profile-header-flex">
+                    <div class="profile-avatar-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 id="prof-username" class="profile-username">Duelista</h1>
+                        <div class="profile-rank-tag">RANGO OCG OFICIAL • COMPETIDOR LIGA MUNDIAL</div>
+                    </div>
+                </div>
+
+            <!-- MÉTRICAS DE JUGADOR -->
+            <div class="profile-stats-grid">
+                <div class="profile-stat-box">
+                    <div class="profile-stat-lbl">NIVEL DE DUELISTA</div>
+                    <div id="prof-level" class="profile-stat-val" style="color:var(--accent-cyan);">Nv. 1</div>
+                </div>
+                <div class="profile-stat-box">
+                    <div class="profile-stat-lbl">STARSHIPS</div>
+                    <div id="prof-coins" class="profile-stat-val" style="color:var(--accent-gold);">⭐ 500</div>
+                </div>
+                <div class="profile-stat-box">
+                    <div class="profile-stat-lbl">VICTORIAS EN DUELOS</div>
+                    <div id="prof-wins" class="profile-stat-val" style="color:var(--accent-emerald);">0</div>
+                </div>
+            </div>
+
+            <!-- AVISO DE GESTIÓN CENTRALIZADA DE CUENTA -->
+            <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(0,240,255,0.2); border-radius:10px; padding:16px; font-size:11px; color:#94a3b8; line-height:1.5;">
+                <div style="font-family:'Cinzel', serif; font-size:12px; font-weight:700; color:var(--accent-cyan); margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px; height:16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    GESTIÓN CENTRALIZADA DE PERFIL
+                </div>
+                Los datos de tu cuenta y nombre de usuario se encuentran protegidos. Para modificaciones de nick o credenciales, solicita asistencia en el <b>Módulo de Administración de Usuarios</b>.
+            </div>
+        </div> <!-- Fin profile-scroll-content -->
+    </div> <!-- Fin profile-page-container -->
+
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Construcción de Deck</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="stylesheet" href="menu.css?v=3.1">
+    <link rel="stylesheet" href="deck-builder.css?v=1.0">
+    <link rel="stylesheet" href="../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; background: radial-gradient(circle at center, #0f172a 0%, #090d16 60%, #020408 100%) !important; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="deck-builder-page-container">
+        
+        <!-- HEADER SUPERIOR CON STATUS Y ACCIONES DE GUARDADO -->
+        <div class="deck-builder-header">
+            <div class="deck-title-box">
+                <a href="menu.html" class="btn-deck-back" title="Volver a la Arena de Duelos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>VOLVER</span>
+                </a>
+                <div>
+                    <h1 class="deck-page-title">CONSTRUCCIÓN DE DECK OCG</h1>
+                    <div class="deck-page-subtitle">GESTIÓN DE CARTAS POSEÍDAS, LIMITACIONES KONAMI Y CONFIGURACIÓN DEL EXTRA DECK</div>
+                </div>
+            </div>
+
+            <div class="deck-header-actions">
+                <!-- BADGE DE VALIDACIÓN DEL DECK (DINÁMICO) -->
+                <div id="deck-status-pill" class="deck-status-pill invalid">
+                    <span id="deck-status-icon">⚠️</span>
+                    <span id="deck-status-text">DECK INCOMPLETO (0/40)</span>
+                </div>
+
+                <button id="btn-reset-deck" class="btn-deck-secondary" onclick="resetUserDeckToDefault()" title="Restablecer deck inicial por defecto">
+                    <span>RESETEAR</span>
+                </button>
+
+                <button id="btn-save-deck" class="btn-deck-primary" onclick="saveUserDeckChanges()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px; height:14px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span>GUARDAR DECK</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ESTRUCTURA PRINCIPAL DE 2 COLUMNAS (DECK ACTUAL IZQ | INVENTARIO DER) -->
+        <div class="deck-builder-content">
+            
+            <!-- PANEL IZQUIERDO: DECK ACTUAL DEL JUGADOR -->
+            <div class="deck-panel deck-active-panel">
+                
+                <!-- STATS RÁPIDOS DEL DECK -->
+                <div class="deck-stats-bar">
+                    <div class="deck-stat-item">
+                        <span class="stat-lbl">MONSTRUOS:</span>
+                        <span id="stat-monsters-count" class="stat-val monster">0</span>
+                    </div>
+                    <div class="deck-stat-item">
+                        <span class="stat-lbl">MAGIAS:</span>
+                        <span id="stat-spells-count" class="stat-val spell">0</span>
+                    </div>
+                    <div class="deck-stat-item">
+                        <span class="stat-lbl">TRAMPAS:</span>
+                        <span id="stat-traps-count" class="stat-val trap">0</span>
+                    </div>
+                    <div class="deck-stat-item">
+                        <span class="stat-lbl">EXTRA DECK:</span>
+                        <span id="stat-extra-count" class="stat-val extra">0</span>
+                    </div>
+                </div>
+
+                <div class="deck-scroll-area">
+                    
+                    <!-- SECCIÓN 1: MAIN DECK (40 - 60 CARTAS) -->
+                    <div class="deck-section-header">
+                        <div class="section-title">
+                            <span>MAIN DECK</span>
+                            <span class="section-rule">(REGLAMENTO: 40 - 60 CARTAS)</span>
+                        </div>
+                        <div id="main-deck-count-badge" class="section-count-badge">0 / 40-60</div>
+                    </div>
+                    
+                    <div id="main-deck-grid" class="deck-cards-grid">
+                        <!-- RENDERIZADO DINÁMICO DE CARTAS EN EL MAIN DECK -->
+                    </div>
+
+                    <!-- SECCIÓN 2: EXTRA DECK (0 - 15 CARTAS) -->
+                    <div class="deck-section-header extra-header" style="margin-top:16px;">
+                        <div class="section-title">
+                            <span>EXTRA DECK</span>
+                            <span class="section-rule">(FUSIÓN / SINCRONÍA / XYZ / LINK: 0 - 15 CARTAS)</span>
+                        </div>
+                        <div id="extra-deck-count-badge" class="section-count-badge extra">0 / 15</div>
+                    </div>
+
+                    <div id="extra-deck-grid" class="deck-cards-grid">
+                        <!-- RENDERIZADO DINÁMICO DE CARTAS EN EL EXTRA DECK -->
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO: CATALOGO DE CARTAS EN INVENTARIO -->
+            <div class="deck-panel deck-inventory-panel">
+                
+                <div class="inventory-header-bar">
+                    <div class="inventory-title-box">
+                        <span class="inventory-title">CARTAS EN TU INVENTARIO POSEÍDO</span>
+                        <span id="inventory-total-count" class="inventory-subtitle">0 CARTAS ÚNICAS POSEÍDAS</span>
+                    </div>
+
+                    <!-- FILTROS Y BUSCADOR -->
+                    <div class="inventory-controls">
+                        <input type="text" id="inventory-search" placeholder="🔍 Buscar por nombre o passcode..." oninput="filterInventoryCatalog()" class="inventory-search-input">
+                        
+                        <div class="inventory-filter-pills">
+                            <button class="inv-filter-btn active" data-filter="ALL" onclick="setInventoryFilter('ALL')">TODAS</button>
+                            <button class="inv-filter-btn" data-filter="MONSTER" onclick="setInventoryFilter('MONSTER')">MONSTRUOS</button>
+                            <button class="inv-filter-btn" data-filter="SPELL" onclick="setInventoryFilter('SPELL')">MAGIAS</button>
+                            <button class="inv-filter-btn" data-filter="TRAP" onclick="setInventoryFilter('TRAP')">TRAMPAS</button>
+                            <button class="inv-filter-btn" data-filter="EXTRA" onclick="setInventoryFilter('EXTRA')">EXTRA DECK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REJILLA DE CARTAS DISPONIBLES EN INVENTARIO -->
+                <div id="inventory-cards-grid" class="inventory-cards-grid">
+                    <!-- RENDERIZADO DINÁMICO DE CARTAS POSEÍDAS -->
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL DE INSPECCIÓN DETALLADA DE CARTA EN DECK BUILDER -->
+    <div id="deck-card-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:99999; justify-content:center; align-items:center; padding:15px; box-sizing:border-box;" onclick="closeDeckCardModal()">
+        <div class="deck-modal-content" style="background:radial-gradient(circle at center, #0f172a 0%, #070b14 100%); border:1.5px solid #00f0ff; box-shadow:0 0 35px rgba(0,240,255,0.45); max-width:440px; width:100%; border-radius:8px; padding:16px; box-sizing:border-box; position:relative;" onclick="event.stopPropagation();">
+            <button onclick="closeDeckCardModal()" style="position:absolute; top:10px; right:12px; background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; line-height:1; font-weight:900;">✕</button>
+            <div style="display:flex; gap:14px; align-items:flex-start;">
+                <img id="modal-card-img" src="" style="width:115px; height:168px; object-fit:contain; border-radius:4px; border:1px solid rgba(255,255,255,0.2); box-shadow:0 0 15px rgba(0,0,0,0.8); flex-shrink:0;">
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span id="modal-card-passcode" style="font-family:'Orbitron', sans-serif; font-size:8.5px; font-weight:900; color:#38bdf8; background:rgba(15,23,42,0.9); border:1px solid rgba(56,189,248,0.4); padding:1px 6px; border-radius:4px;">#--------</span>
+                        <span id="modal-card-rarity" style="font-family:'Orbitron', sans-serif; font-size:8px; font-weight:900; color:#ffd700;">COMMON</span>
+                    </div>
+                    <div id="modal-card-name" style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:#fff; text-shadow:0 0 8px rgba(0,240,255,0.5); line-height:1.2;">-</div>
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+                        <span id="modal-card-attr" style="font-family:'Orbitron', sans-serif; font-size:8px; font-weight:900; padding:1.5px 6px; border-radius:4px;">-</span>
+                        <span id="modal-card-stars" style="font-size:8px;"></span>
+                    </div>
+                    <div id="modal-card-type" style="font-size:9.5px; color:#cbd5e1; margin-top:2px;">-</div>
+                    <div id="modal-card-stats" style="display:flex; gap:8px; margin-top:4px;">
+                        <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,215,0,0.4); padding:2px 8px; border-radius:4px; font-family:'Orbitron', sans-serif; font-size:9px;">
+                            <span style="color:#94a3b8; font-size:7.5px;">ATK:</span> <b id="modal-card-atk" style="color:#ffd700;">-</b>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(56,189,248,0.4); padding:2px 8px; border-radius:4px; font-family:'Orbitron', sans-serif; font-size:9px;">
+                            <span style="color:#94a3b8; font-size:7.5px;">DEF:</span> <b id="modal-card-def" style="color:#38bdf8;">-</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modal-card-desc" style="margin-top:12px; padding:10px; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.1); border-radius:6px; font-size:10.5px; line-height:1.45; color:#e2e8f0; max-height:140px; overflow-y:auto;">
+                -
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR E INFRAESTRUCTURA DE SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/data/packs-data.js"></script>
+    <script src="../../js/data/deck-manager.js"></script>
+    <script src="../../js/views/deck-builder.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('duelos');
+        });
+    </script>
+</body>
+</html>

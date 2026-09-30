@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Tienda de Potenciadores</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/shop.css?v=2.1">
+    <link rel="stylesheet" href="shop.css?v=2.1">
+    <link rel="stylesheet" href="../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="shop-page-container">
+        <!-- HEADER FIJO CON BOTÓN VOLVER -->
+        <div class="shop-header">
+            <div class="shop-title-box">
+                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </a>
+                <div>
+                    <h1 class="shop-title">POTENCIADORES Y ORBES</h1>
+                    <div class="shop-subtitle">ACELERADORES DE EXP, STARSHIPS Y MEJORAS DE CUENTA</div>
+                </div>
+            </div>
+
+            <div class="shop-balance-pill">
+                <span>STARSHIPS:</span>
+                <span id="shop-user-coins">⭐ 500</span>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (LISTO PARA INYECTAR ÍTEMS) -->
+        <div class="shop-scroll-content">
+            <div class="shop-empty-category-container">
+                <div class="shop-empty-icon" style="color:#ffd700;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:100%; height:100%;">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <div class="shop-empty-title">CATÁLOGO DE POTENCIADORES EN PREPARACIÓN</div>
+                <div class="shop-empty-desc">
+                    Aquí encontrarás pociones de energía, aumentos de EXP x2 para duelos y orbes para forja de cartas.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR Y AUTENTICACIÓN -->
+    <div id="navbar-container"></div>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/shop.js"></script>
+    <script>
+        async function enforceLandscapeOrientation() {
+            try {
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
+                    await window.Capacitor.Plugins.ScreenOrientation.lock({ orientation: 'landscape' });
+                } else if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                    await screen.orientation.lock('landscape');
+                }
+            } catch (e) {}
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            enforceLandscapeOrientation();
+            if (window.AppNavbar) window.AppNavbar.init('tienda');
+        });
+    </script>
+</body>
+</html>

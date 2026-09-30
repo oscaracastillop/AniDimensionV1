@@ -1,0 +1,3522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension Online - Duelo PvP Online</title>
+    <!-- Google Fonts: Orbitron & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=3.0">
+    <link rel="stylesheet" href="../../../css/duel-board.css?v=3.0">
+    <link rel="stylesheet" href="../../../css/dice.css?v=3.0">
+    <link rel="stylesheet" href="../../../css/duel-modals.css?v=3.0">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/socket.js"></script>
+</head>
+<body>
+
+    <div id="game-container">
+<!-- BANNERS DE ALERTA WEBSOCKET -->
+        <div id="rule-alert-banner">⚠️ [Regla Oficial] No puedes atacar durante la MAIN_1</div>
+        <div id="trap-chain-banner">⚡ ¡NPC Yugi Muto activa la Carta Trampa "Fuerza de Espejo"!</div>
+
+        <!-- MODAL DE CADENAS BIDIRECCIONAL ("A LA INVERSA") -->
+        <div id="chain-prompt-modal" class="ocg-modal-overlay" style="display:none;">
+            <div class="ocg-modal-card">
+                <div class="ocg-modal-header">
+                    <span class="chain-badge">⛓️ CADENA OFICIAL: ESLABÓN <span id="chain-link-num">1</span></span>
+                    <span class="chain-timer-tag" id="chain-timer-num">8s</span>
+                </div>
+
+                        <div class="chain-timer-bar-container">
+                    <div id="chain-timer-bar" class="chain-timer-bar"></div>
+                </div>
+                <p id="chain-prompt-text" class="chain-prompt-desc">¿Deseas activar una carta o efecto rápido en respuesta?</p>
+                <div id="chain-allowed-cards" class="chain-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="chain-actions-row">
+                    <button class="chain-btn chain-pass-btn" onclick="respondChainPass()">✋ Pasar Prioridad (No encadenar)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE EDICIÓN DE NICK DE USUARIO (MÁXIMO 15 CARACTERES, 1 PALABRA SIN ESPACIOS) -->
+        <div id="edit-nick-modal" class="ocg-modal-overlay" style="display:none; z-index:99999;">
+            <div style="background:linear-gradient(145deg, #0e1626, #070b14); border:1px solid var(--accent-cyan); box-shadow:0 0 25px rgba(0,229,255,0.3); border-radius:12px; padding:22px; width:380px; max-width:92vw; color:#fff; font-family:'Outfit', sans-serif;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(0,229,255,0.2); padding-bottom:8px;">
+                    <div style="font-family:'Cinzel', serif; font-size:14px; font-weight:800; color:var(--accent-cyan); display:flex; align-items:center; gap:8px;">
+                        <span>✏️</span> EDITAR NICK DE USUARIO
+                    </div>
+                    <button onclick="closeEditNickModal()" style="background:transparent; border:none; color:#888; font-size:18px; cursor:pointer; line-height:1;">✕</button>
+                </div>
+
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:14px; line-height:1.4;">
+                    Ingresa tu nuevo nombre de duelista. Debe ser <b style="color:var(--accent-cyan);">una sola palabra</b> (sin espacios en blanco) y tener un <b style="color:var(--accent-gold);">máximo de 15 caracteres</b>.
+                </div>
+
+                <div class="auth-input-group" style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label class="auth-input-label" style="font-size:10px; font-weight:700; color:var(--accent-cyan); margin:0;">NUEVO NICK</label>
+                        <span id="editNickCharCount" style="font-size:10px; color:#888;">0/15</span>
+                    </div>
+                    <input type="text" id="editNickInput" class="auth-input" maxlength="15" placeholder="Ej: KaibaX (3-15 car.)" 
+                           oninput="onEditNickInputChanged(this)"
+                           onkeydown="if(event.key===' ') { event.preventDefault(); } if(event.key==='Enter') saveEditedNick();"
+                           style="width:100%; box-sizing:border-box; font-size:13px; font-weight:600; letter-spacing:0.5px;">
+                </div>
+
+                <div id="edit-nick-alert" style="display:none; font-size:11px; margin-bottom:14px; padding:8px 10px; border-radius:4px; text-align:left;"></div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button onclick="closeEditNickModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; border-radius:6px; padding:7px 14px; font-size:11px; cursor:pointer; font-weight:600;">CANCELAR</button>
+                    <button id="btn-save-nick" onclick="saveEditedNick()" class="btn-act-vertical" style="padding:7px 16px; font-size:11px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(0,180,216,0.5)); border-color:var(--accent-cyan);">GUARDAR CAMBIOS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BANNER DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS OCG) -->
+        <div id="tribute-banner" class="tribute-floating-banner" style="display:none;">
+            <div class="tribute-banner-content">
+                <span class="tribute-icon">⭐</span>
+                <div class="tribute-info">
+                    <div class="tribute-title">SELECCIÓN DE SACRIFICIOS REQUERIDA (OCG)</div>
+                    <div id="tribute-desc" class="tribute-desc">Selecciona monstruos en tu campo para tributar.</div>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button id="btn-confirm-tribute" class="btn-tribute-confirm" onclick="confirmTributeSelection()" disabled>Confirmar Sacrificio</button>
+                    <button class="btn-tribute-cancel" onclick="cancelTributeSelection()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL INTERACTIVO VISUAL DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS OCG) -->
+        <div id="tribute-modal" class="ocg-modal-overlay" style="display:none; z-index:9999;">
+            <div class="ocg-modal-card" style="width:520px; max-width:94vw; border-color:var(--accent-gold); box-shadow:0 0 35px rgba(255,215,0,0.45);">
+                <div class="ocg-modal-header" style="border-bottom:1px solid rgba(255,215,0,0.3);">
+                    <div style="font-family:'Cinzel', serif; font-size:14px; font-weight:800; color:var(--accent-gold); display:flex; align-items:center; gap:8px;">
+                        <span>⭐</span> <span id="tribute-modal-title">INVOCACIÓN POR SACRIFICIO</span>
+                    </div>
+                    <button onclick="cancelTributeSelection()" style="background:transparent; border:none; color:#888; font-size:18px; cursor:pointer; line-height:1;">✕</button>
+                </div>
+                <div id="tribute-modal-desc" style="font-size:11.5px; color:#cbd5e1; line-height:1.4;">
+                    Selecciona los monstruos de tu campo que deseas tributar al Cementerio.
+                </div>
+                <div id="tribute-monsters-grid" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; padding:10px; background:rgba(0,0,0,0.4); border-radius:6px; min-height:140px; align-items:center;">
+                    <!-- Monstruos se cargan dinámicamente -->
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                    <div id="tribute-status-badge" style="font-size:11px; font-weight:700; color:var(--accent-gold);">
+                        Seleccionados: 0 / 1
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-tribute-cancel" onclick="cancelTributeSelection()" style="padding:8px 14px; font-size:11px;">Cancelar</button>
+                        <button id="btn-tribute-atk" class="btn-tribute-confirm" onclick="executeTributeSummon('ATK')" disabled style="padding:8px 14px; font-size:11px;">
+                            ⚔️ Invocar (ATK)
+                        </button>
+                        <button id="btn-tribute-def" class="btn-tribute-confirm" onclick="executeTributeSummon('DEF')" disabled style="padding:8px 14px; font-size:11px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(0,180,216,0.5)); border-color:var(--accent-cyan); color:#fff;">
+                            🛡️ Colocar (DEF)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BANNER DE SELECCIÓN DE OBJETIVOS (TRAMPAS, MAGIAS Y EFECTOS OCG) -->
+        <div id="targeting-floating-banner" class="tribute-floating-banner" style="display:none; border-color: #ff0055; box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);">
+            <div class="tribute-banner-content">
+                <span id="targeting-icon" class="tribute-icon" style="color: #ff0055;">🎯</span>
+                <div class="tribute-info">
+                    <div id="targeting-title" class="tribute-title" style="color: #ff0055;">SELECCIÓN DE OBJETIVO REQUERIDA (OCG)</div>
+                    <div id="targeting-desc" class="tribute-desc">Haz clic en el objetivo en el campo.</div>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-tribute-cancel" onclick="cancelInteractiveTargeting()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISUALIZADOR DE ESLABONES DE CADENA ACTIVA -->
+        <div id="chain-stack-visualizer" class="chain-stack-container" style="display:none;">
+            <div class="chain-stack-title">⛓️ Cadena Activa (Resolución LIFO):</div>
+            <div id="chain-stack-items" class="chain-stack-items"></div>
+        </div>
+
+        <!-- VISOR FLOTANTE NO BLOQUEANTE DE EXTRA DECK, CEMENTERIO (GY) & DESTIERRO -->
+        <div id="gy-inspector-modal" class="non-blocking-drawer" style="display:none;">
+            <div id="gy-drawer-card-box" class="gy-drawer-card drawer-theme-extra">
+                <div class="gy-drawer-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span id="gy-drawer-icon" style="font-size:16px;">🔮</span>
+                        <h3 id="gy-modal-title" style="margin:0; font-size:13px; font-weight:800; color:var(--accent-gold);">Extra Deck</h3>
+                    </div>
+                    <button class="modal-close-btn" onclick="closeGraveyardModal()" title="Cerrar panel (Esc)">✕</button>
+                </div>
+                <div id="gy-drawer-hint" class="gy-drawer-hint">
+                    💡 Haz clic en cualquier carta para ver sus detalles completos en el panel izquierdo en tiempo real.
+                </div>
+                <div id="gy-cards-grid" class="gy-cards-grid">
+                    <!-- Cards list -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE EDICIÓN DE NICK DE USUARIO (MÁXIMO 15 CARACTERES, 1 PALABRA SIN ESPACIOS) -->
+        <div id="edit-nick-modal" class="ocg-modal-overlay" style="display:none; z-index:99999;">
+            <div style="background:linear-gradient(145deg, #0e1626, #070b14); border:1px solid var(--accent-cyan); box-shadow:0 0 25px rgba(0,229,255,0.3); border-radius:12px; padding:22px; width:380px; max-width:92vw; color:#fff; font-family:'Outfit', sans-serif;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(0,229,255,0.2); padding-bottom:8px;">
+                    <div style="font-family:'Cinzel', serif; font-size:14px; font-weight:800; color:var(--accent-cyan); display:flex; align-items:center; gap:8px;">
+                        <span>✏️</span> EDITAR NICK DE USUARIO
+                    </div>
+                    <button onclick="closeEditNickModal()" style="background:transparent; border:none; color:#888; font-size:18px; cursor:pointer; line-height:1;">✕</button>
+                </div>
+
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:14px; line-height:1.4;">
+                    Ingresa tu nuevo nombre de duelista. Debe ser <b style="color:var(--accent-cyan);">una sola palabra</b> (sin espacios en blanco) y tener un <b style="color:var(--accent-gold);">máximo de 15 caracteres</b>.
+                </div>
+
+                <div class="auth-input-group" style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label class="auth-input-label" style="font-size:10px; font-weight:700; color:var(--accent-cyan); margin:0;">NUEVO NICK</label>
+                        <span id="editNickCharCount" style="font-size:10px; color:#888;">0/15</span>
+                    </div>
+                    <input type="text" id="editNickInput" class="auth-input" maxlength="15" placeholder="Ej: KaibaX (3-15 car.)" 
+                           oninput="onEditNickInputChanged(this)"
+                           onkeydown="if(event.key===' ') { event.preventDefault(); } if(event.key==='Enter') saveEditedNick();"
+                           style="width:100%; box-sizing:border-box; font-size:13px; font-weight:600; letter-spacing:0.5px;">
+                </div>
+
+                <div id="edit-nick-alert" style="display:none; font-size:11px; margin-bottom:14px; padding:8px 10px; border-radius:4px; text-align:left;"></div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button onclick="closeEditNickModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; border-radius:6px; padding:7px 14px; font-size:11px; cursor:pointer; font-weight:600;">CANCELAR</button>
+                    <button id="btn-save-nick" onclick="saveEditedNick()" class="btn-act-vertical" style="padding:7px 16px; font-size:11px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(0,180,216,0.5)); border-color:var(--accent-cyan);">GUARDAR CAMBIOS</button>
+                </div>
+            </div>
+        </div>
+
+        
+<!-- =========================================================================
+             VENTANA DE TIRADA DE DADOS PRE-DUELO (ORDEN DE INICIO)
+             ========================================================================= -->
+        <div id="dice-roll-modal">
+            <div class="dice-modal-card">
+                <button class="modal-close-btn" onclick="closeDiceRollModal()" title="Cerrar ventana de dados" style="position:absolute; right:14px; top:14px;">✕</button>
+                <div class="dice-modal-title">
+                    🎲 SORTEO DE DADOS: ELECCIÓN DE ORDEN
+                </div>
+                <div class="dice-modal-desc">
+                    El duelista con el número mayor gana el derecho de escoger si inicia de <b>Primeras (Turno 1)</b> o de <b>Segundas (Turno 2)</b>.
+                </div>
+
+                <div class="dice-arena">
+                    <!-- DADO DEL JUGADOR -->
+                    <div class="die-wrapper">
+                        <div id="dice-player-label">TU DADO</div>
+                        <div id="die-player-cube" class="die-cube die-player">?</div>
+                    </div>
+
+                    <div class="dice-vs-badge">VS</div>
+
+                    <!-- DADO DEL RIVAL -->
+                    <div class="die-wrapper">
+                        <div id="dice-npc-label">RIVAL</div>
+                        <div id="die-npc-cube" class="die-cube die-npc">?</div>
+                    </div>
+                </div>
+
+                <div id="dice-status-message">
+                    Presiona el botón para lanzar los dados.
+                </div>
+
+                <!-- CONTENEDOR DE ACCIONES DE DADOS -->
+                <div id="dice-actions-container">
+                    <button id="btn-roll-dice" class="btn-arena-launch" onclick="rollDice()">
+                        🎲 LANZAR DADOS
+                    </button>
+                </div>
+
+                <!-- SELECTOR DE ORDEN (CUANDO EL JUGADOR GANA) -->
+                <div id="dice-choice-container" style="display:none; gap:12px; justify-content:center;">
+                    <button class="btn-act-vertical btn-order-p1" onclick="confirmOrderChoice('player1')">
+                        🥇 IR DE PRIMERAS (Turno 1)
+                    </button>
+                    <button class="btn-act-vertical btn-order-p2" onclick="confirmOrderChoice('player2')">
+                        🥈 IR DE SEGUNDAS (Turno 2)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================================
+             MODAL DE FIN DE DUELO (GAME OVER / RENDICIÓN)
+             ========================================================================= -->
+        <div id="game-over-modal">
+            <div class="game-over-card">
+                <div id="game-over-title" style="font-family:'Cinzel', serif; font-size:20px; font-weight:900; margin-bottom:8px; color:var(--accent-gold);">
+                    🏆 ¡VICTORIA OFICIAL!
+                </div>
+                <div id="game-over-desc" style="font-size:12px; color:#cbd5e1; margin-bottom:20px; line-height:1.5;">
+                    El duelo ha finalizado reglamentariamente.
+                </div>
+
+                <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(0,229,255,0.25); border-radius:8px; padding:14px; margin-bottom:20px; font-size:11px; display:flex; justify-content:space-around;">
+                    <div>
+                        <div style="color:#94a3b8; font-size:9.5px;">ESTADO</div>
+                        <div id="game-over-status-badge" style="font-weight:800; color:var(--accent-cyan);">Concluido</div>
+                    </div>
+                    <div>
+                        <div style="color:#94a3b8; font-size:9.5px;">RECOMPENSA</div>
+                        <div style="font-weight:800; color:var(--accent-gold);">⭐ +50 Starships</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button class="btn-act-vertical" onclick="returnToDuelMenu()" style="width:100%; padding:10px; font-size:12px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(9,132,227,0.5)); border-color:var(--accent-cyan);">
+                        ⚔️ RETORNAR AL MENÚ DE DUELOS
+                    </button>
+                    <button onclick="returnToLobby()" style="width:100%; padding:9px; font-size:11px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; border-radius:6px; cursor:pointer;">
+                        🏛️ IR AL LOBBY PRINCIPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE MONSTER REBORN (RESURRECCIÓN DUAL DE CEMENTERIOS OCG) -->
+        <div id="reborn-modal" class="ocg-modal-overlay" style="display:none;">
+            <div class="gy-modal-card" style="border-color: #55efc4; box-shadow: 0 0 35px rgba(85, 239, 196, 0.45); width: 780px;">
+                <div class="gy-modal-header" style="border-color: rgba(85, 239, 196, 0.3);">
+                    <h3 style="color:#55efc4; font-size:13px; font-weight:900;">✨ Monster Reborn: Selecciona un Monstruo para Revivir</h3>
+                    <button class="modal-close-btn" onclick="closeRebornModal()">✕</button>
+                </div>
+                <div style="font-size:10.5px; color:#cbd5e1; padding: 2px 4px;">
+                    Selecciona cualquier monstruo del Cementerio de tu rival o de tu propio Cementerio para invocarlo de modo Especial a tu campo.
+                </div>
+                <div style="display:flex; gap:12px; flex:1; overflow:hidden;">
+                    <div style="flex:1; display:flex; flex-direction:column; gap:4px; min-width:0;">
+                        <div style="font-size:11px; font-weight:800; color:var(--accent-cyan); text-align:center; padding:5px; background:rgba(0,240,255,0.12); border:1px solid rgba(0,240,255,0.3); border-radius:4px;">
+                            🪦 Tu Cementerio (<span id="reborn-p1-count">0</span>)
+                        </div>
+                        <div id="reborn-p1-grid" class="gy-cards-grid" style="flex:1;"></div>
+                    </div>
+                    <div style="flex:1; display:flex; flex-direction:column; gap:4px; min-width:0;">
+                        <div style="font-size:11px; font-weight:800; color:var(--accent-ruby); text-align:center; padding:5px; background:rgba(255,71,87,0.12); border:1px solid rgba(255,71,87,0.3); border-radius:4px;">
+                            🪦 Cementerio Rival (<span id="reborn-p2-count">0</span>)
+                        </div>
+                        <div id="reborn-p2-grid" class="gy-cards-grid" style="flex:1;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE DESCARTE POR LÍMITE DE MANO (END PHASE > 6 CARTAS OCG) -->
+        <div id="hand-discard-modal" class="ocg-modal-overlay" style="display:none;">
+            <div class="gy-modal-card" style="height: auto; max-height: 480px; border-color: var(--accent-gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.45); width: 620px;">
+                <div class="gy-modal-header" style="border-color: rgba(255, 215, 0, 0.3);">
+                    <h3 style="color:var(--accent-gold); font-size:13px; font-weight:900;">⚠️ End Phase: Ajuste de Límite de Mano (Regla Oficial Konami)</h3>
+                </div>
+                <p id="hand-discard-desc" style="font-size:11px; color:#cbd5e1; margin: 4px 0;">
+                    Tienes más de 6 cartas en la mano. Selecciona las cartas que deseas descartar al Cementerio.
+                </p>
+                <div id="hand-discard-grid" class="gy-cards-grid" style="max-height: 240px; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));"></div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                    <button id="btn-confirm-discard" class="btn-tribute-confirm" onclick="confirmHandDiscard()" disabled>
+                        Confirmar Descarte (0/1)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE CONFIRMACIÓN DE RENDICIÓN -->
+        <div id="surrender-modal" class="ocg-modal-overlay" style="display:none;">
+            <div class="ocg-modal-card" style="border-color: var(--accent-ruby); box-shadow: 0 0 35px rgba(255, 71, 87, 0.5); width: 440px; height: auto; text-align: center;">
+                <div class="ocg-modal-header" style="border-color: rgba(255, 71, 87, 0.3); justify-content: center;">
+                    <span class="chain-badge" style="color:var(--accent-ruby); text-shadow:0 0 8px rgba(255, 71, 87, 0.6);">🏳️ DECLARAR RENDICIÓN</span>
+                </div>
+                <div style="font-size: 13px; font-weight: 800; color: #ff6b81; margin-top: 6px;">
+                    ¿Estás seguro de que deseas rendirte?
+                </div>
+                <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,71,87,0.25); border-radius: 6px; padding: 12px; margin: 10px 0; text-align: left;">
+                    ⚠️ <strong style="color:#ff6b81;">AVISO DE PENALIZACIÓN OFICIAL:</strong><br>
+                    Por rendición voluntaria <strong>NO</strong> se te concederá ninguna recompensa de duelo:<br>
+                    ❌ <strong>0 Puntos de Experiencia (EXP)</strong><br>
+                    ❌ <strong>0 StarShips ⭐</strong><br>
+                    ❌ <strong>Sin posibilidad de obtener cartas de recompensa</strong>
+                </div>
+                <div style="display:flex; justify-content:center; gap:12px; margin-top:6px;">
+                    <button class="chain-btn chain-pass-btn" style="background:var(--accent-ruby); color:#fff; padding:8px 18px; font-size:11px;" onclick="confirmSurrender()">
+                        🏳️ Sí, Rendirme y Volver al Lobby
+                    </button>
+                    <button class="chain-btn" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 18px; font-size:11px;" onclick="closeSurrenderModal()">
+                        Cancelar (Seguir Jugando)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENÚ CONTEXTUAL DINÁMICO DE ACCIONES DE CARTAS -->
+        <div id="context-action-menu" class="context-card-menu" style="display:none;">
+            <div id="context-menu-title" class="context-menu-title">Carta</div>
+            <div id="context-menu-buttons" style="display:flex; flex-direction:column; gap:4px;"></div>
+        </div>
+
+        
+<div id="duel-app" style="display:flex;">
+
+        <div id="inspector-panel">
+            <h3>INFO CARTA</h3>
+            
+            <div class="card-img-container">
+                <img id="inspect-img" src="../../../assets/card_back.jpg" alt="Carta">
+            </div>
+
+            <div class="card-meta">
+                <div id="inspect-passcode-bar" style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:3px;">
+                    <span id="inspect-passcode" style="font-family:'Orbitron', sans-serif; font-size:8px; font-weight:900; color:#38bdf8; background:rgba(15,23,42,0.9); border:1px solid rgba(56,189,248,0.4); padding:1px 6px; border-radius:4px; letter-spacing:0.5px;">#--------</span>
+                    <span id="inspect-card-rarity" style="font-family:'Orbitron', sans-serif; font-size:7.5px; font-weight:900; color:#ffd700; background:rgba(0,0,0,0.6); border:1px solid rgba(255,215,0,0.3); padding:1px 5px; border-radius:4px; display:none;">OCG</span>
+                </div>
+                <div class="card-title" id="inspect-title">INFORMACIÓN DE CARTA</div>
+
+                <div class="card-attr-stars" id="inspect-attr-stars">
+                    <span class="card-attr-badge" id="inspect-attr">-</span>
+                    <span class="card-stars-span" id="inspect-stars"></span>
+                </div>
+
+                <div class="card-type-box">
+                    <span id="inspect-type">Selecciona o pasa el cursor sobre una carta</span>
+                    <span class="card-archetype-tag" id="inspect-archetype" style="display:none;">-</span>
+                </div>
+
+                <div class="card-stats-grid" id="inspect-stats-grid">
+                    <div class="stat-box stat-atk">
+                        <span class="stat-label">ATK</span>
+                        <span class="stat-val" id="inspect-atk">-</span>
+                    </div>
+                    <div class="stat-box stat-def">
+                        <span class="stat-label">DEF</span>
+                        <span class="stat-val" id="inspect-def">-</span>
+                    </div>
+                </div>
+
+                <div class="card-desc" id="inspect-desc">
+                    Pasa el cursor o haz clic en cualquier carta de la mano, campo, cementerio o mazo para visualizar sus detalles completos y efectos en tiempo real.
+                </div>
+
+                <!-- SECCIÓN DE CARTAS ASIGNADAS Y EFECTOS CONTINUOS (OCG) -->
+                <div id="inspect-attached-box" style="display:none; margin-top:8px; padding:6px 8px; background:rgba(88,28,135,0.3); border:1px solid rgba(192,132,252,0.5); border-radius:4px; text-align:left;">
+                    <div style="font-size:9.5px; font-weight:800; color:#c084fc; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>🔗</span> CARTAS ASIGNADAS / EFECTOS ACTIVOS:
+                    </div>
+                    <div id="inspect-attached-list" style="font-size:9px; color:#e9d5ff; line-height:1.4;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+             PANEL 2: CAMPO CENTRAL DE DUELO (56% ANCHO TOTAL) - DIFERENCIACIÓN CROMÁTICA
+             ========================================================================== -->
+        <div id="duel-field-panel">
+            
+            <!-- DIVISION EXACTA DEL TABLERO EN DOS MITADES (MITAD Y MITAD DE TODO EL CONTENEDOR) -->
+            <div id="rival-mat-field" class="field-half-panel rival-half"></div>
+            <div id="player-mat-field" class="field-half-panel player-half"></div>
+
+            <!-- MANO RIVAL FLOTANTE SUPERIOR (REVERSO OFICIAL SIMÉTRICO) -->
+            <div class="rival-hand-floating" id="rival-hand">
+                <div class="rival-hand-card"></div>
+                <div class="rival-hand-card"></div>
+                <div class="rival-hand-card"></div>
+                <div class="rival-hand-card"></div>
+            </div>
+
+            <!-- CONTENEDOR INTERNO DE MATRIZ DE DUELO 100% CENTRADO (9 COLUMNAS - ESPEJO OFICIAL KONAMI) -->
+            <div class="matrix-centered-container">
+
+                <!-- FILA 1 (RIVAL FONDO): [SPACER] | [MAIN DECK] | 5 MAGIAS/TRAMPAS | [EXTRA DECK] | [SPACER] -->
+                <div class="field-row-9">
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot zone-purple deck-stack" id="r-deck" title="Main Deck Rival">
+                        <div class="card-on-field card-sleeve"></div>
+                        <div class="slot-tooltip">DECK</div>
+                        <div class="deck-counter-badge" id="r-deck-counter">35</div>
+                    </div>
+                    <div class="field-slot zone-cyan" id="r-s0" onclick="onSlotClick('R_S', 0)"></div>
+                    <div class="field-slot zone-cyan" id="r-s1" onclick="onSlotClick('R_S', 1)"></div>
+                    <div class="field-slot zone-cyan" id="r-s2" onclick="onSlotClick('R_S', 2)"></div>
+                    <div class="field-slot zone-cyan" id="r-s3" onclick="onSlotClick('R_S', 3)"></div>
+                    <div class="field-slot zone-cyan" id="r-s4" onclick="onSlotClick('R_S', 4)"></div>
+                    <div class="field-slot zone-purple extra-stack" id="r-extra" title="Extra Deck Rival (Clic para ver cartas)" onclick="openExtraDeckModal('player2')">
+                        <div class="card-on-field card-sleeve"></div>
+                        <div class="slot-tooltip">EXTRA</div>
+                        <div class="deck-counter-badge" id="r-extra-counter">15</div>
+                    </div>
+                    <div class="field-slot spacer-slot"></div>
+                </div>
+
+                <!-- FILA 2 (RIVAL FRENTE): [DESTIERRO] | [CEMENTERIO] | 5 MONSTRUOS | [CAMPO] | [SPACER] -->
+                <div class="field-row-9">
+                    <div class="field-slot zone-orange" id="r-banished" title="Destierro Rival (Clic para ver)" onclick="openBanishedModal('player2')">
+                        <div class="slot-tooltip">BANISHED</div>
+                    </div>
+                    <div class="field-slot zone-ruby" id="r-gy" title="Cementerio Rival (Clic para ver)" onclick="openGraveyardModal('player2')">
+                        <div class="slot-tooltip">GY</div>
+                        <div class="deck-counter-badge" id="r-gy-counter" style="display:none; background:var(--accent-ruby);">0</div>
+                    </div>
+                    <div class="field-slot zone-cyan" id="r-m0" onclick="onSlotClick('R_M', 0)"></div>
+                    <div class="field-slot zone-cyan" id="r-m1" onclick="onSlotClick('R_M', 1)"></div>
+                    <div class="field-slot zone-cyan" id="r-m2" onclick="onSlotClick('R_M', 2)"></div>
+                    <div class="field-slot zone-cyan" id="r-m3" onclick="onSlotClick('R_M', 3)"></div>
+                    <div class="field-slot zone-cyan" id="r-m4" onclick="onSlotClick('R_M', 4)"></div>
+                    <div class="field-slot zone-emerald" id="r-campo" title="Campo Rival" onclick="onSlotClick('R_CAMPO', 0, event)">
+                        <div class="slot-tooltip">CAMPO</div>
+                    </div>
+                    <div class="field-slot spacer-slot"></div>
+                </div>
+
+                <!-- FILA CENTRO GEOMÉTRICO: EXTRA MONSTER ZONES (EMZ 1 EN COL 4 | EMZ 2 EN COL 6) -->
+                <div class="emz-row-9">
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot zone-emz" id="emz-0" title="EMZ 1 (Izquierda)" onclick="onSlotClick('EMZ', 0)">
+                        <div class="slot-tooltip">EMZ 1</div>
+                    </div>
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot zone-emz" id="emz-1" title="EMZ 2 (Derecha)" onclick="onSlotClick('EMZ', 1)">
+                        <div class="slot-tooltip">EMZ 2</div>
+                    </div>
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot spacer-slot"></div>
+                </div>
+
+                <!-- FILA 3 (JUGADOR FRENTE): [SPACER] | [CAMPO] | 5 MONSTRUOS | [CEMENTERIO] | [DESTIERRO] -->
+                <div class="field-row-9">
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot zone-emerald" id="p-campo" title="Campo Jugador" onclick="onSlotClick('P_CAMPO', 0, event)">
+                        <div class="slot-tooltip">CAMPO</div>
+                    </div>
+                    <div class="field-slot zone-cyan" id="p-m0" onclick="onSlotClick('P_M', 0)"></div>
+                    <div class="field-slot zone-cyan" id="p-m1" onclick="onSlotClick('P_M', 1)"></div>
+                    <div class="field-slot zone-cyan" id="p-m2" onclick="onSlotClick('P_M', 2)"></div>
+                    <div class="field-slot zone-cyan" id="p-m3" onclick="onSlotClick('P_M', 3)"></div>
+                    <div class="field-slot zone-cyan" id="p-m4" onclick="onSlotClick('P_M', 4)"></div>
+                    <div class="field-slot zone-ruby" id="p-gy" title="Cementerio Jugador (Clic para ver)" onclick="openGraveyardModal('player1')">
+                        <div class="slot-tooltip">GY</div>
+                        <div class="deck-counter-badge" id="p-gy-counter" style="display:none; background:var(--accent-ruby);">0</div>
+                    </div>
+                    <div class="field-slot zone-orange" id="p-banished" title="Destierro Jugador (Clic para ver)" onclick="openBanishedModal('player1')">
+                        <div class="slot-tooltip">BANISHED</div>
+                    </div>
+                </div>
+
+                <!-- FILA 4 (JUGADOR FONDO): [SPACER] | [EXTRA DECK] | 5 MAGIAS/TRAMPAS | [MAIN DECK] | [SPACER] -->
+                <div class="field-row-9">
+                    <div class="field-slot spacer-slot"></div>
+                    <div class="field-slot zone-purple extra-stack" id="p-extra" title="Extra Deck Jugador (Clic para ver cartas)" onclick="openExtraDeckModal('player1')">
+                        <div class="card-on-field card-sleeve"></div>
+                        <div class="slot-tooltip">EXTRA</div>
+                        <div class="deck-counter-badge" id="p-extra-counter">15</div>
+                    </div>
+                    <div class="field-slot zone-cyan" id="p-s0" onclick="onSlotClick('P_S', 0)"></div>
+                    <div class="field-slot zone-cyan" id="p-s1" onclick="onSlotClick('P_S', 1)"></div>
+                    <div class="field-slot zone-cyan" id="p-s2" onclick="onSlotClick('P_S', 2)"></div>
+                    <div class="field-slot zone-cyan" id="p-s3" onclick="onSlotClick('P_S', 3)"></div>
+                    <div class="field-slot zone-cyan" id="p-s4" onclick="onSlotClick('P_S', 4)"></div>
+                    <div class="field-slot zone-purple deck-stack" id="p-deck" title="Main Deck Jugador">
+                        <div class="card-on-field card-sleeve"></div>
+                        <div class="slot-tooltip">DECK</div>
+                        <div class="deck-counter-badge" id="p-deck-counter">35</div>
+                    </div>
+                    <div class="field-slot spacer-slot"></div>
+                </div>
+
+            </div>
+
+            <!-- MANO JUGADOR FLOTANTE INFERIOR -->
+            <div class="player-hand-floating">
+                <div class="hand-cards-container" id="player-hand"></div>
+            </div>
+
+        </div>
+
+        <!-- ==========================================================================
+             PANEL 3: CONTROL DE DUELO LATERAL DERECHO - FASES OFICIALES KONAMI
+             ========================================================================== -->
+        <div id="right-action-panel">
+            <h3>Control de Duelo</h3>
+
+            <!-- VIDAS DE RIVAL Y JUGADOR EN UNA SOLA LÍNEA COMPACTA -->
+            <div class="user-status-box duel-lp-single-row">
+                <div class="lp-col rival-col">
+                    <div class="lp-label"><span>🎮 RIVAL:</span> <span style="color:#fff;">NPC Yugi</span></div>
+                    <div class="lp-value lp-rival-val" id="rival-lp">LP: 8000</div>
+                </div>
+                <div class="lp-divider-v"></div>
+                <div class="lp-col player-col">
+                    <div class="lp-label" style="display:flex; align-items:center; gap:6px;">
+                        <span>👤 JUGADOR:</span> 
+                        <span id="player-name-val" style="color:#fff;">Admin</span>
+                    </div>
+                    <div class="lp-value lp-player-val" id="player-lp">LP: 8000</div>
+                </div>
+            </div>
+
+            <!-- TRACKER Y CONTROL DE FASES REGLAMENTARIAS (OCG / TCG) -->
+            <div class="phase-tracker-box">
+                <div class="phase-turn-header">
+                    <span id="turn-num-label" style="color:var(--accent-gold);">TURNO 1</span>
+                    <span id="turn-player-badge" class="turn-player-tag my-turn">TU TURNO</span>
+                </div>
+
+                <div class="phases-list">
+                    <!-- 1. DRAW PHASE -->
+                    <div class="phase-item" id="phase-item-DRAW" onclick="attemptPhaseChange('DRAW')">
+                        <div class="phase-badge">DP</div>
+                        <div class="phase-meta">
+                            <div class="phase-name"><span>Draw Phase</span></div>
+                            <div class="phase-hint">Robo de carta & Mágicas Rápidas / Trampas</div>
+                        </div>
+                    </div>
+
+                    <!-- 2. STANDBY PHASE -->
+                    <div class="phase-item" id="phase-item-STANDBY" onclick="attemptPhaseChange('STANDBY')">
+                        <div class="phase-badge">SP</div>
+                        <div class="phase-meta">
+                            <div class="phase-name"><span>Standby Phase</span></div>
+                            <div class="phase-hint">Mantenimiento de efectos & Respuestas</div>
+                        </div>
+                    </div>
+
+                    <!-- 3. MAIN PHASE 1 -->
+                    <div class="phase-item active-phase" id="phase-item-MAIN_1" onclick="attemptPhaseChange('MAIN_1')">
+                        <div class="phase-badge">M1</div>
+                        <div class="phase-meta">
+                            <div class="phase-name"><span>Main Phase 1</span></div>
+                            <div class="phase-hint">Invocaciones, Mágicas, SET & Efectos</div>
+                        </div>
+                    </div>
+
+                    <!-- 4. BATTLE PHASE -->
+                    <div class="phase-item" id="phase-item-BATTLE" onclick="attemptPhaseChange('BATTLE')">
+                        <div class="phase-badge">BP</div>
+                        <div class="phase-meta">
+                            <div class="phase-name"><span>Battle Phase</span></div>
+                            <div class="phase-hint">Declarar Ataques & Paso de Daño</div>
+                        </div>
+                    </div>
+
+                    <!-- 5. MAIN PHASE 2 -->
+                    <div class="phase-item" id="phase-item-MAIN_2" onclick="attemptPhaseChange('MAIN_2')">
+                        <div class="phase-badge">M2</div>
+                        <div class="phase-meta">
+                            <div class="phase-name"><span>Main Phase 2</span></div>
+                            <div class="phase-hint">Estrategia post-combate & Colocar SET</div>
+                        </div>
+                    </div>
+
+                    <!-- 6. END PHASE -->
+                    <div class="phase-item" id="phase-item-END" onclick="attemptPhaseChange('END')">
+                        <div class="phase-badge">EP</div>
+                        <div class="phase-meta">
+                            <div class="phase-name"><span>End Phase</span></div>
+                            <div class="phase-hint">Límite de mano (6) & Fin de turno</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- REGISTRO DE EVENTOS DE DUELO OCG EN TIEMPO REAL -->
+            <div class="duel-event-log-box">
+                <div class="log-title">📜 Registro de Duelo OCG</div>
+                <div id="duel-event-log" class="log-entries">
+                    <div class="log-item">⚔️ Duelo iniciado según reglas oficiales OCG Konami.</div>
+                </div>
+            </div>
+
+            <!-- BOTÓN OFICIAL DE RENDICIÓN -->
+            <button id="btn-surrender" class="btn-surrender" onclick="promptSurrender()" title="Rendirse del duelo y regresar al Lobby">
+                🏳️ Rendirse del Duelo
+            </button>
+        </div>
+
+            </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentUser = null;
+        let currentSummonMode = 'ATK'; // 'ATK' o 'DEF'
+        let selectedHandCardIndex = -1;
+        let selectedHandCardId = null;
+        let selectedAttackerSlot = 0;
+        let selectedRivalTargetSlot = -1;
+        let lastDuelState = null;
+
+        // Variables OCG Bidireccionales ("A la Inversa")
+        let selectedTributeSlots = [];
+        let pendingTributeData = null;
+        let chainTimerInterval = null;
+        let targetSelectMode = null; // null o { callback: fn }
+
+        // =========================================================================
+        // MÓDULO DE AUTENTICACIÓN Y REGISTRO (CON CATÁLOGO DE PAÍSES)
+        // =========================================================================
+        let cachedCountries = null;
+
+        function switchAuthTab(tab) {
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+            const loginPanel = document.getElementById('auth-login-panel');
+            const regPanel = document.getElementById('auth-register-panel');
+            const loginAlert = document.getElementById('login-alert-box');
+            const regAlert = document.getElementById('register-alert-box');
+
+            if (loginAlert) loginAlert.style.display = 'none';
+            if (regAlert) regAlert.style.display = 'none';
+
+            if (tab === 'login') {
+                if (loginBtn) loginBtn.classList.add('active');
+                if (regBtn) regBtn.classList.remove('active');
+                if (loginPanel) loginPanel.style.display = 'block';
+                if (regPanel) regPanel.style.display = 'none';
+            } else {
+                if (regBtn) regBtn.classList.add('active');
+                if (loginBtn) loginBtn.classList.remove('active');
+                if (regPanel) regPanel.style.display = 'block';
+                if (loginPanel) loginPanel.style.display = 'none';
+                loadCountries();
+            }
+        }
+
+        async function loadCountries() {
+            const selectElem = document.getElementById('regCountryInput');
+            if (!selectElem) return;
+            if (cachedCountries && cachedCountries.length > 0) return;
+
+            try {
+                const res = await fetch('/api/countries');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.countries)) {
+                        cachedCountries = data.countries;
+                        selectElem.innerHTML = '<option value="">-- Selecciona tu país --</option>';
+                        data.countries.forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c.IsoCode;
+                            opt.textContent = `${c.FlagEmoji || '🌐'} ${c.Name} (${c.IsoCode})`;
+                            selectElem.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Error al cargar catálogo de países:", err);
+            }
+        }
+
+        function showAuthAlert(panel, message, isError = true) {
+            const alertBox = document.getElementById(panel === 'login' ? 'login-alert-box' : 'register-alert-box');
+            if (!alertBox) return;
+            alertBox.style.display = 'block';
+            alertBox.style.background = isError ? 'rgba(255, 71, 87, 0.15)' : 'rgba(46, 213, 115, 0.15)';
+            alertBox.style.border = isError ? '1px solid #ff4757' : '1px solid #2ed573';
+            alertBox.style.color = isError ? '#ff6b81' : '#2ed573';
+            alertBox.innerHTML = (isError ? '⚠️ ' : '✅ ') + message;
+        }
+
+        async function performLogin() {
+            const userInput = document.getElementById('usernameInput');
+            const passInput = document.getElementById('passwordInput');
+            const btnSubmit = document.getElementById('btn-login-submit');
+            const user = userInput ? userInput.value.trim() : '';
+            const password = passInput ? passInput.value : '';
+
+            if (!user) {
+                showAuthAlert('login', 'Por favor ingresa tu nombre de usuario.');
+                return;
+            }
+            if (!password) {
+                showAuthAlert('login', 'Por favor ingresa tu contraseña.');
+                return;
+            }
+
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'VERIFICANDO...';
+            }
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: password })
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    showAuthAlert('login', data.message || 'Credenciales inválidas.');
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.textContent = 'INICIAR SESIÓN';
+                    }
+                    return;
+                }
+
+                currentUser = data.user;
+                try { localStorage.setItem('ani_user', JSON.stringify(currentUser)); } catch (e) {}
+                
+                // Mostrar nombre y bandera del país del jugador
+                const flag = currentUser.flagEmoji ? (currentUser.flagEmoji + ' ') : '';
+                const playerNameElem = document.getElementById('player-name-val');
+                if (playerNameElem) {
+                    playerNameElem.textContent = `${flag}${currentUser.username}`;
+                    playerNameElem.title = currentUser.countryName ? `${currentUser.countryName} (${currentUser.countryIsoCode})` : '';
+                }
+
+                socket.emit('USER_IDENTIFY', { 
+                    username: currentUser.username, 
+                    userId: currentUser.id,
+                    countryIsoCode: currentUser.countryIsoCode
+                });
+
+                document.getElementById('login-overlay').style.display = 'none';
+                openWelcomeLobby();
+            } catch (err) {
+                console.error("Error en login:", err);
+                showAuthAlert('login', 'Error de conexión con el servidor.');
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'INICIAR SESIÓN';
+                }
+            }
+        }
+
+        async function performRegister() {
+            const userInput = document.getElementById('regUsernameInput');
+            const emailInput = document.getElementById('regEmailInput');
+            const passInput = document.getElementById('regPasswordInput');
+            const countryInput = document.getElementById('regCountryInput');
+            const btnSubmit = document.getElementById('btn-register-submit');
+
+            const username = userInput ? userInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
+            const password = passInput ? passInput.value : '';
+            const countryIsoCode = countryInput ? countryInput.value.trim() : '';
+
+            // Validaciones de cliente (máx 15 caracteres y 1 palabra sin espacios)
+            if (!username || username.length < 3 || username.length > 15) {
+                showAuthAlert('register', 'El nick de usuario debe tener entre 3 y 15 caracteres (máximo 15).');
+                return;
+            }
+            if (/\s/.test(username) || username.split(/\s+/).length > 1) {
+                showAuthAlert('register', 'El nick de usuario debe ser una sola palabra, no se permiten espacios en blanco.');
+                return;
+            }
+            const validNickRegex = /^[a-zA-Z0-9_.-]+$/;
+            if (!validNickRegex.test(username)) {
+                showAuthAlert('register', 'El nick solo puede contener caracteres alfanuméricos, guiones o puntos.');
+                return;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                showAuthAlert('register', 'Ingresa una dirección de correo electrónico válida.');
+                return;
+            }
+            if (!password || password.length < 6) {
+                showAuthAlert('register', 'La contraseña debe contener al menos 6 caracteres.');
+                return;
+            }
+            if (!countryIsoCode) {
+                showAuthAlert('register', 'Por favor selecciona tu país de procedencia en el catálogo.');
+                return;
+            }
+
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'REGISTRANDO...';
+            }
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, countryIsoCode })
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    showAuthAlert('register', data.message || 'No se pudo completar el registro.');
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.textContent = 'CREAR CUENTA';
+                    }
+                    return;
+                }
+
+                showAuthAlert('register', '¡Registro exitoso! Iniciando sesión...', false);
+
+                // Prellenar credenciales en el formulario de login y loguear automáticamente
+                setTimeout(() => {
+                    const uInput = document.getElementById('usernameInput');
+                    const pInput = document.getElementById('passwordInput');
+                    if (uInput) uInput.value = username;
+                    if (pInput) pInput.value = password;
+                    switchAuthTab('login');
+                    performLogin();
+                }, 1200);
+            } catch (err) {
+                console.error("Error en registro:", err);
+                showAuthAlert('register', 'Error de comunicación con el servidor.');
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'CREAR CUENTA';
+                }
+            }
+        }
+
+        // Cargar catálogo de países al inicio y restaurar sesión si existe
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCountries();
+            try {
+                const savedUser = localStorage.getItem('ani_user');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                    socket.emit('USER_IDENTIFY', { 
+                        username: currentUser.username, 
+                        userId: currentUser.id,
+                        countryIsoCode: currentUser.countryIsoCode
+                    });
+                    openWelcomeLobby();
+                }
+            } catch (e) {}
+        });
+
+        // =========================================================================
+        // PANEL DETALLADO EXTENDIDO DE INFORMACIÓN DE CARTAS (28% DE ANCHO)
+        // =========================================================================
+        async function inspectCardById(cardId) {
+            if (!cardId) return;
+            const imgElem = document.getElementById('inspect-img');
+            const titleElem = document.getElementById('inspect-title');
+            const attrElem = document.getElementById('inspect-attr');
+            const starsElem = document.getElementById('inspect-stars');
+            const typeElem = document.getElementById('inspect-type');
+            const archetypeElem = document.getElementById('inspect-archetype');
+            const atkElem = document.getElementById('inspect-atk');
+            const defElem = document.getElementById('inspect-def');
+            const descElem = document.getElementById('inspect-desc');
+            const statsGrid = document.getElementById('inspect-stats-grid');
+
+            imgElem.src = `https://images.ygoprodeck.com/images/cards/${cardId}.jpg`;
+            titleElem.textContent = `Cargando ID #${cardId}...`;
+            descElem.textContent = "Obteniendo datos oficiales de carta...";
+
+            try {
+                const res = await fetch(`/api/cards/${cardId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.card) {
+                        const card = data.card;
+                        imgElem.src = card.image_url || `https://images.ygoprodeck.com/images/cards/${card.id}.jpg`;
+                        titleElem.textContent = card.name;
+                        
+                        attrElem.textContent = card.attribute || (card.type && card.type.includes('Spell') ? 'SPELL' : 'TRAP');
+                        
+                        const lvl = card.level || 0;
+                        if (lvl > 0) {
+                            starsElem.textContent = '⭐'.repeat(Math.min(lvl, 12)) + ` (Nv. ${lvl})`;
+                            starsElem.style.display = 'inline';
+                        } else {
+                            starsElem.textContent = (card.type && card.type.includes('Spell')) ? '✨ MÁGICA' : '🛡️ TRAMPA';
+                        }
+
+                        typeElem.textContent = `${card.race || 'Carta'} / ${card.type || 'Normal'}`;
+                        
+                        const invalidArchetypes = ['Field', 'Spell', 'Trap', 'Normal', 'Continuous', 'Quick-Play', 'Equip', 'Ritual', 'Counter'];
+                        if (card.archetype && !invalidArchetypes.includes(card.archetype)) {
+                            archetypeElem.textContent = `Arquetipo: ${card.archetype}`;
+                        } else {
+                            archetypeElem.textContent = 'Sin Arquetipo';
+                        }
+
+                        if (card.atk !== null && card.atk !== undefined) {
+                            statsGrid.style.display = 'grid';
+                            let displayAtk = card.atk;
+                            let displayDef = card.def;
+                            let atkExtra = '';
+                            let defExtra = '';
+
+                            // Si Yami está activo en campo, reflejar buff/debuff
+                            let activeField = null;
+                            if (lastDuelState) {
+                                if (lastDuelState.player1 && lastDuelState.player1.fieldSpell) activeField = lastDuelState.player1.fieldSpell.card_id;
+                                if (lastDuelState.player2 && lastDuelState.player2.fieldSpell) activeField = lastDuelState.player2.fieldSpell.card_id;
+                            }
+
+                            if (activeField === 59197169 && card.race) {
+                                const r = card.race.toLowerCase();
+                                if (r === 'spellcaster' || r === 'fiend') {
+                                    displayAtk = (card.atk || 0) + 200;
+                                    displayDef = (card.def || 0) + 200;
+                                    atkExtra = ' <span class="stat-buffed">(+200)</span>';
+                                    defExtra = ' <span class="stat-buffed">(+200)</span>';
+                                } else if (r === 'fairy') {
+                                    displayAtk = Math.max(0, (card.atk || 0) - 200);
+                                    displayDef = Math.max(0, (card.def || 0) - 200);
+                                    atkExtra = ' <span class="stat-debuffed">(-200)</span>';
+                                    defExtra = ' <span class="stat-debuffed">(-200)</span>';
+                                }
+                            }
+
+                            atkElem.innerHTML = `${displayAtk}${atkExtra}`;
+                            defElem.innerHTML = `${displayDef !== null ? displayDef : '---'}${defExtra}`;
+                        } else {
+                            statsGrid.style.display = 'none';
+                        }
+
+                        descElem.textContent = card.desc;
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error("Error al consultar API de carta:", err);
+            }
+
+            titleElem.textContent = `Carta #${cardId}`;
+            descElem.textContent = "Datos oficiales registrados en base de datos.";
+            const attachedBox = document.getElementById('inspect-attached-box');
+            if (attachedBox) attachedBox.style.display = 'none';
+        }
+
+        function inspectMonsterSlot(playerKey, slotIndex) {
+            if (!lastDuelState || !lastDuelState[playerKey]) return;
+            const monster = lastDuelState[playerKey].monsters[slotIndex];
+            if (!monster) return;
+
+            inspectCardById(monster.card_id);
+
+            const attachedBox = document.getElementById('inspect-attached-box');
+            const attachedList = document.getElementById('inspect-attached-list');
+
+            const isTrapped = monster.isTrapped || (monster.attachedEffects && monster.attachedEffects.some(e => e.effect_type === 'CANNOT_ATTACK'));
+            const effects = monster.attachedEffects || [];
+
+            if (isTrapped || effects.length > 0) {
+                if (attachedBox && attachedList) {
+                    attachedBox.style.display = 'block';
+                    if (effects.length > 0) {
+                        attachedList.innerHTML = effects.map(e => `
+                            <div style="margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid rgba(192,132,252,0.25);">
+                                <strong style="color:#f3e8ff;">⛓️ ${e.card_name || e.name}</strong><br>
+                                <span style="color:#d8b4fe; font-size:8.5px;">${e.desc || 'No puede declarar ataque ni cambiar su posición de batalla.'}</span>
+                            </div>
+                        `).join('');
+                    } else if (isTrapped) {
+                        attachedList.innerHTML = `<div><strong style="color:#f3e8ff;">⛓️ Círculo Atador de Hechizos</strong>: Inmovilizado. No puede atacar ni cambiar posición.</div>`;
+                    }
+                }
+            } else {
+                if (attachedBox) attachedBox.style.display = 'none';
+            }
+        }
+
+        function highlightTargetSlot(playerKey, slotIdx, enable) {
+            const prefix = playerKey === 'player1' ? 'p-m' : 'r-m';
+            const slotElem = document.getElementById(`${prefix}${slotIdx}`);
+            if (slotElem) {
+                if (enable) slotElem.classList.add('slot-target-highlight');
+                else slotElem.classList.remove('slot-target-highlight');
+            }
+        }
+
+        // =========================================================================
+        // MODO DE INVOCACIÓN (ATK / DEF) & RESALTADO DE RANURAS DISPONIBLES
+        // =========================================================================
+        function setSummonMode(mode) {
+            currentSummonMode = mode;
+            const btnAtk = document.getElementById('btn-mode-atk');
+            const btnDef = document.getElementById('btn-mode-def');
+            if (btnAtk && btnDef) {
+                if (mode === 'ATK') {
+                    btnAtk.style.borderColor = '#00f0ff';
+                    btnAtk.style.background = 'rgba(0, 240, 255, 0.28)';
+                    btnDef.style.borderColor = 'rgba(255, 215, 0, 0.35)';
+                    btnDef.style.background = 'rgba(255, 215, 0, 0.12)';
+                } else {
+                    btnDef.style.borderColor = '#ffd700';
+                    btnDef.style.background = 'rgba(255, 215, 0, 0.28)';
+                    btnAtk.style.borderColor = 'rgba(0, 240, 255, 0.35)';
+                    btnAtk.style.background = 'rgba(0, 240, 255, 0.12)';
+                }
+            }
+        }
+
+        function highlightAvailableSlots(enable, isMonsterCard) {
+            if (!lastDuelState) return;
+            for (let i = 0; i < 5; i++) {
+                const slotM = document.getElementById(`p-m${i}`);
+                if (slotM) {
+                    if (enable && isMonsterCard && !lastDuelState.player1.monsters[i]) {
+                        slotM.classList.add('slot-droppable');
+                    } else {
+                        slotM.classList.remove('slot-droppable');
+                    }
+                }
+                const slotS = document.getElementById(`p-s${i}`);
+                if (slotS) {
+                    if (enable && !isMonsterCard && !lastDuelState.player1.spells[i]) {
+                        slotS.classList.add('slot-droppable');
+                    } else {
+                        slotS.classList.remove('slot-droppable');
+                    }
+                }
+            }
+        }
+
+        // =========================================================================
+        // MENÚ CONTEXTUAL DINÁMICO DE ACCIONES
+        // =========================================================================
+        function showContextMenu(e, title, actions) {
+            const menu = document.getElementById('context-action-menu');
+            const titleElem = document.getElementById('context-menu-title');
+            const btnsContainer = document.getElementById('context-menu-buttons');
+
+            titleElem.textContent = title;
+            btnsContainer.innerHTML = '';
+
+            actions.forEach(act => {
+                const btn = document.createElement('button');
+                btn.className = 'context-btn';
+                btn.textContent = act.label;
+                btn.onclick = (event) => {
+                    event.stopPropagation();
+                    hideContextMenu();
+                    act.onClick();
+                };
+                btnsContainer.appendChild(btn);
+            });
+
+            menu.style.left = `${Math.min(e.clientX + 10, window.innerWidth - 200)}px`;
+            menu.style.top = `${Math.min(e.clientY - 20, window.innerHeight - 150)}px`;
+            menu.style.display = 'flex';
+        }
+
+        function hideContextMenu() {
+            document.getElementById('context-action-menu').style.display = 'none';
+        }
+
+        document.addEventListener('click', () => hideContextMenu());
+
+        // =========================================================================
+        // SELECCIÓN LIBRE DE MANO & MENÚ CONTEXTUAL DE ACCIÓN
+        // =========================================================================
+        function selectHandCard(index, cardId, event = null) {
+            selectedHandCardIndex = index;
+            selectedHandCardId = cardId;
+
+            // Iluminar la carta seleccionada en la mano con contorno dorado
+            document.querySelectorAll('.hand-card').forEach((c, idx) => {
+                if (idx === index) c.classList.add('selected-hand');
+                else c.classList.remove('selected-hand');
+            });
+
+            const cardObj = lastDuelState && lastDuelState.player1.hand ? lastDuelState.player1.hand[index] : null;
+            let isMonsterCard = true;
+            let isSpell = false;
+            let isTrap = false;
+
+            if (cardObj && cardObj.type) {
+                isMonsterCard = cardObj.type.includes('Monster');
+                isSpell = cardObj.type.includes('Spell');
+                isTrap = cardObj.type.includes('Trap');
+            }
+
+            if (isSpell || isTrap) {
+                currentSummonMode = 'DEF';
+            }
+
+            const myUsername = currentUser ? currentUser.username : 'Admin';
+            const isMyTurn = !lastDuelState || lastDuelState.turnPlayer === myUsername;
+
+            if (isMyTurn && (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2')) {
+                highlightAvailableSlots(true, isMonsterCard);
+            }
+            inspectCardById(cardId);
+
+            // Si es turno del rival o fase no válida, solo inspecciona la carta
+            if (!isMyTurn) {
+                showRuleAlert('⚠️ [Turno del Rival] Solo puedes inspeccionar cartas. Los controles de juego están bloqueados.');
+                return;
+            }
+
+            if (lastDuelState && lastDuelState.phase !== 'MAIN_1' && lastDuelState.phase !== 'MAIN_2') {
+                showRuleAlert(`⚠️ [Regla Oficial] Solo puedes realizar jugadas de invocación/colocación durante la Main Phase 1 o 2 (Fase actual: ${lastDuelState.phase}).`);
+                return;
+            }
+
+            // Si hay evento de ratón, abrir menú contextual
+            if (event) {
+                event.stopPropagation();
+                const cardName = cardObj ? cardObj.name : `Carta #${cardId}`;
+                const actions = [];
+
+                if (isMonsterCard) {
+                    const level = cardObj ? (cardObj.level || 0) : 0;
+                    const tributesNeeded = level >= 7 ? 2 : (level >= 5 ? 1 : 0);
+                    const atkLabel = tributesNeeded === 0 
+                        ? '⚔️ Invocar Normal (ATK)' 
+                        : (tributesNeeded === 1 ? '⭐ Invocar por Sacrificio (1 Tributo - ATK)' : '⭐⭐ Invocar por Sacrificio (2 Tributos - ATK)');
+                    const defLabel = tributesNeeded === 0 
+                        ? '🛡️ Colocar en Defensa (SET)' 
+                        : (tributesNeeded === 1 ? '🛡️ Colocar por Sacrificio (1 Tributo - SET)' : '🛡️ Colocar por Sacrificio (2 Tributos - SET)');
+
+                    actions.push({
+                        label: atkLabel,
+                        onClick: () => {
+                            setSummonMode('ATK');
+                            if (tributesNeeded > 0) {
+                                initiateTributeFlow(cardId, cardName, level, tributesNeeded, 'ATK');
+                            } else {
+                                showRuleAlert('Elige una casilla libre en la Zona de Monstruos (0..4).');
+                            }
+                        }
+                    });
+                    actions.push({
+                        label: defLabel,
+                        onClick: () => {
+                            setSummonMode('DEF');
+                            if (tributesNeeded > 0) {
+                                initiateTributeFlow(cardId, cardName, level, tributesNeeded, 'DEF');
+                            } else {
+                                showRuleAlert('Elige una casilla libre en la Zona de Monstruos (0..4).');
+                            }
+                        }
+                    });
+                } else if (isSpell) {
+                    actions.push({
+                        label: '✨ Activar Efecto',
+                        onClick: () => activateCardFromHand(cardId)
+                    });
+                    actions.push({
+                        label: '🎴 Colocar Boca Abajo (SET)',
+                        onClick: () => {
+                            setSummonMode('DEF');
+                            const emptySlot = lastDuelState && lastDuelState.player1 ? lastDuelState.player1.spells.findIndex(s => s === null) : -1;
+                            if (emptySlot !== -1) {
+                                socket.emit('CLIENT_SET', {
+                                    room_id: 'ROOM_DEMO',
+                                    card_id: cardId,
+                                    slot_index: emptySlot,
+                                    zone_type: 'P_S',
+                                    position: 'DEF'
+                                });
+                                selectedHandCardIndex = -1;
+                                selectedHandCardId = null;
+                                highlightAvailableSlots(false, false);
+                                document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
+                            } else {
+                                showRuleAlert('⚠️ [Zona Llena] No tienes casillas libres en la Zona de Magias y Trampas.');
+                            }
+                        }
+                    });
+                } else if (isTrap) {
+                    actions.push({
+                        label: '🎴 Colocar Boca Abajo (SET)',
+                        onClick: () => {
+                            setSummonMode('DEF');
+                            const emptySlot = lastDuelState && lastDuelState.player1 ? lastDuelState.player1.spells.findIndex(s => s === null) : -1;
+                            if (emptySlot !== -1) {
+                                socket.emit('CLIENT_SET', {
+                                    room_id: 'ROOM_DEMO',
+                                    card_id: cardId,
+                                    slot_index: emptySlot,
+                                    zone_type: 'P_S',
+                                    position: 'DEF'
+                                });
+                                selectedHandCardIndex = -1;
+                                selectedHandCardId = null;
+                                highlightAvailableSlots(false, false);
+                                document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
+                            } else {
+                                showRuleAlert('⚠️ [Zona Llena] No tienes casillas libres en la Zona de Magias y Trampas.');
+                            }
+                        }
+                    });
+                }
+
+                showContextMenu(event, cardName, actions);
+            }
+        }
+
+        // =========================================================================
+        // CONTROL UNIFICADO DE SELECCIÓN DE OBJETIVOS (MAGIAS, TRAMPAS Y CADENAS OCG)
+        // =========================================================================
+        let pendingTargetAction = null; // { mode, cardId, slotIndex, fromHand, isChain, cardName }
+
+        function isCardRequiringTarget(cardId) {
+            const numId = Number(cardId);
+            // Monstruos de volteo o efectos de monstruo
+            if (numId === 54652250 || numId === 7089711) return 'MONSTER_ANY';
+            if (numId === 9076207 || numId === 33066139 || numId === 51482758) return 'SPELL_TRAP';
+            if (numId === 18807109 || numId === 18807108 || numId === 44519536 || numId === 63102017 || numId === 63519819 || numId === 83887306) return 'MONSTER_OPPONENT';
+            if (numId === 5318639 || numId === 46130346) return 'SPELL_TRAP';
+
+            // Buscar en mano o campo del jugador si es carta de equipo
+            let cardObj = null;
+            if (typeof lastDuelState !== 'undefined' && lastDuelState && lastDuelState.player1) {
+                cardObj = (lastDuelState.player1.hand && lastDuelState.player1.hand.find(c => Number(c.id || c.card_id) === numId))
+                    || (lastDuelState.player1.spells && lastDuelState.player1.spells.find(s => s && Number(s.card_id) === numId));
+            }
+            if (cardObj) {
+                const cd = cardObj.card_data || cardObj;
+                const isEquip = cd.race === 'Equip' || (cd.type && typeof cd.type === 'string' && cd.type.includes('Equip'));
+                if (isEquip) return 'MONSTER_PLAYER';
+            }
+
+            // Cartas Mágicas de Equipo conocidas (LOB y posteriores)
+            const equipIds = [
+                61854111, 46009906, 15052462, 91595718, 77027445, 4614116, 77007920, 39774685, 
+                1557499, 1435851, 37820550, 36607978, 25769732, 51267887, 98252586, 37120512, 
+                43422537, 46986414, 98374133
+            ];
+            if (equipIds.includes(numId)) return 'MONSTER_PLAYER';
+            return null;
+        }
+
+        function startInteractiveTargeting(mode, cardId, slotIndex = -1, fromHand = false, isChain = false, cardName = 'Carta', actionType = 'ACTIVATE') {
+            pendingTargetAction = {
+                mode: mode,
+                cardId: cardId,
+                slotIndex: slotIndex,
+                fromHand: fromHand,
+                isChain: isChain,
+                cardName: cardName,
+                actionType: actionType
+            };
+
+            // Si proviene de un aviso de cadena, pausar temporizador y ocultar modal mientras el jugador elige objetivo
+            if (isChain) {
+                if (chainTimerInterval) clearInterval(chainTimerInterval);
+                const modal = document.getElementById('chain-prompt-modal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            const banner = document.getElementById('targeting-floating-banner');
+            const icon = document.getElementById('targeting-icon');
+            const title = document.getElementById('targeting-title');
+            const desc = document.getElementById('targeting-desc');
+
+            if (mode === 'MONSTER_OPPONENT') {
+                if (banner) {
+                    banner.style.borderColor = '#ff0055';
+                    banner.style.boxShadow = '0 0 25px rgba(255, 0, 85, 0.6)';
+                    banner.style.display = 'flex';
+                }
+                if (icon) { icon.textContent = '🎯'; icon.style.color = '#ff0055'; }
+                if (title) { title.textContent = `SELECCIÓN DE OBJETIVO (OCG) - ${cardName.toUpperCase()}`; title.style.color = '#ff0055'; }
+                if (desc) desc.textContent = `Haz clic sobre el monstruo del rival que deseas seleccionar como objetivo de "${cardName}".`;
+                highlightTargets('MONSTER_OPPONENT', true);
+            } else if (mode === 'MONSTER_ANY') {
+                if (banner) {
+                    banner.style.borderColor = '#ffaa00';
+                    banner.style.boxShadow = '0 0 25px rgba(255, 170, 0, 0.6)';
+                    banner.style.display = 'flex';
+                }
+                if (icon) { icon.textContent = '🎯'; icon.style.color = '#ffaa00'; }
+                if (title) { title.textContent = `SELECCIÓN DE OBJETIVO - ${cardName.toUpperCase()}`; title.style.color = '#ffaa00'; }
+                if (desc) desc.textContent = `Haz clic sobre un monstruo en el campo para aplicar el efecto de "${cardName}".`;
+                highlightTargets('MONSTER_ANY', true);
+            } else if (mode === 'MONSTER_PLAYER') {
+                if (banner) {
+                    banner.style.borderColor = '#00e5ff';
+                    banner.style.boxShadow = '0 0 25px rgba(0, 229, 255, 0.6)';
+                    banner.style.display = 'flex';
+                }
+                if (icon) { icon.textContent = '🗡️'; icon.style.color = '#00e5ff'; }
+                if (title) { title.textContent = `SELECCIÓN DE OBJETIVO (EQUIPAR) - ${cardName.toUpperCase()}`; title.style.color = '#00e5ff'; }
+                if (desc) desc.textContent = `Haz clic sobre tu monstruo que deseas equipar con "${cardName}".`;
+                highlightTargets('MONSTER_PLAYER', true);
+            } else if (mode === 'SPELL_TRAP') {
+                if (banner) {
+                    banner.style.borderColor = '#00ff88';
+                    banner.style.boxShadow = '0 0 25px rgba(0, 255, 136, 0.6)';
+                    banner.style.display = 'flex';
+                }
+                if (icon) { icon.textContent = '⚡'; icon.style.color = '#00ff88'; }
+                if (title) { title.textContent = `SELECCIÓN DE OBJETIVO (OCG) - ${cardName.toUpperCase()}`; title.style.color = '#00ff88'; }
+                if (desc) desc.textContent = `Haz clic sobre la carta Mágica o Trampa en el campo que deseas seleccionar con "${cardName}".`;
+                highlightTargets('SPELL_TRAP', true);
+            }
+        }
+
+        function cancelInteractiveTargeting() {
+            const wasChain = pendingTargetAction && pendingTargetAction.isChain;
+            pendingTargetAction = null;
+
+            const banner = document.getElementById('targeting-floating-banner');
+            if (banner) banner.style.display = 'none';
+
+            highlightTargets('ALL', false);
+
+            if (wasChain) {
+                const modal = document.getElementById('chain-prompt-modal');
+                if (modal) modal.style.display = 'flex';
+            }
+        }
+
+        function highlightTargets(mode, enable) {
+            if (!enable) {
+                document.querySelectorAll('.trap-target-candidate, .mst-target-candidate').forEach(el => {
+                    el.classList.remove('trap-target-candidate');
+                    el.classList.remove('mst-target-candidate');
+                });
+                return;
+            }
+            if (!lastDuelState) return;
+
+            if (mode === 'MONSTER_OPPONENT' || mode === 'MONSTER_ANY') {
+                for (let i = 0; i < 5; i++) {
+                    if (lastDuelState.player2 && lastDuelState.player2.monsters[i]) {
+                        const el = document.getElementById(`r-m${i}`);
+                        if (el) el.classList.add('trap-target-candidate');
+                    }
+                }
+            }
+            if (mode === 'MONSTER_PLAYER' || mode === 'MONSTER_ANY') {
+                for (let i = 0; i < 5; i++) {
+                    if (lastDuelState.player1 && lastDuelState.player1.monsters[i]) {
+                        const el = document.getElementById(`p-m${i}`);
+                        if (el) el.classList.add('trap-target-candidate');
+                    }
+                }
+            }
+            if (mode === 'SPELL_TRAP') {
+                for (let i = 0; i < 5; i++) {
+                    if (lastDuelState.player1 && lastDuelState.player1.spells[i]) {
+                        const el = document.getElementById(`p-s${i}`);
+                        if (el) el.classList.add('mst-target-candidate');
+                    }
+                    if (lastDuelState.player2 && lastDuelState.player2.spells[i]) {
+                        const el = document.getElementById(`r-s${i}`);
+                        if (el) el.classList.add('mst-target-candidate');
+                    }
+                }
+                if (lastDuelState.player1 && lastDuelState.player1.fieldSpell) {
+                    const el = document.getElementById('p-campo');
+                    if (el) el.classList.add('mst-target-candidate');
+                }
+                if (lastDuelState.player2 && lastDuelState.player2.fieldSpell) {
+                    const el = document.getElementById('r-campo');
+                    if (el) el.classList.add('mst-target-candidate');
+                }
+            }
+        }
+
+        function activateCardDirectly(cardId, fromHand = false, slotIndex = -1, cardName = 'Carta') {
+            const targetMode = isCardRequiringTarget(cardId);
+            if (targetMode) {
+                startInteractiveTargeting(targetMode, cardId, slotIndex, fromHand, false, cardName);
+                return;
+            }
+
+            socket.emit('OCG_ACTIVATE_CARD', {
+                room_id: 'ROOM_DEMO',
+                card_id: cardId,
+                slot_index: slotIndex,
+                from_hand: fromHand
+            });
+        }
+
+        function triggerMonsterEffect(slotIndex, cardId) {
+            socket.emit('CMD_ACTION', {
+                room_id: 'ROOM_DEMO',
+                action_type: 'MONSTER_EFFECT',
+                slot_index: slotIndex,
+                card_id: cardId
+            });
+        }
+
+        function openRebornModal() {
+            if (!lastDuelState) return;
+            const p1Gy = lastDuelState.player1.graveyard || [];
+            const p2Gy = lastDuelState.player2.graveyard || [];
+
+            const isMonster = c => (c.type && c.type.includes('Monster')) || (c.atk !== null && c.atk !== undefined);
+            const p1Monsters = p1Gy.filter(isMonster);
+            const p2Monsters = p2Gy.filter(isMonster);
+
+            if (p1Monsters.length === 0 && p2Monsters.length === 0) {
+                showRuleAlert('⚠️ [Monster Reborn] No hay monstruos en ningún Cementerio para revivir.');
+                return;
+            }
+
+            const modal = document.getElementById('reborn-modal');
+            const p1Count = document.getElementById('reborn-p1-count');
+            const p2Count = document.getElementById('reborn-p2-count');
+            const p1Grid = document.getElementById('reborn-p1-grid');
+            const p2Grid = document.getElementById('reborn-p2-grid');
+
+            if (p1Count) p1Count.textContent = p1Monsters.length;
+            if (p2Count) p2Count.textContent = p2Monsters.length;
+
+            p1Grid.innerHTML = '';
+            p2Grid.innerHTML = '';
+
+            if (p1Monsters.length === 0) {
+                p1Grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:20px; font-size:10px;">Sin monstruos en tu Cementerio</div>`;
+            } else {
+                p1Gy.forEach((c, idx) => {
+                    if (!isMonster(c)) return;
+                    const cId = c.id || c.card_id;
+                    const el = document.createElement('div');
+                    el.className = 'gy-card-item';
+                    el.innerHTML = `
+                        <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+                        <div class="gy-card-name">${c.name || 'Monstruo'}</div>
+                        <div style="font-size:8px; color:var(--accent-gold);">ATK: ${c.atk} / DEF: ${c.def}</div>
+                    `;
+                    el.onclick = () => selectRebornMonster('player1', idx);
+                    p1Grid.appendChild(el);
+                });
+            }
+
+            if (p2Monsters.length === 0) {
+                p2Grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:20px; font-size:10px;">Sin monstruos en Cementerio Rival</div>`;
+            } else {
+                p2Gy.forEach((c, idx) => {
+                    if (!isMonster(c)) return;
+                    const cId = c.id || c.card_id;
+                    const el = document.createElement('div');
+                    el.className = 'gy-card-item';
+                    el.innerHTML = `
+                        <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+                        <div class="gy-card-name">${c.name || 'Monstruo'}</div>
+                        <div style="font-size:8px; color:var(--accent-gold);">ATK: ${c.atk} / DEF: ${c.def}</div>
+                    `;
+                    el.onclick = () => selectRebornMonster('player2', idx);
+                    p2Grid.appendChild(el);
+                });
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeRebornModal() {
+            const modal = document.getElementById('reborn-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function selectRebornMonster(targetGy, targetIndex) {
+            socket.emit('OCG_ACTIVATE_CARD', {
+                room_id: 'ROOM_DEMO',
+                card_id: 83764718,
+                from_hand: true,
+                target_data: {
+                    target_gy: targetGy,
+                    target_index: targetIndex
+                }
+            });
+
+            closeRebornModal();
+            selectedHandCardIndex = -1;
+            selectedHandCardId = null;
+            highlightAvailableSlots(false, true);
+        }
+
+        // =========================================================================
+        // LÍMITE DE MANO EN END PHASE (DESCARTE OBLIGATORIO SEGÚN KONAMI OCG)
+        // =========================================================================
+        let pendingDiscardData = null;
+        let selectedDiscardIndices = [];
+
+        socket.on('OCG_PROMPT_HAND_DISCARD', (data) => {
+            console.log('[OCG HAND DISCARD PROMPT]', data);
+            pendingDiscardData = data;
+            selectedDiscardIndices = [];
+            const modal = document.getElementById('hand-discard-modal');
+            const desc = document.getElementById('hand-discard-desc');
+            const grid = document.getElementById('hand-discard-grid');
+            const confirmBtn = document.getElementById('btn-confirm-discard');
+
+            desc.textContent = `Tienes ${data.hand.length} cartas en la mano (límite oficial: 6). Selecciona ${data.required_count} carta(s) para descartar al Cementerio:`;
+            confirmBtn.textContent = `Confirmar Descarte (0/${data.required_count})`;
+            confirmBtn.disabled = true;
+            grid.innerHTML = '';
+
+            data.hand.forEach((card, idx) => {
+                const cId = card.id || card.card_id;
+                const div = document.createElement('div');
+                div.className = 'gy-card-item discard-candidate';
+                div.id = `discard-card-${idx}`;
+                div.innerHTML = `
+                    <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+                    <div class="gy-card-name">${card.name || 'Carta'}</div>
+                `;
+                div.onclick = () => toggleDiscardCard(idx);
+                grid.appendChild(div);
+            });
+
+            modal.style.display = 'flex';
+        });
+
+        function toggleDiscardCard(idx) {
+            if (!pendingDiscardData) return;
+            const cardEl = document.getElementById(`discard-card-${idx}`);
+            const selIdx = selectedDiscardIndices.indexOf(idx);
+
+            if (selIdx !== -1) {
+                selectedDiscardIndices.splice(selIdx, 1);
+                if (cardEl) cardEl.classList.remove('discard-selected');
+            } else {
+                if (selectedDiscardIndices.length < pendingDiscardData.required_count) {
+                    selectedDiscardIndices.push(idx);
+                    if (cardEl) cardEl.classList.add('discard-selected');
+                }
+            }
+
+            const confirmBtn = document.getElementById('btn-confirm-discard');
+            confirmBtn.textContent = `Confirmar Descarte (${selectedDiscardIndices.length}/${pendingDiscardData.required_count})`;
+            confirmBtn.disabled = selectedDiscardIndices.length !== pendingDiscardData.required_count;
+        }
+
+        function confirmHandDiscard() {
+            if (!pendingDiscardData || selectedDiscardIndices.length !== pendingDiscardData.required_count) return;
+
+            socket.emit('OCG_HAND_DISCARD_RESPONSE', {
+                room_id: 'ROOM_DEMO',
+                discard_indices: selectedDiscardIndices
+            });
+
+            document.getElementById('hand-discard-modal').style.display = 'none';
+            pendingDiscardData = null;
+            selectedDiscardIndices = [];
+        }
+
+        function activateCardFromHand(cardId) {
+            if (cardId === 83764718) { // Monster Reborn
+                openRebornModal();
+                return;
+            }
+            const targetMode = isCardRequiringTarget(cardId);
+            if (targetMode) {
+                let cardName = 'Carta';
+                if (lastDuelState && lastDuelState.player1 && lastDuelState.player1.hand) {
+                    const c = lastDuelState.player1.hand.find(h => (h.id || h.card_id) === cardId);
+                    if (c) cardName = c.name;
+                }
+                startInteractiveTargeting(targetMode, cardId, -1, true, false, cardName);
+                selectedHandCardIndex = -1;
+                selectedHandCardId = null;
+                highlightAvailableSlots(false, true);
+                return;
+            }
+
+            socket.emit('OCG_ACTIVATE_CARD', {
+                room_id: 'ROOM_DEMO',
+                card_id: cardId,
+                from_hand: true
+            });
+            selectedHandCardIndex = -1;
+            selectedHandCardId = null;
+            highlightAvailableSlots(false, true);
+        }
+
+        // =========================================================================
+        // INTERACCIÓN CON CASILLAS DEL TABLERO (0..4)
+        // =========================================================================
+        function onSlotClick(zoneType, slotIndex, event = null) {
+            if (event && pendingTargetAction) {
+                event.stopPropagation();
+            }
+
+            // GESTIÓN DE SELECCIÓN DE OBJETIVOS INTERACTIVOS (OCG OFICIAL: TRAMPAS, MAGIAS Y EFECTOS)
+            if (pendingTargetAction) {
+                if (pendingTargetAction.mode === 'MONSTER_OPPONENT' || pendingTargetAction.mode === 'MONSTER_PLAYER' || pendingTargetAction.mode === 'MONSTER_ANY') {
+                    const isOpponentSlot = (zoneType === 'R_M');
+                    const isPlayerSlot = (zoneType === 'P_M');
+                    let targetPlayer = null;
+                    let targetMonster = null;
+
+                    if (isOpponentSlot && (pendingTargetAction.mode === 'MONSTER_OPPONENT' || pendingTargetAction.mode === 'MONSTER_ANY')) {
+                        if (lastDuelState && lastDuelState.player2.monsters[slotIndex]) {
+                            targetPlayer = 'player2';
+                            targetMonster = lastDuelState.player2.monsters[slotIndex];
+                        }
+                    } else if (isPlayerSlot && (pendingTargetAction.mode === 'MONSTER_PLAYER' || pendingTargetAction.mode === 'MONSTER_ANY')) {
+                        if (lastDuelState && lastDuelState.player1.monsters[slotIndex]) {
+                            targetPlayer = 'player1';
+                            targetMonster = lastDuelState.player1.monsters[slotIndex];
+                        }
+                    }
+
+                    if (targetPlayer && targetMonster) {
+                        const targetName = targetMonster.card_data ? targetMonster.card_data.name : `Monstruo #${slotIndex + 1}`;
+                        const targetData = {
+                            slot_index: slotIndex,
+                            target_slot: slotIndex,
+                            target_player: targetPlayer,
+                            source_slot: pendingTargetAction.slotIndex
+                        };
+
+                        if (pendingTargetAction.isChain) {
+                            socket.emit('OCG_CHAIN_RESPONSE', {
+                                room_id: 'ROOM_DEMO',
+                                action: 'CHAIN',
+                                card_id: pendingTargetAction.cardId,
+                                slot_index: pendingTargetAction.slotIndex,
+                                from_hand: pendingTargetAction.fromHand,
+                                target_data: targetData
+                            });
+                        } else if (pendingTargetAction.actionType === 'CHANGE_POS') {
+                            socket.emit('CMD_ACTION', {
+                                room_id: 'ROOM_DEMO',
+                                action_type: 'CHANGE_POS',
+                                slot_index: pendingTargetAction.slotIndex,
+                                target_data: targetData
+                            });
+                        } else if (pendingTargetAction.actionType === 'MONSTER_EFFECT') {
+                            socket.emit('CMD_ACTION', {
+                                room_id: 'ROOM_DEMO',
+                                action_type: 'MONSTER_EFFECT',
+                                slot_index: pendingTargetAction.slotIndex,
+                                card_id: pendingTargetAction.cardId,
+                                target_data: targetData
+                            });
+                        } else {
+                            socket.emit('OCG_ACTIVATE_CARD', {
+                                room_id: 'ROOM_DEMO',
+                                card_id: pendingTargetAction.cardId,
+                                slot_index: pendingTargetAction.slotIndex,
+                                from_hand: pendingTargetAction.fromHand,
+                                target_data: targetData
+                            });
+                        }
+                        showRuleAlert(`🎯 ¡Objetivo seleccionado: ${targetName} (${targetPlayer === 'player2' ? 'Rival' : 'Tu campo'}, casilla #${slotIndex + 1})!`);
+                        cancelInteractiveTargeting();
+                        return;
+                    } else {
+                        showRuleAlert('⚠️ [Selección de Objetivo] Selecciona un monstruo válido según el efecto de la carta.');
+                        return;
+                    }
+                } else if (pendingTargetAction.mode === 'SPELL_TRAP') {
+                    let targetPlayer = null;
+                    let isField = false;
+                    let targetName = 'Carta Mágica/Trampa';
+
+                    if (zoneType === 'P_S' && lastDuelState && lastDuelState.player1.spells[slotIndex]) {
+                        targetPlayer = 'player1';
+                        targetName = lastDuelState.player1.spells[slotIndex].card_data ? lastDuelState.player1.spells[slotIndex].card_data.name : 'Magia/Trampa';
+                    } else if (zoneType === 'R_S' && lastDuelState && lastDuelState.player2.spells[slotIndex]) {
+                        targetPlayer = 'player2';
+                        targetName = lastDuelState.player2.spells[slotIndex].card_data ? lastDuelState.player2.spells[slotIndex].card_data.name : 'Magia/Trampa';
+                    } else if (zoneType === 'P_CAMPO' && lastDuelState && lastDuelState.player1.fieldSpell) {
+                        targetPlayer = 'player1';
+                        isField = true;
+                        targetName = lastDuelState.player1.fieldSpell.card_data ? lastDuelState.player1.fieldSpell.card_data.name : 'Campo';
+                    } else if (zoneType === 'R_CAMPO' && lastDuelState && lastDuelState.player2.fieldSpell) {
+                        targetPlayer = 'player2';
+                        isField = true;
+                        targetName = lastDuelState.player2.fieldSpell.card_data ? lastDuelState.player2.fieldSpell.card_data.name : 'Campo';
+                    }
+
+                    if (targetPlayer) {
+                        const targetData = {
+                            target_player: targetPlayer,
+                            target_slot: slotIndex,
+                            is_field_spell: isField,
+                            source_slot: pendingTargetAction.slotIndex
+                        };
+
+                        if (pendingTargetAction.isChain) {
+                            socket.emit('OCG_CHAIN_RESPONSE', {
+                                room_id: 'ROOM_DEMO',
+                                action: 'CHAIN',
+                                card_id: pendingTargetAction.cardId,
+                                slot_index: pendingTargetAction.slotIndex,
+                                from_hand: pendingTargetAction.fromHand,
+                                target_data: targetData
+                            });
+                        } else if (pendingTargetAction.actionType === 'CHANGE_POS') {
+                            socket.emit('CMD_ACTION', {
+                                room_id: 'ROOM_DEMO',
+                                action_type: 'CHANGE_POS',
+                                slot_index: pendingTargetAction.slotIndex,
+                                target_data: targetData
+                            });
+                        } else if (pendingTargetAction.actionType === 'MONSTER_EFFECT') {
+                            socket.emit('CMD_ACTION', {
+                                room_id: 'ROOM_DEMO',
+                                action_type: 'MONSTER_EFFECT',
+                                slot_index: pendingTargetAction.slotIndex,
+                                card_id: pendingTargetAction.cardId,
+                                target_data: targetData
+                            });
+                        } else {
+                            socket.emit('OCG_ACTIVATE_CARD', {
+                                room_id: 'ROOM_DEMO',
+                                card_id: pendingTargetAction.cardId,
+                                slot_index: pendingTargetAction.slotIndex,
+                                from_hand: pendingTargetAction.fromHand,
+                                target_data: targetData
+                            });
+                        }
+                        showRuleAlert(`🌪️ ¡Objetivo seleccionado: ${targetName}!`);
+                        cancelInteractiveTargeting();
+                        return;
+                    } else {
+                        showRuleAlert('⚠️ [Selección de Objetivo] Selecciona una carta Mágica, Trampa o de Campo válida.');
+                        return;
+                    }
+                }
+            }
+
+            document.querySelectorAll('.field-slot').forEach(el => el.classList.remove('slot-targeted'));
+
+            const myUsername = currentUser ? currentUser.username : 'Admin';
+            const isMyTurn = !lastDuelState || lastDuelState.turnPlayer === myUsername;
+
+            // Si es turno del rival: el jugador puede inspeccionar o activar Trampas y Mágicas Rápidas
+            if (!isMyTurn) {
+                if (zoneType === 'P_M' && lastDuelState && lastDuelState.player1.monsters[slotIndex]) {
+                    inspectMonsterSlot('player1', slotIndex);
+                    return;
+                } else if (zoneType === 'R_M' && lastDuelState && lastDuelState.player2.monsters[slotIndex]) {
+                    if (!lastDuelState.player2.monsters[slotIndex].faceDown) {
+                        inspectMonsterSlot('player2', slotIndex);
+                    }
+                    return;
+                } else if (zoneType === 'P_S' && lastDuelState && lastDuelState.player1.spells[slotIndex]) {
+                    const sObj = lastDuelState.player1.spells[slotIndex];
+                    inspectCardById(sObj.card_id);
+
+                    const cardData = sObj.card_data || {};
+                    const isTrap = cardData.type && cardData.type.includes('Trap');
+                    const isQuickPlay = cardData.race === 'Quick-Play' || (cardData.type && cardData.type.includes('Quick-Play'));
+                    const isFaceDown = sObj.faceDown === true || sObj.position === 'SET';
+
+                    // REGLA OFICIAL OCG: Las cartas de Trampa y Mágicas Rápidas colocadas boca abajo PUEDEN activarse durante el turno del rival
+                    if ((isTrap || isQuickPlay) && isFaceDown) {
+                        if (event) event.stopPropagation();
+                        showContextMenu(event, cardData.name || 'Trampa / Mágica Rápida', [
+                            {
+                                label: '⚡ Activar Carta (Respuesta OCG)',
+                                onClick: () => {
+                                    activateCardDirectly(sObj.card_id, false, slotIndex, cardData.name || 'Carta');
+                                }
+                            }
+                        ]);
+                        return;
+                    } else if (!isFaceDown) {
+                        showRuleAlert(`ℹ️ [Efecto Activo] "${cardData.name || 'Esta carta'}" ya se encuentra activa en el campo.`);
+                        return;
+                    } else {
+                        showRuleAlert('⚠️ [Regla Oficial OCG] Las cartas Mágicas normales no pueden activarse durante el turno del adversario.');
+                        return;
+                    }
+                }
+                showRuleAlert('⚠️ [Turno del Rival] Solo puedes activar Trampas o Mágicas de Juego Rápido en respuesta.');
+                return;
+            }
+
+            // 0. Si estamos en Modo de Selección de Tributos
+            if (pendingTributeData && zoneType === 'P_M') {
+                toggleTributeSlot(slotIndex);
+                return;
+            }
+
+            // 1. FLUJO DE INVOCACIÓN DINÁMICA (Mano -> Casilla Libre 0..4)
+            if ((zoneType === 'P_M' || zoneType === 'P_S') && selectedHandCardId !== null) {
+                if (lastDuelState && lastDuelState.phase !== 'MAIN_1' && lastDuelState.phase !== 'MAIN_2') {
+                    showRuleAlert(`⚠️ [Regla Oficial] Solo puedes invocar o colocar cartas durante la Main Phase 1 o 2 (Fase actual: ${lastDuelState.phase}).`);
+                    return;
+                }
+
+                let isMonsterCard = true;
+                let handCard = null;
+                if (lastDuelState && lastDuelState.player1.hand) {
+                    handCard = lastDuelState.player1.hand.find(card => (card.id || card.card_id) === selectedHandCardId);
+                    if (handCard && handCard.type) isMonsterCard = handCard.type.includes('Monster');
+                }
+
+                if (zoneType === 'P_M' && !isMonsterCard) {
+                    showRuleAlert('⚠️ [Regla Oficial] Las cartas Mágicas y de Trampa deben colocarse en la Zona de Magias y Trampas (Fila Inferior).');
+                    return;
+                }
+
+                if (zoneType === 'P_S' && isMonsterCard) {
+                    showRuleAlert('⚠️ [Regla Oficial] Los monstruos solo pueden invocarse en la Zona de Monstruos (Fila Central).');
+                    return;
+                }
+
+                // Invocación por Sacrificio (Nivel 5+): Si se hace clic en cualquier casilla de la Zona de Monstruos
+                if (zoneType === 'P_M' && isMonsterCard && handCard) {
+                    const level = handCard.level || 0;
+                    const tributesNeeded = level >= 7 ? 2 : (level >= 5 ? 1 : 0);
+                    if (tributesNeeded > 0) {
+                        initiateTributeFlow(selectedHandCardId, handCard.name || 'Monstruo', level, tributesNeeded, currentSummonMode);
+                        return;
+                    }
+                }
+
+                const targetSlotElem = document.getElementById(zoneType === 'P_M' ? `p-m${slotIndex}` : `p-s${slotIndex}`);
+                if (targetSlotElem) targetSlotElem.classList.add('slot-targeted');
+
+                const actionEvent = (!isMonsterCard || currentSummonMode === 'DEF') ? 'CLIENT_SET' : 'CLIENT_SUMMON';
+                const positionChosen = (!isMonsterCard || currentSummonMode === 'DEF') ? 'DEF' : 'ATK';
+
+                socket.emit(actionEvent, {
+                    room_id: 'ROOM_DEMO',
+                    card_id: selectedHandCardId,
+                    slot_index: slotIndex,
+                    zone_type: zoneType,
+                    position: positionChosen
+                });
+
+                selectedHandCardIndex = -1;
+                selectedHandCardId = null;
+                document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
+                highlightAvailableSlots(false, true);
+                return;
+            }
+
+            // 2. SELECCIÓN DE MONSTRUO PROPIO EN CAMPO
+            if (zoneType === 'P_M') {
+                selectedAttackerSlot = slotIndex;
+                const slotElem = document.getElementById(`p-m${slotIndex}`);
+                if (slotElem) slotElem.classList.add('slot-targeted');
+
+                const monsterObj = lastDuelState ? lastDuelState.player1.monsters[slotIndex] : null;
+                if (monsterObj) {
+                    inspectMonsterSlot('player1', slotIndex);
+
+                    if (event) {
+                        event.stopPropagation();
+                        const actions = [];
+                        const cardData = monsterObj.card_data || {};
+                        const isEffectMonster = (cardData.type && cardData.type.includes('Effect'));
+
+                        // 1. Activar Efecto de Monstruo (Regla OCG: En Main Phase 1 o 2, boca arriba)
+                        if ((lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2') && !monsterObj.faceDown && isEffectMonster) {
+                            if (monsterObj.hasUsedEffect) {
+                                actions.push({
+                                    label: `⏳ Efecto Ya Usado (${cardData.name})`,
+                                    onClick: () => showRuleAlert(`⚠️ [Regla Oficial] Ya has usado el efecto de "${cardData.name}" en este turno.`)
+                                });
+                            } else {
+                                actions.push({
+                                    label: `✨ Activar Efecto (${cardData.name})`,
+                                    onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id)
+                                });
+                            }
+                        }
+
+                        // 2. Cambiar Posición de Batalla (Reglas Oficiales Konami OCG)
+                        if (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2') {
+                            const isSummonedThisTurn = monsterObj.turnSummoned === lastDuelState.turnNumber;
+                            const hasAttackedThisTurn = !!monsterObj.hasAttacked;
+                            const hasChangedPosThisTurn = !!monsterObj.hasChangedPosition;
+                            const isTrapped = !!monsterObj.isTrapped;
+
+                            if (isTrapped) {
+                                actions.push({
+                                    label: '🔒 Posición Bloqueada (Atrapado)',
+                                    onClick: () => showRuleAlert('⚠️ [Regla Oficial OCG] Este monstruo está atrapado por Círculo Atador de Hechizos y no puede cambiar su posición de batalla.')
+                                });
+                            } else if (isSummonedThisTurn) {
+                                actions.push({
+                                    label: '⏳ Invocado Este Turno (No cambiable)',
+                                    onClick: () => showRuleAlert('⚠️ [Regla Oficial OCG] No puedes cambiar manualmente la posición de este monstruo en el turno en que fue invocado. (Sí puedes declarar ataque durante la Battle Phase).')
+                                });
+                            } else if (hasAttackedThisTurn) {
+                                actions.push({
+                                    label: '⚔️ Ya Atacó (No cambiable)',
+                                    onClick: () => showRuleAlert('⚠️ [Regla Oficial OCG] Un monstruo que declaró un ataque este turno no puede cambiar su posición de batalla.')
+                                });
+                            } else if (hasChangedPosThisTurn) {
+                                actions.push({
+                                    label: '🔄 Ya Cambió Posición (1 por turno)',
+                                    onClick: () => showRuleAlert('⚠️ [Regla Oficial OCG] Cada monstruo solo puede cambiar manualmente de posición una vez por turno.')
+                                });
+                            } else {
+                                const isFlipSummon = (monsterObj.position === 'DEF' && monsterObj.faceDown);
+                                const nextPosLabel = isFlipSummon 
+                                    ? '⭐ Invocación por Volteo (ATK)' 
+                                    : (monsterObj.position === 'ATK' ? '🛡️ Cambiar a Defensa (DEF)' : '⚔️ Cambiar a Ataque (ATK)');
+                                actions.push({
+                                    label: `🔄 ${nextPosLabel}`,
+                                    onClick: () => {
+                                        if (isFlipSummon) {
+                                            const flipId = monsterObj.card_id || (cardData ? cardData.id : 0);
+                                            const targetMode = isCardRequiringTarget(flipId);
+                                            if (targetMode) {
+                                                startInteractiveTargeting(targetMode, flipId, slotIndex, false, false, cardData.name || 'Monstruo', 'CHANGE_POS');
+                                                return;
+                                            }
+                                        }
+                                        triggerChangePos();
+                                    }
+                                });
+                            }
+                        }
+
+                        // 3. Declarar Ataque
+                        if (lastDuelState.phase === 'BATTLE') {
+                            actions.push({
+                                label: '💥 Declarar Ataque',
+                                onClick: () => triggerAttack()
+                            });
+                        } else if (lastDuelState.phase === 'MAIN_1' && lastDuelState.turnNumber > 1 && monsterObj.position === 'ATK' && !monsterObj.hasAttacked) {
+                            actions.push({
+                                label: '⚔️ Ir a Battle Phase y Atacar',
+                                onClick: () => {
+                                    advanceToPhase('BATTLE');
+                                    setTimeout(() => {
+                                        selectedAttackerSlot = slotIndex;
+                                        triggerAttack();
+                                    }, 300);
+                                }
+                            });
+                        }
+
+                        if (actions.length > 0) {
+                            showContextMenu(event, cardData.name || 'Monstruo', actions);
+                        }
+                    }
+                }
+            }
+            // 3. SELECCIÓN DE OBJETIVO RIVAL EN CAMPO
+            else if (zoneType === 'R_M') {
+                selectedRivalTargetSlot = slotIndex;
+                const rivalSlotElem = document.getElementById(`r-m${slotIndex}`);
+                if (rivalSlotElem) rivalSlotElem.classList.add('slot-targeted');
+
+                if (lastDuelState && lastDuelState.player2.monsters[slotIndex]) {
+                    inspectMonsterSlot('player2', slotIndex);
+                }
+
+                if (lastDuelState && lastDuelState.phase === 'BATTLE') {
+                    executeAttack(selectedAttackerSlot, slotIndex);
+                } else if (lastDuelState && lastDuelState.phase === 'MAIN_1') {
+                    if (lastDuelState.turnNumber > 1 && selectedAttackerSlot >= 0 && lastDuelState.player1.monsters[selectedAttackerSlot] && !lastDuelState.player1.monsters[selectedAttackerSlot].hasAttacked && lastDuelState.player1.monsters[selectedAttackerSlot].position === 'ATK') {
+                        advanceToPhase('BATTLE');
+                        setTimeout(() => {
+                            executeAttack(selectedAttackerSlot, slotIndex);
+                        }, 300);
+                    } else {
+                        showRuleAlert('⚠️ [Regla Oficial] Solo puedes atacar durante la BATTLE PHASE.');
+                    }
+                } else if (lastDuelState && lastDuelState.phase !== 'BATTLE') {
+                    showRuleAlert('⚠️ [Regla Oficial] Solo puedes atacar durante la BATTLE PHASE.');
+                }
+            } 
+            // 4. MAGIAS / TRAMPAS PROPIAS EN CAMPO
+            else if (zoneType === 'P_S') {
+                const sObj = lastDuelState ? lastDuelState.player1.spells[slotIndex] : null;
+                if (sObj) {
+                    inspectCardById(sObj.card_id);
+                    const isFaceDown = sObj.faceDown === true || sObj.position === 'SET';
+
+                    if (isFaceDown) {
+                        if (event) {
+                            event.stopPropagation();
+                            showContextMenu(event, sObj.card_data ? sObj.card_data.name : 'Magia/Trampa', [
+                                {
+                                    label: '✨ Activar Carta / Efecto',
+                                    onClick: () => {
+                                        activateCardDirectly(sObj.card_id, false, slotIndex, sObj.card_data ? sObj.card_data.name : 'Magia/Trampa');
+                                    }
+                                }
+                            ]);
+                        }
+                    } else {
+                        showRuleAlert(`ℹ️ [Efecto Activo] "${sObj.card_data ? sObj.card_data.name : 'Esta carta'}" ya se encuentra activa en el campo.`);
+                    }
+                }
+            }
+        }
+
+        // =========================================================================
+        // MOTOR DE CADENAS BIDIRECCIONAL ("A LA INVERSA")
+        // =========================================================================
+        socket.on('OCG_PROMPT_CHAIN', (data) => {
+            console.log('[OCG CHAIN PROMPT]', data);
+            const modal = document.getElementById('chain-prompt-modal');
+            const linkElem = document.getElementById('chain-link-num');
+            const timerTag = document.getElementById('chain-timer-num');
+            const timerBar = document.getElementById('chain-timer-bar');
+            const promptText = document.getElementById('chain-prompt-text');
+            const allowedCardsContainer = document.getElementById('chain-allowed-cards');
+
+            linkElem.textContent = data.chain_link || 1;
+            promptText.textContent = data.message || '¿Deseas activar una carta o efecto en respuesta?';
+            allowedCardsContainer.innerHTML = '';
+
+            // Mostrar cartas que el jugador puede encadenar
+            if (data.allowed_cards && data.allowed_cards.length > 0) {
+                data.allowed_cards.forEach(card => {
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'chain-card-item';
+                    cardDiv.style.backgroundImage = `url('https://images.ygoprodeck.com/images/cards/${card.card_id}.jpg')`;
+                    cardDiv.innerHTML = `<div class="item-title">${card.name}</div>`;
+                    cardDiv.onclick = () => {
+                        respondChainCard(card.card_id, card.slot_index, card.location === 'HAND');
+                    };
+                    allowedCardsContainer.appendChild(cardDiv);
+                });
+            } else {
+                allowedCardsContainer.innerHTML = `<div style="font-size:10px; color:#94a3b8; padding:8px;">No tienes cartas rápidas o trampas disponibles para encadenar en este momento.</div>`;
+            }
+
+            modal.style.display = 'flex';
+
+            // Temporizador animado de 8s
+            let timeLeft = Math.floor((data.timeout || 8000) / 1000);
+            timerTag.textContent = `${timeLeft}s`;
+            timerBar.style.width = '100%';
+
+            if (chainTimerInterval) clearInterval(chainTimerInterval);
+            const totalMs = data.timeout || 8000;
+            const startMs = Date.now();
+
+            chainTimerInterval = setInterval(() => {
+                const elapsed = Date.now() - startMs;
+                const remainingRatio = Math.max(0, 1 - (elapsed / totalMs));
+                timerBar.style.width = `${remainingRatio * 100}%`;
+                timerTag.textContent = `${Math.ceil((totalMs - elapsed) / 1000)}s`;
+
+                if (elapsed >= totalMs) {
+                    clearInterval(chainTimerInterval);
+                    modal.style.display = 'none';
+                }
+            }, 100);
+        });
+
+        function respondChainPass() {
+            if (chainTimerInterval) clearInterval(chainTimerInterval);
+            document.getElementById('chain-prompt-modal').style.display = 'none';
+            socket.emit('OCG_CHAIN_RESPONSE', {
+                room_id: 'ROOM_DEMO',
+                action: 'PASS'
+            });
+        }
+
+        function respondChainCard(cardId, slotIndex, fromHand) {
+            const targetMode = isCardRequiringTarget(cardId);
+            if (targetMode) {
+                let cardName = 'Carta';
+                if (fromHand && lastDuelState && lastDuelState.player1 && lastDuelState.player1.hand) {
+                    const c = lastDuelState.player1.hand.find(h => (h.id || h.card_id) === cardId);
+                    if (c) cardName = c.name;
+                } else if (!fromHand && lastDuelState && lastDuelState.player1 && lastDuelState.player1.spells[slotIndex]) {
+                    const s = lastDuelState.player1.spells[slotIndex];
+                    if (s && s.card_data) cardName = s.card_data.name;
+                }
+                startInteractiveTargeting(targetMode, cardId, slotIndex, fromHand, true, cardName);
+                return;
+            }
+
+            if (chainTimerInterval) clearInterval(chainTimerInterval);
+            document.getElementById('chain-prompt-modal').style.display = 'none';
+            socket.emit('OCG_CHAIN_RESPONSE', {
+                room_id: 'ROOM_DEMO',
+                action: 'CHAIN',
+                card_id: cardId,
+                slot_index: slotIndex,
+                from_hand: fromHand
+            });
+        }
+
+        // =========================================================================
+        // MOTOR DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS OCG)
+        // =========================================================================
+        function initiateTributeFlow(cardId, cardName, level, tributesNeeded, position = 'ATK') {
+            if (!lastDuelState || !lastDuelState.player1) return;
+            const controlledSlots = [];
+            for (let i = 0; i < 5; i++) {
+                if (lastDuelState.player1.monsters[i]) controlledSlots.push(i);
+            }
+
+            if (controlledSlots.length < tributesNeeded) {
+                showRuleAlert(`⚠️ [Regla Oficial Konami] "${cardName}" es Nivel ${level} y requiere ${tributesNeeded} sacrificio(s) en el campo. Actualmente solo controlas ${controlledSlots.length} monstruo(s).`);
+                return;
+            }
+
+            startTributeSelectionMode({
+                card_id: cardId,
+                card_name: cardName,
+                level: level,
+                required_count: tributesNeeded,
+                position: position,
+                available_slots: controlledSlots,
+                target_slot: controlledSlots[0]
+            });
+        }
+
+        function startTributeSelectionMode(data) {
+            console.log('[START TRIBUTE SELECTION]', data);
+            pendingTributeData = data;
+            selectedTributeSlots = [];
+
+            // Deseleccionar mano para enfocar la selección de sacrificios en el campo
+            selectedHandCardIndex = -1;
+            selectedHandCardId = null;
+            document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
+
+            const banner = document.getElementById('tribute-banner');
+            const desc = document.getElementById('tribute-desc');
+            const confirmBtn = document.getElementById('btn-confirm-tribute');
+
+            if (desc) desc.textContent = `Selecciona ${data.required_count} monstruo(s) en tu campo para tributar e invocar a "${data.card_name}" (Nv. ${data.level}).`;
+            if (confirmBtn) {
+                confirmBtn.textContent = `Confirmar Sacrificio (0/${data.required_count})`;
+                confirmBtn.disabled = true;
+            }
+
+            // Resaltar monstruos en campo como elegibles para sacrificio
+            for (let i = 0; i < 5; i++) {
+                const slot = document.getElementById(`p-m${i}`);
+                if (slot) {
+                    slot.classList.remove('slot-targeted');
+                    if (lastDuelState && lastDuelState.player1.monsters[i]) {
+                        slot.classList.add('slot-droppable');
+                    } else {
+                        slot.classList.remove('slot-droppable');
+                    }
+                }
+            }
+
+            if (banner) banner.style.display = 'flex';
+            showRuleAlert(`⭐ [Sacrificio OCG] Haz clic sobre ${data.required_count} monstruo(s) en tu campo para seleccionarlos como tributo.`);
+        }
+
+        socket.on('OCG_PROMPT_TRIBUTE', (data) => {
+            console.log('[OCG TRIBUTE PROMPT]', data);
+            startTributeSelectionMode(data);
+        });
+
+        function toggleTributeSlot(slotIndex) {
+            if (!pendingTributeData) return;
+            if (!lastDuelState || !lastDuelState.player1 || !lastDuelState.player1.monsters[slotIndex]) {
+                showRuleAlert('⚠️ [Regla Oficial] Solo puedes tributar monstruos que controles actualmente en tu campo.');
+                return;
+            }
+            const slotElem = document.getElementById(`p-m${slotIndex}`);
+            const idx = selectedTributeSlots.indexOf(slotIndex);
+
+            if (idx !== -1) {
+                selectedTributeSlots.splice(idx, 1);
+                if (slotElem) slotElem.classList.remove('slot-targeted');
+            } else {
+                if (selectedTributeSlots.length < pendingTributeData.required_count) {
+                    selectedTributeSlots.push(slotIndex);
+                    if (slotElem) slotElem.classList.add('slot-targeted');
+                }
+            }
+
+            const confirmBtn = document.getElementById('btn-confirm-tribute');
+            if (confirmBtn) {
+                confirmBtn.textContent = `Confirmar Sacrificio (${selectedTributeSlots.length}/${pendingTributeData.required_count})`;
+                confirmBtn.disabled = selectedTributeSlots.length !== pendingTributeData.required_count;
+            }
+        }
+
+        function confirmTributeSelection() {
+            if (!pendingTributeData || selectedTributeSlots.length !== pendingTributeData.required_count) return;
+
+            const targetSlot = pendingTributeData.target_slot !== undefined ? pendingTributeData.target_slot : selectedTributeSlots[0];
+            socket.emit('OCG_TRIBUTE_RESPONSE', {
+                room_id: 'ROOM_DEMO',
+                card_id: pendingTributeData.card_id,
+                tribute_slots: selectedTributeSlots,
+                target_slot: targetSlot,
+                position: pendingTributeData.position || 'ATK'
+            });
+
+            cancelTributeSelection();
+        }
+
+        function cancelTributeSelection() {
+            pendingTributeData = null;
+            selectedTributeSlots = [];
+            document.getElementById('tribute-banner').style.display = 'none';
+            for (let i = 0; i < 5; i++) {
+                const slot = document.getElementById(`p-m${i}`);
+                if (slot) {
+                    slot.classList.remove('slot-droppable');
+                    slot.classList.remove('slot-targeted');
+                }
+            }
+        }
+
+        // =========================================================================
+        // VISOR E INSPECTOR FLOTANTE NO BLOQUEANTE (EXTRA DECK, CEMENTERIO, DESTIERRO)
+        // =========================================================================
+        function inspectCardDirectly(card) {
+            if (!card) return;
+            const cId = card.id || card.card_id;
+            const imgElem = document.getElementById('inspect-img');
+            const titleElem = document.getElementById('inspect-title');
+            const attrElem = document.getElementById('inspect-attr');
+            const starsElem = document.getElementById('inspect-stars');
+            const typeElem = document.getElementById('inspect-type');
+            const archetypeElem = document.getElementById('inspect-archetype');
+            const atkElem = document.getElementById('inspect-atk');
+            const defElem = document.getElementById('inspect-def');
+            const descElem = document.getElementById('inspect-desc');
+            const statsGrid = document.getElementById('inspect-stats-grid');
+            const attachedBox = document.getElementById('inspect-attached-box');
+
+            if (attachedBox) attachedBox.style.display = 'none';
+
+            imgElem.src = card.image_url || `https://images.ygoprodeck.com/images/cards/${cId}.jpg`;
+            titleElem.textContent = card.name || `Carta #${cId}`;
+            attrElem.textContent = card.attribute || (card.type && card.type.includes('Spell') ? 'SPELL' : (card.type && card.type.includes('Trap') ? 'TRAP' : 'DARK'));
+
+            const lvl = card.level || card.rank || card.linkval || 0;
+            if (lvl > 0) {
+                if (card.type && card.type.includes('XYZ')) {
+                    starsElem.textContent = '⚫'.repeat(Math.min(lvl, 12)) + ` (Rango ${lvl})`;
+                } else if (card.type && card.type.includes('Link')) {
+                    starsElem.textContent = `🔷 LINK-${lvl}`;
+                } else {
+                    starsElem.textContent = '⭐'.repeat(Math.min(lvl, 12)) + ` (Nv. ${lvl})`;
+                }
+                starsElem.style.display = 'inline';
+            } else {
+                starsElem.textContent = (card.type && card.type.includes('Spell')) ? '✨ MÁGICA' : ((card.type && card.type.includes('Trap')) ? '🛡️ TRAMPA' : '');
+            }
+
+            typeElem.textContent = `${card.race || 'Carta'} / ${card.type || 'Monstruo'}`;
+
+            const invalidArchetypes = ['Field', 'Spell', 'Trap', 'Normal', 'Continuous', 'Quick-Play', 'Equip', 'Ritual', 'Counter'];
+            if (card.archetype && !invalidArchetypes.includes(card.archetype)) {
+                archetypeElem.textContent = `Arquetipo: ${card.archetype}`;
+            } else {
+                archetypeElem.textContent = 'Sin Arquetipo';
+            }
+
+            if (card.atk !== null && card.atk !== undefined) {
+                statsGrid.style.display = 'grid';
+                atkElem.innerHTML = `${card.atk}`;
+                defElem.innerHTML = `${card.def !== null && card.def !== undefined ? card.def : '---'}`;
+            } else {
+                statsGrid.style.display = 'none';
+            }
+
+            descElem.textContent = card.desc || 'Sin descripción disponible.';
+
+            // Sincronizar consulta al backend para datos ampliados o efectos adicionales
+            inspectCardById(cId);
+        }
+
+        function getCardTypeBadgeColor(typeStr) {
+            if (!typeStr) return '#c084fc';
+            const t = typeStr.toLowerCase();
+            if (t.includes('fusion')) return '#c084fc';
+            if (t.includes('synchro')) return '#e2e8f0';
+            if (t.includes('xyz')) return '#38bdf8';
+            if (t.includes('link')) return '#00f0ff';
+            if (t.includes('spell')) return '#2ed573';
+            if (t.includes('trap')) return '#ff4757';
+            return 'var(--accent-gold)';
+        }
+
+        function openGraveyardModal(playerKey) {
+            if (!lastDuelState) return;
+            const p = lastDuelState[playerKey];
+            const modal = document.getElementById('gy-inspector-modal');
+            const box = document.getElementById('gy-drawer-card-box');
+            const iconElem = document.getElementById('gy-drawer-icon');
+            const titleElem = document.getElementById('gy-modal-title');
+            const hintElem = document.getElementById('gy-drawer-hint');
+            const grid = document.getElementById('gy-cards-grid');
+
+            box.className = 'gy-drawer-card drawer-theme-gy';
+            if (iconElem) iconElem.textContent = '🪦';
+            if (hintElem) hintElem.textContent = '💡 Haz clic en cualquier carta para ver sus detalles en el panel izquierdo.';
+
+            const gyCards = p.graveyard || [];
+            titleElem.textContent = `🪦 Cementerio de ${p.username} (${gyCards.length} cartas)`;
+            grid.innerHTML = '';
+
+            if (gyCards.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:30px;">El Cementerio está vacío.</div>`;
+            } else {
+                gyCards.forEach((c, idx) => {
+                    const cId = c.id || c.card_id;
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'gy-card-item' + (idx === 0 ? ' gy-card-selected' : '');
+                    const badgeColor = getCardTypeBadgeColor(c.type);
+                    cardDiv.innerHTML = `
+                        <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+                        <div class="gy-card-name" title="${c.name || 'Carta'}">${c.name || 'Carta'}</div>
+                        <div style="font-size:8px; color:${badgeColor}; font-weight:800;">${c.atk !== null && c.atk !== undefined ? `ATK: ${c.atk} / DEF: ${c.def}` : (c.type || 'Mágica/Trampa')}</div>
+                    `;
+                    cardDiv.onclick = () => {
+                        grid.querySelectorAll('.gy-card-item').forEach(item => item.classList.remove('gy-card-selected'));
+                        cardDiv.classList.add('gy-card-selected');
+                        inspectCardDirectly(c);
+
+                        // Si estamos en modo de selección de objetivo para revivir
+                        if (targetSelectMode && typeof targetSelectMode.callback === 'function') {
+                            targetSelectMode.callback(cId);
+                            targetSelectMode = null;
+                            closeGraveyardModal();
+                        }
+                    };
+                    grid.appendChild(cardDiv);
+                });
+
+                // Cargar inmediatamente la primera carta en el inspector lateral izquierdo
+                inspectCardDirectly(gyCards[0]);
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function openBanishedModal(playerKey) {
+            if (!lastDuelState) return;
+            const p = lastDuelState[playerKey];
+            const modal = document.getElementById('gy-inspector-modal');
+            const box = document.getElementById('gy-drawer-card-box');
+            const iconElem = document.getElementById('gy-drawer-icon');
+            const titleElem = document.getElementById('gy-modal-title');
+            const hintElem = document.getElementById('gy-drawer-hint');
+            const grid = document.getElementById('gy-cards-grid');
+
+            box.className = 'gy-drawer-card drawer-theme-banished';
+            if (iconElem) iconElem.textContent = '🌌';
+            if (hintElem) hintElem.textContent = '💡 Haz clic en cualquier carta para ver sus detalles en el panel izquierdo.';
+
+            const banishedCards = p.banished || [];
+            titleElem.textContent = `🌌 Cartas Desterradas de ${p.username} (${banishedCards.length} cartas)`;
+            grid.innerHTML = '';
+
+            if (banishedCards.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:30px;">No hay cartas desterradas.</div>`;
+            } else {
+                banishedCards.forEach((c, idx) => {
+                    const cId = c.id || c.card_id;
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'gy-card-item' + (idx === 0 ? ' gy-card-selected' : '');
+                    const badgeColor = getCardTypeBadgeColor(c.type);
+                    cardDiv.innerHTML = `
+                        <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+                        <div class="gy-card-name" title="${c.name || 'Carta'}">${c.name || 'Carta'}</div>
+                        <div style="font-size:8px; color:${badgeColor}; font-weight:800;">${c.atk !== null && c.atk !== undefined ? `ATK: ${c.atk} / DEF: ${c.def}` : (c.type || 'Desterrada')}</div>
+                    `;
+                    cardDiv.onclick = () => {
+                        grid.querySelectorAll('.gy-card-item').forEach(item => item.classList.remove('gy-card-selected'));
+                        cardDiv.classList.add('gy-card-selected');
+                        inspectCardDirectly(c);
+                    };
+                    grid.appendChild(cardDiv);
+                });
+
+                // Cargar inmediatamente la primera carta en el inspector lateral izquierdo
+                inspectCardDirectly(banishedCards[0]);
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function openExtraDeckModal(playerKey) {
+            if (!lastDuelState) return;
+            const p = lastDuelState[playerKey];
+            if (!p) return;
+
+            const modal = document.getElementById('gy-inspector-modal');
+            const box = document.getElementById('gy-drawer-card-box');
+            const iconElem = document.getElementById('gy-drawer-icon');
+            const titleElem = document.getElementById('gy-modal-title');
+            const hintElem = document.getElementById('gy-drawer-hint');
+            const grid = document.getElementById('gy-cards-grid');
+
+            box.className = 'gy-drawer-card drawer-theme-extra';
+            if (iconElem) iconElem.textContent = '🔮';
+            if (hintElem) hintElem.textContent = '💡 Haz clic en cualquier carta del Extra Deck para ver sus detalles completos a la izquierda.';
+
+            const extraCards = p.extraDeck || [];
+            titleElem.textContent = `🔮 Extra Deck de ${p.username} (${extraCards.length} cartas)`;
+            grid.innerHTML = '';
+
+            if (extraCards.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:30px;">El Extra Deck está vacío.</div>`;
+            } else {
+                extraCards.forEach((c, idx) => {
+                    const cId = c.id || c.card_id;
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'gy-card-item' + (idx === 0 ? ' gy-card-selected' : '');
+                    const badgeColor = getCardTypeBadgeColor(c.type);
+                    cardDiv.innerHTML = `
+                        <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+                        <div class="gy-card-name" title="${c.name || 'Carta'}">${c.name || 'Carta'}</div>
+                        <div style="font-size:8px; color:${badgeColor}; font-weight:800;">${c.atk !== null && c.atk !== undefined ? `ATK: ${c.atk} / DEF: ${c.def}` : (c.type || 'Fusión')}</div>
+                    `;
+                    cardDiv.onclick = () => {
+                        grid.querySelectorAll('.gy-card-item').forEach(item => item.classList.remove('gy-card-selected'));
+                        cardDiv.classList.add('gy-card-selected');
+                        inspectCardDirectly(c);
+                    };
+                    grid.appendChild(cardDiv);
+                });
+
+                // Cargar inmediatamente la primera carta del Extra Deck en el inspector lateral izquierdo
+                inspectCardDirectly(extraCards[0]);
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeGraveyardModal() {
+            const modal = document.getElementById('gy-inspector-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // =========================================================================
+        // CONTROL DEL MODAL DE EDICIÓN DE NICK DE USUARIO (MÁX 15 CAR., 1 PALABRA)
+        // =========================================================================
+        function openEditNickModal() {
+            const modal = document.getElementById('edit-nick-modal');
+            const input = document.getElementById('editNickInput');
+            const alertBox = document.getElementById('edit-nick-alert');
+            const countElem = document.getElementById('editNickCharCount');
+            if (!modal || !input) return;
+
+            const currentNick = currentUser ? currentUser.username : (document.getElementById('player-name-val')?.textContent?.trim() || '');
+            const cleanCurrent = currentNick.replace(/^[\uD800-\uDBFF][\uDC00-\uDFFF]\s*/, '').trim();
+            input.value = cleanCurrent;
+            if (countElem) countElem.textContent = `${cleanCurrent.length}/15`;
+            if (alertBox) alertBox.style.display = 'none';
+
+            modal.style.display = 'flex';
+            setTimeout(() => { input.focus(); input.select(); }, 50);
+        }
+
+        function closeEditNickModal() {
+            const modal = document.getElementById('edit-nick-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function onEditNickInputChanged(input) {
+            if (/\s/.test(input.value)) {
+                input.value = input.value.replace(/\s+/g, '');
+            }
+            const countElem = document.getElementById('editNickCharCount');
+            if (countElem) {
+                countElem.textContent = `${input.value.length}/15`;
+                countElem.style.color = input.value.length > 15 ? '#ff4757' : (input.value.length === 15 ? 'var(--accent-gold)' : '#888');
+            }
+        }
+
+        async function saveEditedNick() {
+            const input = document.getElementById('editNickInput');
+            const btnSave = document.getElementById('btn-save-nick');
+            if (!input) return;
+
+            const newNick = input.value.trim();
+
+            if (!newNick || newNick.length < 3 || newNick.length > 15) {
+                showEditNickAlert('El nick debe tener entre 3 y 15 caracteres (máximo 15).', true);
+                return;
+            }
+
+            if (/\s/.test(newNick) || newNick.split(/\s+/).length > 1) {
+                showEditNickAlert('El nick debe ser una sola palabra, no se permiten espacios en blanco.', true);
+                return;
+            }
+
+            const validNickRegex = /^[a-zA-Z0-9_.-]+$/;
+            if (!validNickRegex.test(newNick)) {
+                showEditNickAlert('El nick solo puede contener caracteres alfanuméricos, guiones o puntos.', true);
+                return;
+            }
+
+            if (btnSave) {
+                btnSave.disabled = true;
+                btnSave.textContent = 'GUARDANDO...';
+            }
+
+            try {
+                const payload = {
+                    userId: currentUser ? currentUser.id : null,
+                    currentUsername: currentUser ? currentUser.username : 'Admin',
+                    newUsername: newNick
+                };
+
+                const res = await fetch('/api/user/update-nick', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    showEditNickAlert(data.message || 'No se pudo actualizar el nick.', true);
+                    if (btnSave) {
+                        btnSave.disabled = false;
+                        btnSave.textContent = 'GUARDAR CAMBIOS';
+                    }
+                    return;
+                }
+
+                if (currentUser) {
+                    currentUser.username = data.username;
+                }
+
+                const flag = (currentUser && currentUser.flagEmoji) ? (currentUser.flagEmoji + ' ') : '';
+                const playerNameElem = document.getElementById('player-name-val');
+                if (playerNameElem) {
+                    playerNameElem.textContent = `${flag}${data.username}`;
+                }
+
+                if (window.socket) {
+                    window.socket.emit('USER_IDENTIFY', {
+                        username: data.username,
+                        userId: currentUser ? currentUser.id : null,
+                        countryIsoCode: currentUser ? currentUser.countryIsoCode : null
+                    });
+                }
+
+                showEditNickAlert(data.message || '¡Nick actualizado con éxito!', false);
+
+                setTimeout(() => {
+                    closeEditNickModal();
+                    if (btnSave) {
+                        btnSave.disabled = false;
+                        btnSave.textContent = 'GUARDAR CAMBIOS';
+                    }
+                }, 1000);
+
+            } catch (err) {
+                console.error("Error al actualizar nick:", err);
+                showEditNickAlert('Error de comunicación con el servidor.', true);
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.textContent = 'GUARDAR CAMBIOS';
+                }
+            }
+        }
+
+        function showEditNickAlert(message, isError = true) {
+            const alertBox = document.getElementById('edit-nick-alert');
+            if (!alertBox) return;
+            alertBox.style.display = 'block';
+            alertBox.style.background = isError ? 'rgba(255, 71, 87, 0.15)' : 'rgba(46, 213, 115, 0.15)';
+            alertBox.style.border = isError ? '1px solid #ff4757' : '1px solid #2ed573';
+            alertBox.style.color = isError ? '#ff6b81' : '#2ed573';
+            alertBox.innerHTML = (isError ? '⚠️ ' : '✅ ') + message;
+        }
+
+        // Cerrar visor flotante o modal de nick al presionar tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeGraveyardModal();
+                closeEditNickModal();
+            }
+        });
+
+        // =========================================================================
+        // REGISTRO DE EVENTOS OCG EN TIEMPO REAL
+        // =========================================================================
+        socket.on('OCG_EVENT_LOG', (log) => {
+            const container = document.getElementById('duel-event-log');
+            if (!container) return;
+            const div = document.createElement('div');
+            div.className = `log-item ${log.type || 'info'}`;
+            div.textContent = log.message;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        });
+
+        // =========================================================================
+        // LOBBY DE BIENVENIDA, MENÚ DE DUELOS & TIRADA DE DADOS PRE-DUELO
+        // =========================================================================
+        let currentNpcOpponent = 'NPC Yugi Muto';
+        let diceRollInterval = null;
+        let lastDiceWinner = null;
+
+        async function openWelcomeLobby() {
+            const lobbyOverlay = document.getElementById('welcome-lobby-overlay');
+            if (!lobbyOverlay) return;
+
+            const flag = currentUser && currentUser.flagEmoji ? (currentUser.flagEmoji + ' ') : '';
+            const username = currentUser ? currentUser.username : 'Admin';
+            const level = currentUser && currentUser.nivel ? currentUser.nivel : 1;
+            const starships = currentUser && currentUser.starships ? currentUser.starships : 500;
+
+            const nameElem = document.getElementById('lobby-username');
+            if (nameElem) nameElem.textContent = `${flag}${username}`;
+            const lvlElem = document.getElementById('lobby-level');
+            if (lvlElem) lvlElem.textContent = `Nv. ${level}`;
+            const ssElem = document.getElementById('lobby-starships');
+            if (ssElem) ssElem.textContent = `⭐ ${starships}`;
+
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('duel-app').style.display = 'none';
+            lobbyOverlay.style.display = 'flex';
+
+            await loadLobbyContent();
+        }
+
+        function closeWelcomeLobby() {
+            const lobbyOverlay = document.getElementById('welcome-lobby-overlay');
+            if (lobbyOverlay) lobbyOverlay.style.display = 'none';
+        }
+
+        function logoutToLogin() {
+            try { localStorage.removeItem('ani_user'); } catch (e) {}
+            currentUser = null;
+            closeWelcomeLobby();
+            closeDuelMenu();
+            closeDiceRollModal();
+            document.getElementById('duel-app').style.display = 'none';
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
+
+        async function loadLobbyContent() {
+            try {
+                const res = await fetch('/api/lobby/content');
+                const data = await res.json();
+                if (!data.success) return;
+
+                // 1. Renderizar Eventos
+                const eventsContainer = document.getElementById('lobby-events-container');
+                if (eventsContainer && data.events) {
+                    eventsContainer.innerHTML = '';
+                    data.events.forEach(evt => {
+                        const evtCard = document.createElement('div');
+                        evtCard.className = 'event-card';
+                        evtCard.innerHTML = `
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <span class="event-badge" style="background:${evt.badgeColor || '#ffd700'}22; color:${evt.badgeColor || '#ffd700'}; border:1px solid ${evt.badgeColor || '#ffd700'}55;">
+                                    ${evt.badge}
+                                </span>
+                                <span style="font-size:10px; color:#94a3b8;">📅 Hasta: ${evt.endDate}</span>
+                            </div>
+                            <div style="font-weight:800; font-size:13px; color:#fff; margin:4px 0 6px 0;">${evt.title}</div>
+                            <div style="font-size:10.5px; color:#cbd5e1; line-height:1.4; margin-bottom:8px;">${evt.description}</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:11px; font-weight:700; color:var(--accent-gold);">${evt.reward}</span>
+                                <button class="btn-act-vertical" onclick="openDuelMenu()" style="padding:4px 10px; font-size:10px;">PARTICIPAR</button>
+                            </div>
+                        `;
+                        eventsContainer.appendChild(evtCard);
+                    });
+                }
+
+                // 2. Renderizar Actualizaciones
+                const updatesContainer = document.getElementById('lobby-updates-container');
+                if (updatesContainer && data.updates) {
+                    updatesContainer.innerHTML = '';
+                    data.updates.forEach(upd => {
+                        const updCard = document.createElement('div');
+                        updCard.className = 'update-card';
+                        const highlightsHtml = (upd.highlights || []).map(h => `<li style="margin-bottom:3px;">${h}</li>`).join('');
+                        updCard.innerHTML = `
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <span style="font-weight:800; color:var(--accent-cyan); font-size:12px;">🚀 Versión ${upd.version}</span>
+                                <span style="font-size:9.5px; color:#94a3b8;">${upd.date}</span>
+                            </div>
+                            <div style="font-size:11px; font-weight:700; color:#fff; margin-bottom:6px;">${upd.title}</div>
+                            <ul style="font-size:10px; color:#cbd5e1; margin:0; padding-left:16px; line-height:1.4;">
+                                ${highlightsHtml}
+                            </ul>
+                        `;
+                        updatesContainer.appendChild(updCard);
+                    });
+                }
+
+                // 3. Renderizar Ranking Jugadores
+                const playersBody = document.getElementById('ranking-players-body');
+                if (playersBody && data.playerRankings) {
+                    playersBody.innerHTML = '';
+                    data.playerRankings.forEach((p, idx) => {
+                        const tr = document.createElement('tr');
+                        const medal = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : `#${idx + 1}`));
+                        tr.innerHTML = `
+                            <td style="font-weight:900;">${medal}</td>
+                            <td style="font-weight:700; color:#fff;">${p.Username}</td>
+                            <td>${p.FlagEmoji || '🌐'} ${p.CountryName || ''}</td>
+                            <td style="color:var(--accent-cyan); font-weight:700;">Nv. ${p.Nivel}</td>
+                            <td style="color:#2ed573; font-weight:700;">${p.Wins}</td>
+                            <td style="color:var(--accent-gold); font-weight:900;">${p.EloRating}</td>
+                        `;
+                        playersBody.appendChild(tr);
+                    });
+                }
+
+                // 4. Renderizar Ranking Clanes
+                const clansBody = document.getElementById('ranking-clans-body');
+                if (clansBody && data.clanRankings) {
+                    clansBody.innerHTML = '';
+                    data.clanRankings.forEach((c, idx) => {
+                        const tr = document.createElement('tr');
+                        const medal = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : `#${idx + 1}`));
+                        tr.innerHTML = `
+                            <td style="font-weight:900;">${medal}</td>
+                            <td style="font-weight:700; color:#fff;">${c.Shield || '🛡️'} [${c.Tag}] ${c.Name}</td>
+                            <td style="color:var(--accent-cyan);">${c.Leader}</td>
+                            <td>${c.Members}/${c.MaxMembers}</td>
+                            <td style="color:var(--accent-gold); font-weight:900;">🏆 ${c.Trophies}</td>
+                        `;
+                        clansBody.appendChild(tr);
+                    });
+                }
+
+            } catch (err) {
+                console.error("Error al cargar contenido del lobby:", err);
+            }
+        }
+
+        function switchRankingTab(tab) {
+            const btnPlayers = document.getElementById('tab-rank-players');
+            const btnClans = document.getElementById('tab-rank-clans');
+            const viewPlayers = document.getElementById('ranking-players-view');
+            const viewClans = document.getElementById('ranking-clans-view');
+
+            if (tab === 'players') {
+                btnPlayers.classList.add('active');
+                btnClans.classList.remove('active');
+                viewPlayers.style.display = 'block';
+                viewClans.style.display = 'none';
+            } else {
+                btnClans.classList.add('active');
+                btnPlayers.classList.remove('active');
+                viewClans.style.display = 'block';
+                viewPlayers.style.display = 'none';
+            }
+        }
+
+        function openDuelMenu() {
+            const modal = document.getElementById('duel-menu-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeDuelMenu() {
+            const modal = document.getElementById('duel-menu-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function openDiceRollModal(opponentName = 'NPC Yugi Muto') {
+            currentNpcOpponent = opponentName;
+            closeDuelMenu();
+
+            const modal = document.getElementById('dice-roll-modal');
+            const pCube = document.getElementById('die-player-cube');
+            const nCube = document.getElementById('die-npc-cube');
+            const msg = document.getElementById('dice-status-message');
+            const actions = document.getElementById('dice-actions-container');
+            const choices = document.getElementById('dice-choice-container');
+            const btnRoll = document.getElementById('btn-roll-dice');
+
+            if (btnRoll) btnRoll.disabled = false;
+            if (pCube) { pCube.textContent = '?'; pCube.classList.remove('die-rolling'); }
+            if (nCube) { nCube.textContent = '?'; nCube.classList.remove('die-rolling'); }
+            if (msg) msg.textContent = 'Presiona "Lanzar Dados" para determinar el orden de inicio.';
+            if (actions) actions.style.display = 'block';
+            if (choices) choices.style.display = 'none';
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeDiceRollModal() {
+            if (diceRollInterval) clearInterval(diceRollInterval);
+            const modal = document.getElementById('dice-roll-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function rollDice() {
+            const pCube = document.getElementById('die-player-cube');
+            const nCube = document.getElementById('die-npc-cube');
+            const msg = document.getElementById('dice-status-message');
+            const btnRoll = document.getElementById('btn-roll-dice');
+            const actions = document.getElementById('dice-actions-container');
+            const choices = document.getElementById('dice-choice-container');
+
+            if (btnRoll) btnRoll.disabled = true;
+            if (pCube) pCube.classList.add('die-rolling');
+            if (nCube) nCube.classList.add('die-rolling');
+            if (msg) msg.textContent = '🎲 Lanzando los dados...';
+
+            let counter = 0;
+
+            diceRollInterval = setInterval(() => {
+                counter++;
+                const rnd1 = Math.floor(Math.random() * 6) + 1;
+                const rnd2 = Math.floor(Math.random() * 6) + 1;
+                if (pCube) pCube.textContent = rnd1;
+                if (nCube) nCube.textContent = rnd2;
+
+                if (counter > 15) {
+                    clearInterval(diceRollInterval);
+                    if (pCube) pCube.classList.remove('die-rolling');
+                    if (nCube) nCube.classList.remove('die-rolling');
+
+                    let pFinal = Math.floor(Math.random() * 6) + 1;
+                    let nFinal = Math.floor(Math.random() * 6) + 1;
+
+                    // En caso de empate, desempatar automáticamente
+                    while (pFinal === nFinal) {
+                        nFinal = Math.floor(Math.random() * 6) + 1;
+                    }
+
+                    if (pCube) pCube.textContent = pFinal;
+                    if (nCube) nCube.textContent = nFinal;
+
+                    if (pFinal > nFinal) {
+                        lastDiceWinner = 'player1';
+                        if (msg) msg.innerHTML = `🎉 <b style="color:var(--accent-cyan);">¡Has ganado la tirada! (${pFinal} vs ${nFinal})</b><br>Elige si deseas ir de Primeras o de Segundas:`;
+                        if (actions) actions.style.display = 'none';
+                        if (choices) choices.style.display = 'flex';
+                    } else {
+                        lastDiceWinner = 'player2';
+                        if (msg) msg.innerHTML = `🤖 <b style="color:#ff6b81;">El NPC obtuvo mayor puntaje (${nFinal} vs ${pFinal})</b><br>${currentNpcOpponent} ha elegido <b style="color:var(--accent-gold);">IR DE PRIMERAS</b>. Entrando al duelo...`;
+                        if (actions) actions.style.display = 'none';
+
+                        setTimeout(() => {
+                            startDuelWithOrder('player2');
+                        }, 2200);
+                    }
+                }
+            }, 80);
+        }
+
+        function confirmOrderChoice(chosenFirstPlayer) {
+            startDuelWithOrder(chosenFirstPlayer);
+        }
+
+        function startDuelWithOrder(firstPlayer) {
+            closeDiceRollModal();
+            closeDuelMenu();
+            closeWelcomeLobby();
+
+            cleanDuelFieldUI();
+
+            document.getElementById('duel-app').style.display = 'flex';
+
+            const myNick = currentUser ? currentUser.username : 'Admin';
+            socket.emit('DUEL_START', {
+                room_id: 'ROOM_DEMO',
+                opponent_name: currentNpcOpponent || 'NPC Yugi Muto',
+                player_name: myNick,
+                first_player: firstPlayer
+            });
+
+            try {
+                history.pushState({ inDuel: true }, document.title, window.location.href);
+            } catch (e) {}
+        }
+
+        function cleanDuelFieldUI() {
+            const pHand = document.getElementById('player-hand');
+            if (pHand) pHand.innerHTML = '';
+            const rHand = document.getElementById('rival-hand');
+            if (rHand) rHand.innerHTML = '';
+
+            for (let i = 0; i < 5; i++) {
+                const pm = document.getElementById(`p-m${i}`);
+                if (pm) pm.innerHTML = '';
+                const ps = document.getElementById(`p-s${i}`);
+                if (ps) ps.innerHTML = '';
+                const rm = document.getElementById(`r-m${i}`);
+                if (rm) rm.innerHTML = '';
+                const rs = document.getElementById(`r-s${i}`);
+                if (rs) rs.innerHTML = '';
+            }
+        }
+
+        function showGameOverModal(data) {
+            const modal = document.getElementById('game-over-modal');
+            const title = document.getElementById('game-over-title');
+            const desc = document.getElementById('game-over-desc');
+            const badge = document.getElementById('game-over-status-badge');
+            if (!modal) return;
+
+            const myUsername = currentUser ? currentUser.username : 'Admin';
+            const isWinner = data.winner === myUsername;
+
+            if (data.reason === 'SURRENDER') {
+                if (title) title.innerHTML = '🏳️ RENDICIÓN DEL DUELO';
+                if (title) title.style.color = 'var(--accent-ruby)';
+                if (desc) desc.textContent = `${data.loser} se ha rendido. Victoria concedida a ${data.winner}.`;
+                if (badge) badge.textContent = 'Rendición Oficial';
+            } else if (data.reason === 'DECK_OUT') {
+                if (isWinner) {
+                    if (title) title.innerHTML = '🏆 ¡VICTORIA POR DECK OUT!';
+                    if (title) title.style.color = 'var(--accent-gold)';
+                    if (desc) desc.textContent = `¡El Deck de ${data.loser} se quedó sin cartas! Has ganado el duelo por regla oficial Konami OCG.`;
+                    if (badge) badge.textContent = 'Victoria por Deck Out';
+                } else {
+                    if (title) title.innerHTML = '💀 DERROTA POR DECK OUT';
+                    if (title) title.style.color = '#ff4757';
+                    if (desc) desc.textContent = `Te has quedado sin cartas en el Deck al intentar robar. Victoria concedida a ${data.winner}.`;
+                    if (badge) badge.textContent = 'Derrota por Deck Out';
+                }
+            } else if (isWinner) {
+                if (title) title.innerHTML = '🏆 ¡VICTORIA OFICIAL KONAMI!';
+                if (title) title.style.color = 'var(--accent-gold)';
+                if (desc) desc.textContent = `¡Felicitaciones! Has derrotado a ${data.loser} en duelo reglamentario.`;
+                if (badge) badge.textContent = 'Victoria';
+            } else {
+                if (title) title.innerHTML = '💀 DERROTA';
+                if (title) title.style.color = '#ff4757';
+                if (desc) desc.textContent = `${data.winner} ha vencido en el duelo.`;
+                if (badge) badge.textContent = 'Derrota';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function returnToDuelMenu() {
+            const gameOverModal = document.getElementById('game-over-modal');
+            if (gameOverModal) gameOverModal.style.display = 'none';
+
+            cleanDuelFieldUI();
+            lastDuelState = null;
+            document.getElementById('duel-app').style.display = 'none';
+
+            openWelcomeLobby();
+            openDuelMenu();
+        }
+
+        function returnToLobby() {
+            const gameOverModal = document.getElementById('game-over-modal');
+            if (gameOverModal) gameOverModal.style.display = 'none';
+
+            cleanDuelFieldUI();
+            lastDuelState = null;
+            document.getElementById('duel-app').style.display = 'none';
+
+            openWelcomeLobby();
+        }
+
+        // =========================================================================
+        // RENDICIÓN OFICIAL DEL DUELO (SURRENDER) & RETORNO AL LOBBY
+        // =========================================================================
+        function promptSurrender() {
+            const modal = document.getElementById('surrender-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeSurrenderModal() {
+            const modal = document.getElementById('surrender-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function confirmSurrender() {
+            closeSurrenderModal();
+            socket.emit('CMD_ACTION', {
+                room_id: 'ROOM_DEMO',
+                action_type: 'SURRENDER'
+            });
+            setTimeout(() => {
+                returnToDuelMenu();
+            }, 200);
+        }
+
+        // =========================================================================
+        // PROTECCIÓN CONTRA RETROCESO ACCIDENTAL Y RECARGA (WEB & APK ANDROID)
+        // =========================================================================
+        function isDuelInProgress() {
+            const duelApp = document.getElementById('duel-app');
+            return duelApp && duelApp.style.display !== 'none';
+        }
+
+        window.addEventListener('popstate', (e) => {
+            if (isDuelInProgress()) {
+                try {
+                    history.pushState({ inDuel: true }, document.title, window.location.href);
+                } catch (err) {}
+                promptSurrender();
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (isDuelInProgress()) {
+                if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R'))) {
+                    e.preventDefault();
+                    promptSurrender();
+                }
+            }
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (isDuelInProgress()) {
+                e.preventDefault();
+                e.returnValue = '¿Estás seguro de salir del duelo? Se considerará rendición oficial sin recompensas.';
+                return e.returnValue;
+            }
+        });
+
+        socket.on('DUEL_GAME_OVER', (data) => {
+            showGameOverModal(data);
+        });
+
+        // =========================================================================
+        // COMBATE & ACCIONES DE BATALLA
+        // =========================================================================
+        function triggerChangePos() {
+            socket.emit('CMD_ACTION', {
+                room_id: 'ROOM_DEMO',
+                action_type: 'CHANGE_POS',
+                slot_index: selectedAttackerSlot
+            });
+        }
+
+        function triggerAttack() {
+            if (!lastDuelState) return;
+            if (lastDuelState.phase !== 'BATTLE') {
+                showRuleAlert('⚠️ [Regla Oficial] No puedes atacar durante la fase actual. Pasa primero a la BATTLE PHASE.');
+                return;
+            }
+            executeAttack(selectedAttackerSlot, selectedRivalTargetSlot);
+        }
+
+        function triggerDirectAttack() {
+            executeAttack(selectedAttackerSlot, -1);
+        }
+
+        function executeAttack(attackerSlot, targetSlot) {
+            socket.emit('CLIENT_ATTACK', {
+                room_id: 'ROOM_DEMO',
+                attacker_slot: attackerSlot,
+                target_slot: targetSlot
+            });
+            socket.emit('CMD_ACTION', {
+                room_id: 'ROOM_DEMO',
+                action_type: 'CLIENT_ATTACK',
+                attacker_slot: attackerSlot,
+                target_slot: targetSlot
+            });
+        }
+
+        function sendAction(actionType) {
+            socket.emit('CMD_ACTION', {
+                room_id: 'ROOM_DEMO',
+                action_type: actionType,
+                slot_index: selectedAttackerSlot,
+                card_id: selectedHandCardId
+            });
+        }
+
+        function showRuleAlert(msg) {
+            const banner = document.getElementById('rule-alert-banner');
+            banner.textContent = msg;
+            banner.style.display = 'block';
+            setTimeout(() => banner.style.display = 'none', 3500);
+        }
+
+        socket.on('ACTION_ERROR', (data) => {
+            showRuleAlert(data.message || 'Error en la acción solicitada.');
+        });
+
+        socket.on('CHAIN_START', (data) => {
+            const banner = document.getElementById('trap-chain-banner');
+            banner.textContent = data.message || '¡Cadena activada!';
+            banner.style.display = 'block';
+            setTimeout(() => banner.style.display = 'none', 4500);
+        });
+
+        // =========================================================================
+        // MOTOR DE CONTROL Y NAVEGACIÓN DE FASES OFICIALES (KONAMI OCG/TCG)
+        // =========================================================================
+        function updatePhaseUI(phase, turnPlayer, turnNumber) {
+            const PHASES_ORDER = ['DRAW', 'STANDBY', 'MAIN_1', 'BATTLE', 'MAIN_2', 'END'];
+            const myUsername = currentUser ? currentUser.username : 'Admin';
+            const isMyTurn = !currentUser || turnPlayer === myUsername;
+            const currentIdx = PHASES_ORDER.indexOf(phase);
+
+            PHASES_ORDER.forEach((p, idx) => {
+                const item = document.getElementById(`phase-item-${p}`);
+                if (!item) return;
+
+                // Resetear clases y estilos
+                item.classList.remove('active-phase', 'phase-disabled', 'phase-available');
+
+                if (!isMyTurn) {
+                    // TURNO DEL RIVAL: Todos los botones quedan bloqueados para el jugador
+                    item.style.pointerEvents = 'none';
+                    if (p === phase) {
+                        item.classList.add('active-phase');
+                    } else {
+                        item.classList.add('phase-disabled');
+                    }
+                } else {
+                    // TURNO DEL JUGADOR:
+                    if (idx < currentIdx) {
+                        // Fases anteriores: DESHABILITADAS
+                        item.classList.add('phase-disabled');
+                        item.style.pointerEvents = 'none';
+                    } else if (idx === currentIdx) {
+                        // Fase activa actual
+                        item.classList.add('active-phase');
+                        item.style.pointerEvents = 'none';
+                    } else {
+                        // Fases futuras disponibles según reglas oficiales
+                        if (phase === 'MAIN_1' && p === 'MAIN_2') {
+                            // Main Phase 2 requiere haber pasado por Battle Phase
+                            item.classList.add('phase-disabled');
+                            item.style.pointerEvents = 'none';
+                        } else {
+                            item.classList.add('phase-available');
+                            item.style.pointerEvents = 'auto';
+                        }
+                    }
+                }
+            });
+
+            const turnBadge = document.getElementById('turn-player-badge');
+            const turnNumLabel = document.getElementById('turn-num-label');
+            if (turnNumLabel) turnNumLabel.textContent = `TURNO ${turnNumber || 1}`;
+            if (turnBadge) {
+                if (isMyTurn) {
+                    turnBadge.textContent = 'TU TURNO';
+                    turnBadge.className = 'turn-player-tag my-turn';
+                } else {
+                    turnBadge.textContent = 'TURNO DEL RIVAL';
+                    turnBadge.className = 'turn-player-tag rival-turn';
+                }
+            }
+        }
+
+        function advanceToPhase(targetPhase) {
+            socket.emit('CMD_ACTION', {
+                room_id: 'ROOM_DEMO',
+                action_type: 'SET_PHASE',
+                target_phase: targetPhase
+            });
+        }
+
+        function attemptPhaseChange(clickedPhase) {
+            if (!lastDuelState) return;
+            const myUsername = currentUser ? currentUser.username : 'Admin';
+            if (lastDuelState.turnPlayer !== myUsername) {
+                showRuleAlert('⚠️ No es tu turno. Espera a que el oponente finalice su turno.');
+                return;
+            }
+            const current = lastDuelState.phase;
+            if (current === clickedPhase) return;
+
+            // Regla oficial Konami: El primer jugador NO puede entrar a Battle Phase en el Turno 1
+            if (clickedPhase === 'BATTLE' && lastDuelState.turnNumber === 1) {
+                showRuleAlert('⚠️ [Regla Oficial Konami] El primer jugador no puede entrar a la Battle Phase ni declarar ataques en el Turno 1.');
+                return;
+            }
+
+            const PHASES_ORDER = ['DRAW', 'STANDBY', 'MAIN_1', 'BATTLE', 'MAIN_2', 'END'];
+            const currentIdx = PHASES_ORDER.indexOf(current);
+            const targetIdx = PHASES_ORDER.indexOf(clickedPhase);
+
+            // Regla oficial: Fases anteriores ya concluyeron en este turno
+            if (targetIdx < currentIdx) {
+                showRuleAlert(`⚠️ [Regla Oficial] Las fases anteriores ya concluyeron en este turno. No puedes retroceder.`);
+                return;
+            }
+
+            // Validar salto ilegal a Main Phase 2 sin combate
+            if (current === 'MAIN_1' && clickedPhase === 'MAIN_2') {
+                showRuleAlert('⚠️ [Regla Oficial] No puedes entrar a Main Phase 2 sin haber entrado a la Battle Phase.');
+                return;
+            }
+
+            if (clickedPhase === 'END') {
+                showRuleAlert('⏱️ Entrando a End Phase. Validando límite de mano y finalizando turno...');
+            }
+
+            advanceToPhase(clickedPhase);
+        }
+
+        // =========================================================================
+        // SINCRONIZACIÓN TOTAL DEL ESTADO DEL DUELO
+        // =========================================================================
+        socket.on('DUEL_STATE_UPDATE', (state) => {
+            if (!state) return;
+            lastDuelState = state;
+
+            // 1. Life Points y Fase
+            document.getElementById('player-lp').textContent = `LP: ${state.player1.lp}`;
+            document.getElementById('rival-lp').textContent = `LP: ${state.player2.lp}`;
+            const deckLbl = document.getElementById('deck-count-lbl');
+            if (deckLbl) deckLbl.textContent = `${state.player1.mainDeckCount} / 40`;
+            
+            // 2. Actualizar Control de Fases OCG / TCG
+            updatePhaseUI(state.phase, state.turnPlayer, state.turnNumber);
+
+            // 3. Contadores en Pilas de Cartas (Deck, Extra, GY) & Portada Superior Oficial
+            document.getElementById('p-deck-counter').textContent = `${state.player1.mainDeckCount}`;
+            document.getElementById('r-deck-counter').textContent = `${state.player2.mainDeckCount}`;
+            document.getElementById('p-extra-counter').textContent = `${state.player1.extraDeckCount}`;
+            document.getElementById('r-extra-counter').textContent = `${state.player2.extraDeckCount}`;
+
+            // Top Card y Contador en Cementerio y Desierto (Jugador)
+            const pGyCards = state.player1.graveyard || [];
+            const pGySlot = document.getElementById('p-gy');
+            const pGyBadge = document.getElementById('p-gy-counter');
+            if (pGyBadge) {
+                pGyBadge.textContent = pGyCards.length;
+                pGyBadge.style.display = pGyCards.length > 0 ? 'block' : 'none';
+            }
+            if (pGySlot) {
+                if (pGyCards.length > 0) {
+                    const topCard = pGyCards[pGyCards.length - 1];
+                    const topImg = topCard.image_url || `https://images.ygoprodeck.com/images/cards/${topCard.id || topCard.card_id}.jpg`;
+                    pGySlot.style.backgroundImage = `url('${topImg}')`;
+                    pGySlot.style.backgroundSize = 'cover';
+                    pGySlot.style.backgroundPosition = 'center';
+                } else {
+                    pGySlot.style.backgroundImage = '';
+                }
+            }
+
+            const pBanCards = state.player1.banished || [];
+            const pBanSlot = document.getElementById('p-banished');
+            if (pBanSlot) {
+                if (pBanCards.length > 0) {
+                    const topCard = pBanCards[pBanCards.length - 1];
+                    const topImg = topCard.image_url || `https://images.ygoprodeck.com/images/cards/${topCard.id || topCard.card_id}.jpg`;
+                    pBanSlot.style.backgroundImage = `url('${topImg}')`;
+                    pBanSlot.style.backgroundSize = 'cover';
+                    pBanSlot.style.backgroundPosition = 'center';
+                } else {
+                    pBanSlot.style.backgroundImage = '';
+                }
+            }
+
+            // Top Card y Contador en Cementerio y Desierto (Rival)
+            const rGyCards = state.player2.graveyard || [];
+            const rGySlot = document.getElementById('r-gy');
+            const rGyBadge = document.getElementById('r-gy-counter');
+            if (rGyBadge) {
+                rGyBadge.textContent = rGyCards.length;
+                rGyBadge.style.display = rGyCards.length > 0 ? 'block' : 'none';
+            }
+            if (rGySlot) {
+                if (rGyCards.length > 0) {
+                    const topCard = rGyCards[rGyCards.length - 1];
+                    const topImg = topCard.image_url || `https://images.ygoprodeck.com/images/cards/${topCard.id || topCard.card_id}.jpg`;
+                    rGySlot.style.backgroundImage = `url('${topImg}')`;
+                    rGySlot.style.backgroundSize = 'cover';
+                    rGySlot.style.backgroundPosition = 'center';
+                } else {
+                    rGySlot.style.backgroundImage = '';
+                }
+            }
+
+            const rBanCards = state.player2.banished || [];
+            const rBanSlot = document.getElementById('r-banished');
+            if (rBanSlot) {
+                if (rBanCards.length > 0) {
+                    const topCard = rBanCards[rBanCards.length - 1];
+                    const topImg = topCard.image_url || `https://images.ygoprodeck.com/images/cards/${topCard.id || topCard.card_id}.jpg`;
+                    rBanSlot.style.backgroundImage = `url('${topImg}')`;
+                    rBanSlot.style.backgroundSize = 'cover';
+                    rBanSlot.style.backgroundPosition = 'center';
+                } else {
+                    rBanSlot.style.backgroundImage = '';
+                }
+            }
+
+            // 4. Visualizador de Cadena Activa
+            const chainVisualizer = document.getElementById('chain-stack-visualizer');
+            const chainItemsContainer = document.getElementById('chain-stack-items');
+            if (state.activeChain && state.activeChain.length > 0) {
+                chainVisualizer.style.display = 'flex';
+                chainItemsContainer.innerHTML = state.activeChain.map(link => 
+                    `<div class="chain-stack-badge">⛓️ Eslabón ${link.chainLink}: ${link.card_data ? link.card_data.name : 'Efecto'}</div>`
+                ).join(' ➔ ');
+            } else {
+                chainVisualizer.style.display = 'none';
+            }
+
+            // 5. Renderizado de Campo Mágico (Field Spell)
+            const pCampo = document.getElementById('p-campo');
+            if (pCampo) {
+                if (state.player1.fieldSpell) {
+                    const c = state.player1.fieldSpell.card_data;
+                    pCampo.innerHTML = `<div class="card-on-field" style="background-image:url('${c.image_url || `https://images.ygoprodeck.com/images/cards/${c.id}.jpg`}');" title="${c.name}" onclick="onSlotClick('P_CAMPO', 0, event); inspectCardById(${c.id});"></div>`;
+                } else {
+                    pCampo.innerHTML = `<div class="slot-tooltip">CAMPO</div>`;
+                }
+            }
+
+            const rCampo = document.getElementById('r-campo');
+            if (rCampo) {
+                if (state.player2.fieldSpell) {
+                    const c = state.player2.fieldSpell.card_data;
+                    rCampo.innerHTML = `<div class="card-on-field" style="background-image:url('${c.image_url || `https://images.ygoprodeck.com/images/cards/${c.id}.jpg`}');" title="${c.name}" onclick="onSlotClick('R_CAMPO', 0, event); inspectCardById(${c.id});"></div>`;
+                } else {
+                    rCampo.innerHTML = `<div class="slot-tooltip">CAMPO</div>`;
+                }
+            }
+
+            // 6. Renderizado de Monstruos del Jugador (Ranuras 0..4) - Rotación 90° e Insignia Dinámica de ATK/DEF
+            for (let i = 0; i < 5; i++) {
+                const slot = document.getElementById(`p-m${i}`);
+                if (!slot) continue;
+                const m = state.player1.monsters[i];
+                if (m) {
+                    const isDef = m.position === 'DEF';
+                    const isFaceDown = m.faceDown;
+                    const cardImg = m.card_data ? m.card_data.image_url : `https://images.ygoprodeck.com/images/cards/${m.card_id}.jpg`;
+                    const bgUrl = isFaceDown ? '/assets/card_back.jpg' : cardImg;
+
+                    const isTrapped = m.isTrapped || (m.attachedEffects && m.attachedEffects.some(e => e.effect_type === 'CANNOT_ATTACK'));
+                    let attachedBadgeHtml = '';
+                    if (isTrapped || (m.attachedEffects && m.attachedEffects.length > 0)) {
+                        const effNames = m.attachedEffects && m.attachedEffects.length > 0 
+                            ? m.attachedEffects.map(e => e.card_name || e.name).join(', ') 
+                            : 'Círculo Atador de Hechizos';
+                        attachedBadgeHtml = `<div class="attached-effects-badge" title="Afectado por: ${effNames} (Inmovilizado)">⛓️ ENCADENADO</div>`;
+                    }
+                    
+                    let statBadgeHtml = '';
+                    if (!isFaceDown) {
+                        if (isDef) {
+                            const defVal = (m.currentDef !== undefined && m.currentDef !== null) ? m.currentDef : (m.card_data ? m.card_data.def : 0);
+                            const modClass = (m.defMod > 0) ? 'stat-buffed' : (m.defMod < 0 ? 'stat-nerfed' : 'stat-def');
+                            statBadgeHtml = `<div class="monster-stat-badge ${modClass}">DEF ${defVal}</div>`;
+                        } else {
+                            const atkVal = (m.currentAtk !== undefined && m.currentAtk !== null) ? m.currentAtk : (m.card_data ? m.card_data.atk : 0);
+                            const modClass = (m.atkMod > 0) ? 'stat-buffed' : (m.atkMod < 0 ? 'stat-nerfed' : '');
+                            statBadgeHtml = `<div class="monster-stat-badge ${modClass}">ATK ${atkVal}</div>`;
+                        }
+                    }
+
+                    slot.innerHTML = `<div class="card-on-field ${isDef ? 'def-pos' : ''} ${isFaceDown ? 'card-sleeve' : ''} ${isTrapped ? 'monster-trapped' : ''}" 
+                                           style="background-image:url('${bgUrl}');" 
+                                           title="${m.card_data ? m.card_data.name : 'Monstruo'}"
+                                           onclick="onSlotClick('P_M', ${i}, event)"></div>${attachedBadgeHtml}${statBadgeHtml}`;
+                } else {
+                    slot.innerHTML = '';
+                }
+            }
+
+            // 7. Renderizado de Magias/Trampas del Jugador (Ranuras 0..4) - Reverso Oficial Konami si está SET
+            for (let i = 0; i < 5; i++) {
+                const slot = document.getElementById(`p-s${i}`);
+                if (!slot) continue;
+                const s = state.player1.spells[i];
+                if (s) {
+                    const isSet = s.faceDown || s.position === 'SET';
+                    const cardImg = s.card_data ? s.card_data.image_url : `https://images.ygoprodeck.com/images/cards/${s.card_id}.jpg`;
+                    const bgUrl = isSet ? '/assets/card_back.jpg' : cardImg;
+                    const targetHighlightAttr = s.targetingMonster 
+                        ? `onmouseenter="highlightTargetSlot('${s.targetingMonster.player}', ${s.targetingMonster.slot}, true)" onmouseleave="highlightTargetSlot('${s.targetingMonster.player}', ${s.targetingMonster.slot}, false)"`
+                        : '';
+                    const linkBadge = (!isSet && s.targetingMonster) ? `<div class="attached-effects-badge" style="top:auto; bottom:2px; font-size:7px; background:rgba(0,229,255,0.85); border-color:#00e5ff; color:#000;">🎯 #${s.targetingMonster.slot + 1}</div>` : '';
+                    
+                    slot.innerHTML = `<div class="card-on-field ${isSet ? 'card-sleeve' : ''}" 
+                                           style="background-image:url('${bgUrl}');" 
+                                           title="${s.card_data ? s.card_data.name : 'Magia/Trampa'}"
+                                           ${targetHighlightAttr}
+                                           onclick="onSlotClick('P_S', ${i}, event)"></div>${linkBadge}`;
+                } else {
+                    slot.innerHTML = '';
+                }
+            }
+
+            // 8. Renderizado de Monstruos del Rival (Ranuras 0..4) - Rotación 90° e Insignia Dinámica de ATK/DEF
+            for (let i = 0; i < 5; i++) {
+                const slot = document.getElementById(`r-m${i}`);
+                if (!slot) continue;
+                const m = state.player2.monsters[i];
+                if (m) {
+                    const isDef = m.position === 'DEF';
+                    const isFaceDown = m.faceDown;
+                    const cardImg = m.card_data ? m.card_data.image_url : `https://images.ygoprodeck.com/images/cards/${m.card_id}.jpg`;
+                    const bgUrl = isFaceDown ? '/assets/card_back.jpg' : cardImg;
+
+                    const isTrapped = m.isTrapped || (m.attachedEffects && m.attachedEffects.some(e => e.effect_type === 'CANNOT_ATTACK'));
+                    let attachedBadgeHtml = '';
+                    if (isTrapped || (m.attachedEffects && m.attachedEffects.length > 0)) {
+                        const effNames = m.attachedEffects && m.attachedEffects.length > 0 
+                            ? m.attachedEffects.map(e => e.card_name || e.name).join(', ') 
+                            : 'Círculo Atador de Hechizos';
+                        attachedBadgeHtml = `<div class="attached-effects-badge" title="Afectado por: ${effNames} (Inmovilizado)">⛓️ ENCADENADO</div>`;
+                    }
+                    
+                    let statBadgeHtml = '';
+                    if (!isFaceDown) {
+                        if (isDef) {
+                            const defVal = (m.currentDef !== undefined && m.currentDef !== null) ? m.currentDef : (m.card_data ? m.card_data.def : 0);
+                            const modClass = (m.defMod > 0) ? 'stat-buffed' : (m.defMod < 0 ? 'stat-nerfed' : 'stat-def');
+                            statBadgeHtml = `<div class="monster-stat-badge ${modClass}">DEF ${defVal}</div>`;
+                        } else {
+                            const atkVal = (m.currentAtk !== undefined && m.currentAtk !== null) ? m.currentAtk : (m.card_data ? m.card_data.atk : 0);
+                            const modClass = (m.atkMod > 0) ? 'stat-buffed' : (m.atkMod < 0 ? 'stat-nerfed' : '');
+                            statBadgeHtml = `<div class="monster-stat-badge ${modClass}">ATK ${atkVal}</div>`;
+                        }
+                    }
+
+                    slot.innerHTML = `<div class="card-on-field ${isDef ? 'def-pos' : ''} ${isFaceDown ? 'card-sleeve' : ''} ${isTrapped ? 'monster-trapped' : ''}" 
+                                           style="background-image:url('${bgUrl}');" 
+                                           title="${!isFaceDown && m.card_data ? m.card_data.name : 'Monstruo Rival'}"
+                                           onclick="onSlotClick('R_M', ${i}, event);"></div>${attachedBadgeHtml}${statBadgeHtml}`;
+                } else {
+                    slot.innerHTML = '';
+                }
+            }
+
+            // 9. Renderizado de Magias/Trampas del Rival (Ranuras 0..4) - Reverso Oficial Konami
+            for (let i = 0; i < 5; i++) {
+                const slot = document.getElementById(`r-s${i}`);
+                if (!slot) continue;
+                const s = state.player2.spells[i];
+                if (s) {
+                    const isSet = s.faceDown || s.position === 'SET';
+                    const cardImg = s.card_data ? s.card_data.image_url : `https://images.ygoprodeck.com/images/cards/${s.card_id}.jpg`;
+                    const bgUrl = isSet ? '/assets/card_back.jpg' : cardImg;
+                    const targetHighlightAttr = s.targetingMonster 
+                        ? `onmouseenter="highlightTargetSlot('${s.targetingMonster.player}', ${s.targetingMonster.slot}, true)" onmouseleave="highlightTargetSlot('${s.targetingMonster.player}', ${s.targetingMonster.slot}, false)"`
+                        : '';
+                    const linkBadge = (!isSet && s.targetingMonster) ? `<div class="attached-effects-badge" style="top:auto; bottom:2px; font-size:7px; background:rgba(0,229,255,0.85); border-color:#00e5ff; color:#000;">🎯 #${s.targetingMonster.slot + 1}</div>` : '';
+                    
+                    slot.innerHTML = `<div class="card-on-field ${isSet ? 'card-sleeve' : ''}" 
+                                           style="background-image:url('${bgUrl}');" 
+                                           title="${!isSet && s.card_data ? s.card_data.name : 'Carta Boca Abajo Rival'}"
+                                           ${targetHighlightAttr}
+                                           onclick="onSlotClick('R_S', ${i}, event); ${!isSet ? `inspectCardById(${s.card_id});` : ''}"></div>${linkBadge}`;
+                } else {
+                    slot.innerHTML = '';
+                }
+            }
+
+            // 10. Renderizado de la Mano del Jugador (Contorno Dorado si está seleccionada)
+            const handContainer = document.getElementById('player-hand');
+            if (state.player1.hand && Array.isArray(state.player1.hand)) {
+                handContainer.innerHTML = state.player1.hand.map((c, idx) => {
+                    const cId = c.id || c.card_id;
+                    const img = c.image_url || `https://images.ygoprodeck.com/images/cards/${cId}.jpg`;
+                    const isSel = idx === selectedHandCardIndex ? 'selected-hand' : '';
+                    return `<div class="hand-card ${isSel}" style="background-image:url('${img}');" onclick="selectHandCard(${idx}, ${cId}, event)"></div>`;
+                }).join('');
+            }
+
+            // 11. Renderizado de la Mano del Rival (Reversos Oficiales Simétricos)
+            const rivalHandContainer = document.getElementById('rival-hand');
+            if (state.player2.hand && Array.isArray(state.player2.hand)) {
+                rivalHandContainer.innerHTML = state.player2.hand.map(() => `<div class="rival-hand-card"></div>`).join('');
+            }
+        });
+    </script>
+    </div>
+
+    <!-- SCRIPTS MODULARES -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/socket.js"></script>
+    <script src="../../../js/data/packs-data.js?v=3.3"></script>
+    <script src="../../../js/data/deck-manager.js?v=3.3"></script>
+    <script src="../../../js/duel/duel-state-client.js?v=3.3"></script>
+    <script src="../../../js/duel/duel-ui.js?v=3.1"></script>
+    <script src="../../../js/duel/duel-actions.js?v=3.1"></script>
+    <script src="../../../js/duel/duel-chains.js?v=3.1"></script>
+    <script src="../../../js/views/duel-pvp.js?v=3.1"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Portal Informativo y Eventos OCG</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/lobby.css?v=5.0">
+    <link rel="stylesheet" href="lobby.css?v=5.0">
+    <link rel="stylesheet" href="../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+
+    <div id="welcome-lobby-overlay">
+        <!-- CONTENEDOR PRINCIPAL DEL LOBBY -->
+        <div class="lobby-main-container">
+            
+            <!-- HEADER SUPERIOR FRANJA DE LADO A LADO (ESTILO UNIFICADO) -->
+            <div class="lobby-info-header">
+                <div>
+                    <h1 class="lobby-portal-title">PORTAL DE NOTICIAS Y EVENTOS</h1>
+                    <div class="lobby-portal-subtitle">NOVEDADES OFICIALES, PARCHES DE SISTEMA Y TORNEOS ANI-DIMENSION OCG</div>
+                </div>
+            </div>
+
+            <!-- SECCIONES INFORMATIVAS FLOTANDO DIRECTAMENTE EN EL FONDO BLANCO -->
+            <div class="lobby-grid-sections">
+                <!-- 1. AVISOS DE NUEVOS EVENTOS -->
+                <div class="lobby-column">
+                    <div class="lobby-section-title">
+                        <span>PRÓXIMOS EVENTOS Y TORNEOS</span>
+                    </div>
+                    <div id="lobby-events-container">
+                        <div style="color:#64748b; font-size:11px;">Cargando avisos de eventos mundiales...</div>
+                    </div>
+                </div>
+
+                <!-- 2. NUEVAS ACTUALIZACIONES Y NOTAS DE VERSIÓN -->
+                <div class="lobby-column">
+                    <div class="lobby-section-title">
+                        <span>NOTAS DE PARCHE Y MEJORAS</span>
+                    </div>
+                    <div id="lobby-updates-container">
+                        <div style="color:#64748b; font-size:11px;">Cargando notas de parches...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/socket.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/lobby.js"></script>
+</body>
+</html>

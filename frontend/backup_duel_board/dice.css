@@ -1,0 +1,265 @@
+/* ==========================================================================
+   ANI-DIMENSION: MODAL ELECCIÓN DE ORDEN (DADOS PRE-DUELO) & FIN DE DUELO
+   ESTILO CYBER ELEGANTE UNIFICADO | BORDES TOTALMENTE RECTOS (SHARP)
+   PALETA OFICIAL: DARK NAVY + CIAN NEÓN + OUTFIT/ORBITRON (SIN COLORES PAYASO)
+   ========================================================================== */
+
+#dice-roll-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 14, 0.88);
+    backdrop-filter: blur(8px);
+    z-index: 1200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.dice-modal-card {
+    position: relative;
+    width: 460px;
+    max-width: 92vw;
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.2) !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    padding: 22px 24px;
+    color: #fff;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+}
+
+.dice-modal-card .modal-close-btn {
+    border-radius: 0 !important;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.dice-modal-card .modal-close-btn:hover {
+    color: #00f0ff;
+}
+
+.dice-modal-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px;
+    color: #00f0ff !important;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.dice-modal-desc {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.45;
+    margin-bottom: 16px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.dice-arena {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 36px;
+    margin: 18px 0;
+}
+
+.die-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.die-wrapper div {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px;
+    color: #94a3b8 !important;
+    text-transform: uppercase;
+}
+
+/* DADOS CYBERPUNK LIMPIOS (SIN BORDES REDONDEADOS NI COLORES CHILLONES) */
+.die-cube {
+    width: 78px;
+    height: 78px;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif !important;
+    background: #040711 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+    color: #00f0ff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(0, 240, 255, 0.08) !important;
+    transition: all 0.2s ease;
+}
+
+.die-player {
+    border-color: rgba(0, 240, 255, 0.65) !important;
+    color: #00f0ff !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.3), inset 0 0 12px rgba(0, 240, 255, 0.1) !important;
+}
+
+.die-npc {
+    border-color: rgba(148, 163, 184, 0.5) !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 0 12px rgba(148, 163, 184, 0.2), inset 0 0 10px rgba(148, 163, 184, 0.06) !important;
+}
+
+.dice-vs-badge {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 800;
+    color: #64748b !important;
+    letter-spacing: 1px;
+}
+
+#dice-status-message {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    min-height: 22px;
+    color: #94a3b8;
+    margin-bottom: 14px;
+    line-height: 1.4;
+}
+
+/* BOTÓN DE LANZAMIENTO DE DADOS (CYBER RECTO) */
+.btn-arena-launch {
+    background: rgba(0, 240, 255, 0.12) !important;
+    border: 1.5px solid #00f0ff !important;
+    color: #00f0ff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 10.5px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+    padding: 9px 24px !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.2) !important;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: uppercase;
+}
+
+.btn-arena-launch:hover {
+    background: #00f0ff !important;
+    color: #020617 !important;
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.5) !important;
+}
+
+/* BOTONES DE ELECCIÓN DE ORDEN (CYBER RECTOS) */
+#dice-choice-container .btn-act-vertical {
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.6px !important;
+    padding: 8px 16px !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#dice-choice-container .btn-order-p1 {
+    background: rgba(0, 240, 255, 0.15) !important;
+    border: 1.2px solid #00f0ff !important;
+    color: #00f0ff !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
+}
+
+#dice-choice-container .btn-order-p1:hover {
+    background: #00f0ff !important;
+    color: #020617 !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.5) !important;
+}
+
+#dice-choice-container .btn-order-p2 {
+    background: rgba(148, 163, 184, 0.12) !important;
+    border: 1.2px solid rgba(148, 163, 184, 0.45) !important;
+    color: #e2e8f0 !important;
+}
+
+#dice-choice-container .btn-order-p2:hover {
+    background: rgba(148, 163, 184, 0.3) !important;
+    border-color: #cbd5e1 !important;
+    color: #fff !important;
+}
+
+/* ==========================================================================
+   MODAL DE FIN DE DUELO (GAME OVER / SURRENDER) - CYBER RECTO UNIFICADO
+   ========================================================================== */
+#game-over-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 14, 0.92);
+    backdrop-filter: blur(10px);
+    z-index: 1300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-over-card {
+    width: 440px;
+    max-width: 90vw;
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.2) !important;
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    padding: 24px;
+    color: #fff;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+}
+
+.game-over-card button {
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    font-family: 'Orbitron', sans-serif !important;
+}
+
+@media (max-height: 550px) {
+    .dice-modal-card {
+        padding: 10px 16px;
+        max-height: 94vh;
+        overflow-y: auto;
+    }
+    .dice-arena {
+        gap: 18px;
+        margin: 8px 0;
+    }
+    .die-cube {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
+        line-height: 55px;
+    }
+    .die-wrapper div {
+        font-size: 9px !important;
+    }
+    #dice-status-message {
+        margin-bottom: 8px;
+        font-size: 10px;
+    }
+    .btn-arena-launch {
+        padding: 6px 16px !important;
+        font-size: 9.5px !important;
+    }
+}

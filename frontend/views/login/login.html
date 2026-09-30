@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Iniciar Sesión</title>
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/auth.css">
+</head>
+<body style="margin:0; padding:0; overflow:hidden;">
+
+    <div id="login-overlay">
+        <div class="login-wrapper">
+
+            <!-- DRAGÓN NEGRO DE OJOS ROJOS (LADO IZQUIERDO) -->
+            <div class="login-dragon login-dragon-left" id="login-dragon-red">
+                <img src="../../assets/red_eyes_dragon.png" alt="Red-Eyes Black Dragon" class="dragon-img dragon-red-eyes">
+            </div>
+
+            <!-- CONTENEDOR CENTRAL: LOGIN -->
+            <div class="login-center-container">
+                <h1 class="login-main-title">ANI-DIMENSION</h1>
+                <div class="login-subtitle">SISTEMA DE DUELOS OCG VIRTUAL</div>
+
+                <div class="login-card">
+                    <div class="auth-tabs">
+                        <span class="auth-tab-btn">INICIO DE SESIÓN</span>
+                    </div>
+
+                    <div id="auth-login-panel">
+                        <div class="auth-input-group">
+                            <label class="auth-input-label">USUARIO DE DUELISTA</label>
+                            <input type="text" id="usernameInput" class="auth-input" value="Admin" placeholder="Ingresa tu usuario..." autocomplete="username">
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label class="auth-input-label">CONTRASEÑA</label>
+                            <input type="password" id="passwordInput" class="auth-input" value="Oscar1982" placeholder="Ingresa tu contraseña..." autocomplete="current-password" onkeydown="if(event.key==='Enter') performLogin()">
+                        </div>
+
+                        <div id="login-alert-box" style="display:none; font-size:10px; margin-bottom:6px; padding:5px 8px; border-radius:6px; text-align:left;"></div>
+
+                        <button id="btn-login-submit" class="btn-act-vertical" onclick="performLogin()">ENTRAR A LA DIMENSIÓN</button>
+
+                        <div class="auth-toggle-wrapper">
+                            <a href="../register/register.html" class="auth-toggle-link">¿No tienes cuenta? Regístrate como nuevo duelista</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DRAGÓN BLANCO DE OJOS AZULES (LADO DERECHO) -->
+            <div class="login-dragon login-dragon-right" id="login-dragon-blue">
+                <img src="../../assets/blue_eyes_dragon.png" alt="Blue-Eyes White Dragon" class="dragon-img dragon-blue-eyes">
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/views/login.js"></script>
+</body>
+</html>

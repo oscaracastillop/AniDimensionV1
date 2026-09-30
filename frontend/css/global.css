@@ -1,0 +1,179 @@
+/* ==========================================================================
+   ANI-DIMENSION: ESTILOS GLOBALES - FONDO AZUL DEGRADADO CYBERPUNK (HIGH CONTRAST)
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Cinzel:wght@600;700;900&display=swap');
+
+:root {
+    --bg-dark: #020408;
+    --panel-bg: #0b1426;
+    --panel-border: rgba(0, 240, 255, 0.45);
+    --accent-cyan: #00f0ff;
+    --accent-gold: #ffd700;
+    --accent-purple: #a855f7;
+    --accent-blue: #0096ff;
+    --accent-emerald: #10b981;
+    --accent-ruby: #ef4444;
+    --accent-orange: #f97316;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --slot-bg: #0d172e;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;
+    background-color: #020408;
+    background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%);
+    background-size: 80px 80px, 80px 80px, 100% 100%;
+    background-position: 0 0, 0 0, center center;
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+}
+
+/* CONTENEDOR PRINCIPAL 100% ANCHO Y ALTO */
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    position: relative;
+    background: transparent;
+    display: flex;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos de scrollbars estilizados */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(5, 8, 15, 0.8);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.4);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.8);
+}
+
+/* ==========================================================================
+   UNIFIED HEADER DESIGN SYSTEM (IDÉNTICO EN TODAS LAS VISTAS)
+   ========================================================================== */
+.shop-header,
+.admin-header,
+.duel-menu-header,
+.npc-select-header,
+.lobby-info-header,
+.profile-header,
+.rankings-header,
+.app-header {
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    background: #091122 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    border-radius: 0 !important; /* RECTO DE LADO A LADO */
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22), 0 2px 10px rgba(0, 240, 255, 0.12) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+}
+
+.shop-title-box,
+.admin-title-box,
+.lobby-title-box,
+.profile-title-box,
+.rankings-title-box,
+.app-title-box {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.shop-title,
+.admin-title,
+.lobby-portal-title,
+.profile-title,
+.rankings-title,
+.app-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: clamp(13px, 1.6vw, 16px) !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    color: #fff !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+    margin: 0 !important;
+    line-height: 1.15 !important;
+}
+
+.shop-subtitle,
+.admin-subtitle,
+.lobby-portal-subtitle,
+.profile-subtitle,
+.rankings-subtitle,
+.app-subtitle {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 11px !important;
+    color: #94a3b8 !important;
+    margin-top: 2px !important;
+    letter-spacing: 0.35px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    line-height: 1.15 !important;
+}
+
+/* ==========================================================================
+   ESPACIADO SUPERIOR UNIFICADO DE CONTENIDO (MISMO MARGIN TOP EN TODAS LAS VISTAS)
+   ========================================================================== */
+.shop-scroll-content,
+.duel-menu-scroll-content,
+.npc-select-scroll-content,
+.lobby-grid-sections,
+.admin-scroll-content,
+.profile-scroll-content,
+.rankings-scroll-content,
+.app-scroll-content {
+    padding-top: 10px !important;
+}
+
+.shop-grid-container,
+.admin-modules-grid,
+.npc-grid,
+.admin-stats-grid,
+.profile-card-main,
+.rankings-columns-grid {
+    margin-top: 0 !important;
+}
+
+

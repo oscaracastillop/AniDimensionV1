@@ -1,0 +1,46 @@
+{
+  "trained_at": "2026-09-24 12:58:56",
+  "total_duels": 100,
+  "cards_tested": [
+    "Mirror Force",
+    "Red-Eyes Black Dragon",
+    "Time Wizard",
+    "Mystical Elf",
+    "Dark Hole",
+    "Raigeki",
+    "Winged Dragon Guardian #1",
+    "Blue-Eyes White Dragon",
+    "Giant Soldier of Stone",
+    "Summoned Skull",
+    "Celtic Guardian",
+    "Pot of Greed",
+    "Monster Reborn",
+    "Curse of Dragon",
+    "Yami",
+    "Dark Magician",
+    "Mystical Space Typhoon",
+    "Spellbinding Circle"
+  ],
+  "level_performance": {
+    "level_5": {
+      "npc_win_rate": 0.0,
+      "avg_turns": 15.8
+    },
+    "level_15": {
+      "npc_win_rate": 20.0,
+      "avg_turns": 18.9
+    },
+    "level_30": {
+      "npc_win_rate": 60.0,
+      "avg_turns": 32.2
+    },
+    "level_50": {
+      "npc_win_rate": 30.0,
+      "avg_turns": 32.5
+    },
+    "level_100": {
+      "npc_win_rate": 75.0,
+      "avg_turns": 31.6
+    }
+  }
+}

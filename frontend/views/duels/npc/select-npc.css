@@ -1,0 +1,587 @@
+/* ==========================================================================
+   ANI-DIMENSION: SELECCIÓN DE NPC (UNIFIED DESIGN SYSTEM)
+   FONDO BLANCO DEGRADADO + HEADER FRANJA COMPLETA DE LADO A LADO
+   BORDES RECTOS SIN REDONDEAR (SHARP CYBER LOOK) | 5px MÁRGENES EN CONTENIDO
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+html, body {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* ==========================================================================
+   1. ESTRUCTURA FIJA (FONDO DEGRADADO BLANCO)
+   ========================================================================== */
+.npc-select-page-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+    box-sizing: border-box !important;
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+}
+
+/* ==========================================================================
+   HEADER SUPERIOR FRANJA DE LADO A LADO COMPLETA (LIKE NAVBAR)
+   ========================================================================== */
+.npc-select-header,
+.admin-header {
+    width: 100% !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+    padding: 6px 16px !important;
+    background: #091122 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    border-radius: 0 !important; /* RECTO DE LADO A LADO */
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22), 0 2px 10px rgba(0, 240, 255, 0.12) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box !important;
+    z-index: 10;
+}
+
+.admin-title-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(13px, 1.6vw, 16px);
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    margin: 0;
+    line-height: 1.1;
+}
+
+/* ==========================================================================
+   2. CONTENEDOR CENTRAL DESLIZABLE (5px IZQ, 5px DER, 8px TOP)
+   ========================================================================== */
+.npc-select-scroll-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 5px 0 5px !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.npc-select-scroll-content::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* ==========================================================================
+   MÉTRICAS DE COMBATE COMPACTAS (BORDES RECTOS)
+   ========================================================================== */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.admin-stat-card {
+    background: #0d172e;
+    border: 1.5px solid rgba(0, 240, 255, 0.35);
+    border-radius: 0 !important;
+    padding: 6px 10px;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.admin-stat-label {
+    font-size: 8px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.admin-stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 1.1rem, 16px) !important;
+    font-weight: 800;
+    margin-top: 2px;
+}
+
+/* ==========================================================================
+   GRID COMPACTO DE NPCS (BORDES RECTOS Y AIREADO)
+   ========================================================================== */
+.npc-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(130px, 1fr));
+    gap: 12px !important;
+    margin-bottom: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.npc-compact-card {
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45);
+    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22), 0 0 12px rgba(0, 240, 255, 0.12);
+    transition: all 0.22s ease-in-out;
+}
+
+.npc-compact-card:hover {
+    transform: translateY(-3px) scale(1.015);
+    border-color: #00f0ff !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 0 0 20px rgba(0, 240, 255, 0.4);
+}
+
+.npc-card-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.npc-badge-lvl {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 0 !important; /* RECTO */
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    width: fit-content;
+    margin-bottom: 6px;
+}
+
+.npc-avatar-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.npc-icon-frame {
+    width: 38px;
+    height: 38px;
+    border-radius: 0 !important; /* RECTO */
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0, 240, 255, 0.5);
+    background: #070d19;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.npc-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.npc-info-box {
+    overflow: hidden;
+}
+
+.npc-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.npc-title-diff {
+    font-size: 9px;
+    color: #94a3b8;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.npc-reward-badge {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 !important; /* RECTO */
+    padding: 4px 7px;
+    font-size: 8.5px;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reward-lbl {
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.reward-val {
+    color: var(--accent-gold);
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+}
+
+/* BOTÓN DE DESAFÍO (RECTO Y CONTENIDO) */
+.btn-challenge-npc {
+    width: auto !important;
+    min-width: 90px !important;
+    max-width: 82% !important;
+    align-self: center !important;
+    margin: 4px auto 0 auto !important;
+    padding: 4px 10px;
+    border-radius: 0 !important; /* RECTO */
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 800;
+    color: #000;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    border: none;
+    height: 25px;
+}
+
+.btn-challenge-npc:hover {
+    filter: brightness(1.15);
+    transform: scale(1.02);
+}
+
+/* ==========================================================================
+   ESTILO UNIFICADO DE NPCS (SIN COLORES DISONANTES)
+   ========================================================================== */
+.npc-compact-card {
+    border-color: rgba(0, 240, 255, 0.4) !important;
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+}
+
+.npc-badge-lvl {
+    background: rgba(0, 240, 255, 0.15) !important;
+    border: 1px solid rgba(0, 240, 255, 0.45) !important;
+    color: var(--accent-cyan, #00f0ff) !important;
+}
+
+.npc-icon-frame {
+    border-color: rgba(0, 240, 255, 0.4) !important;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.2) !important;
+}
+
+.btn-challenge-npc {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(0, 180, 216, 0.55)) !important;
+    border: 1.2px solid var(--accent-cyan, #00f0ff) !important;
+    color: #fff !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
+}
+
+.btn-challenge-npc:hover {
+    background: var(--accent-cyan, #00f0ff) !important;
+    color: #020617 !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.5) !important;
+    transform: scale(1.02);
+}
+
+/* Distinción sobria y elegante solo para el Jefe Final (LVL 100 Yami Yugi) en Oro KaibaCorp */
+.lvl-100 {
+    border-color: rgba(255, 215, 0, 0.5) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 14px rgba(255, 215, 0, 0.2) !important;
+}
+
+.lvl-100 .npc-badge-lvl {
+    background: rgba(255, 215, 0, 0.15) !important;
+    border: 1px solid rgba(255, 215, 0, 0.5) !important;
+    color: var(--accent-gold, #ffd700) !important;
+}
+
+.lvl-100 .npc-icon-frame {
+    border-color: rgba(255, 215, 0, 0.5) !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
+}
+
+.lvl-100 .btn-challenge-npc {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(218, 165, 32, 0.6)) !important;
+    border: 1.2px solid var(--accent-gold, #ffd700) !important;
+    color: #fff !important;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.3) !important;
+}
+
+.lvl-100 .btn-challenge-npc:hover {
+    background: var(--accent-gold, #ffd700) !important;
+    color: #020617 !important;
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.6) !important;
+}
+
+/* ==========================================================================
+   3. REFACTORIZACIÓN MÓVIL HORIZONTAL COMPACTO (HASTA 932px)
+      Header Franja De Lado A Lado Completa | 5px Márgenes | Bordes Rectos
+   ========================================================================== */
+@media (max-width: 932px) and (orientation: landscape) {
+
+    .npc-select-page-container {
+        width: 100vw !important;
+        height: 100% !important;
+        min-height: 100vh;
+        min-height: 100dvh;
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+        box-sizing: border-box !important;
+    }
+
+    .npc-select-header,
+    .admin-header {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 4px 12px !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+        border-radius: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .admin-title {
+        font-size: 12px !important;
+    }
+
+    .npc-select-scroll-content {
+        width: 100vw !important;
+        height: 100% !important;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px 5px 0 5px !important; /* 5px IZQ, 5px DER */
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    .npc-select-scroll-content::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    .npc-grid {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 0 14px 0 !important;
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 8px;
+    }
+
+    .npc-compact-card {
+        padding: 5px 6px !important;
+        border-radius: 0 !important;
+    }
+
+    .npc-badge-lvl {
+        font-size: 7.5px !important;
+        padding: 1.5px 5px !important;
+        margin-bottom: 4px !important;
+        border-radius: 0 !important;
+    }
+
+    .npc-icon-frame {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 0 !important;
+    }
+
+    .npc-name {
+        font-size: 9.5px !important;
+    }
+
+    .npc-title-diff {
+        font-size: 7.5px !important;
+    }
+
+    .npc-reward-badge {
+        padding: 2px 4px !important;
+        font-size: 7.5px !important;
+        margin-bottom: 4px !important;
+        border-radius: 0 !important;
+    }
+
+    .btn-challenge-npc {
+        height: 22px !important;
+        font-size: 7.5px !important;
+        padding: 2px 6px !important;
+        width: auto !important;
+        max-width: 85% !important;
+        align-self: center !important;
+        margin: 3px auto 0 auto !important;
+        border-radius: 0 !important;
+    }
+
+    .neon-footer-navbar {
+        height: 40px !important;
+    }
+
+    .neon-nav-icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .neon-nav-label {
+        font-size: 0.65rem !important;
+        margin-top: 2px !important;
+    }
+}
+
+/* ==========================================================================
+   4. REFACTORIZACIÓN MÓVIL HORIZONTAL PANORÁMICO / ULTRA-WIDE (933px a 2400px)
+      Especial para celulares con resolución 1612x720, 1600x720, 972px, 1024px o ratio 20:9
+      Header Franja De Lado A Lado Completa | 5px Márgenes | Bordes Rectos
+   ========================================================================== */
+@media (min-width: 933px) and (max-width: 2400px) and (orientation: landscape),
+       (min-width: 933px) and (max-height: 750px) and (orientation: landscape) {
+
+    .npc-select-page-container {
+        width: 100vw !important;
+        height: 100% !important;
+        min-height: 100vh;
+        min-height: 100dvh;
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-bottom: calc(44px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+        box-sizing: border-box !important;
+    }
+
+    .npc-select-header,
+    .admin-header {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 5px 16px !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+        border-radius: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .admin-title {
+        font-size: 13.5px !important;
+    }
+
+    .npc-select-scroll-content {
+        width: 100vw !important;
+        height: 100% !important;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 8px 5px 0 5px !important; /* 5px IZQ, 5px DER */
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    .npc-select-scroll-content::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    .npc-grid {
+        width: 100% !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+        padding: 0 0 16px 0 !important;
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    .npc-compact-card {
+        padding: 7px 8px !important;
+        border-radius: 0 !important;
+    }
+
+    .npc-icon-frame {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 0 !important;
+    }
+
+    .npc-name {
+        font-size: 10.5px !important;
+    }
+
+    .btn-challenge-npc {
+        height: 24px !important;
+        font-size: 8.5px !important;
+        padding: 3px 8px !important;
+        width: auto !important;
+        max-width: 82% !important;
+        align-self: center !important;
+        margin: 4px auto 0 auto !important;
+        border-radius: 0 !important;
+    }
+
+    .neon-footer-navbar {
+        height: 40px !important;
+    }
+
+    .neon-nav-icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .neon-nav-label {
+        font-size: 0.65rem !important;
+        margin-top: 2px !important;
+    }
+}

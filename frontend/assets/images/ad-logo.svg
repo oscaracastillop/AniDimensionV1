@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Filtros de Resplandor Neón Cyberpunk -->
+    <filter id="ad-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur1" />
+      <feGaussianBlur stdDeviation="16" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="ad-intense-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur0" />
+      <feGaussianBlur stdDeviation="12" result="blur1" />
+      <feGaussianBlur stdDeviation="24" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="blur0" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Gradientes Metálicos y Neón Cyber -->
+    <linearGradient id="ad-grad-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#70f3ff" />
+      <stop offset="70%" stop-color="#00d4ff" />
+      <stop offset="100%" stop-color="#0066cc" />
+    </linearGradient>
+
+    <linearGradient id="ad-grad-accent" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <linearGradient id="ad-border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#0e2238" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.8" />
+    </linearGradient>
+  </defs>
+
+  <!-- FONDO HEXAGONAL / EMBLEMA ESTILO KC -->
+  <polygon points="250,25 450,135 450,365 250,475 50,365 50,135" 
+           fill="#060d19" 
+           stroke="url(#ad-border-grad)" 
+           stroke-width="3" 
+           stroke-linejoin="round" />
+
+  <!-- AROS Y LÍNEAS DE CIRCUITO TÉCNICO INTERIOR -->
+  <polygon points="250,42 435,145 435,355 250,458 65,355 65,145" 
+           fill="none" 
+           stroke="#00f0ff" 
+           stroke-width="1" 
+           stroke-opacity="0.3" 
+           stroke-dasharray="12 6" />
+
+  <!-- DETALLES DE CORONA SUPERIOR Y ESQUINAS CYBER -->
+  <path d="M 120 70 L 150 70 L 170 90" fill="none" stroke="#00f0ff" stroke-width="2" stroke-opacity="0.5" />
+  <path d="M 380 70 L 350 70 L 330 90" fill="none" stroke="#00f0ff" stroke-width="2" stroke-opacity="0.5" />
+  <path d="M 100 250 L 75 250" fill="none" stroke="#00f0ff" stroke-width="2" stroke-opacity="0.6" />
+  <path d="M 400 250 L 425 250" fill="none" stroke="#00f0ff" stroke-width="2" stroke-opacity="0.6" />
+
+  <!-- ========================================================
+       MONOGRAMA GEOMÉTRICO INTERBLOQUEADO "AD" (ESTILO KC)
+       ======================================================== -->
+  <g filter="url(#ad-intense-glow)">
+
+    <!-- LETRA "A" ESTILIZADA KC CON CORTES AERODINÁMICOS -->
+    <!-- Pierna izquierda, vértice superior y cuerpo principal -->
+    <path d="M 195 125 
+             L 235 125 
+             L 260 270 
+             L 215 270 
+             L 205 210 
+             L 165 210 
+             L 150 270 
+             L 110 270 
+             Z" 
+          fill="url(#ad-grad-cyan)" />
+
+    <!-- Ojo interno de la "A" -->
+    <polygon points="185,155 198,155 201,185 174,185" fill="#060d19" />
+
+    <!-- LETRA "D" ESTILIZADA KC INTERBLOQUEADA CON "A" -->
+    <!-- Columna vertical compartida/adyacente con arco aerodinámico y biseles de 45 grados -->
+    <path d="M 235 125 
+             L 320 125 
+             C 365 125, 395 155, 395 197 
+             C 395 240, 365 270, 320 270 
+             L 270 270 
+             L 255 235 
+             L 315 235 
+             C 338 235, 355 220, 355 197 
+             C 355 175, 338 160, 315 160 
+             L 250 160 
+             L 245 125 
+             Z" 
+          fill="url(#ad-grad-cyan)" />
+
+    <!-- SLIT / CORTE HORIZONTAL CYBERNETICO TRASVERSAL (CARACTERÍSTICA KC) -->
+    <rect x="100" y="218" width="300" height="7" fill="#060d19" />
+    <line x1="100" y1="215" x2="400" y2="215" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.9" />
+    <line x1="100" y1="228" x2="400" y2="228" stroke="#00f0ff" stroke-width="1" stroke-opacity="0.6" />
+
+    <!-- ACENTO DE BRILLO BLANCO EN EL ÁPICE -->
+    <circle cx="215" cy="125" r="3" fill="#ffffff" />
+    <circle cx="320" cy="125" r="3" fill="#ffffff" />
+    <circle cx="395" cy="197" r="3" fill="#ffffff" />
+  </g>
+
+  <!-- ========================================================
+       TEXTO INFERIOR: ANI DIMENSION
+       ======================================================== -->
+  <g>
+    <!-- Franja de soporte -->
+    <polygon points="140,320 360,320 380,352 120,352" 
+             fill="rgba(0, 240, 255, 0.08)" 
+             stroke="#00f0ff" 
+             stroke-width="1.5" />
+
+    <!-- Tipografía Orbitron Neón -->
+    <text x="250" y="343" 
+          font-family="'Orbitron', 'Segoe UI', sans-serif" 
+          font-size="20" 
+          font-weight="900" 
+          letter-spacing="5" 
+          text-anchor="middle" 
+          fill="#ffffff" 
+          filter="url(#ad-glow)">
+      ANI DIMENSION
+    </text>
+
+    <text x="250" y="380" 
+          font-family="'Outfit', 'Segoe UI', sans-serif" 
+          font-size="11" 
+          font-weight="700" 
+          letter-spacing="3" 
+          text-anchor="middle" 
+          fill="#38bdf8">
+      OFFICIAL CARD GAME
+    </text>
+
+    <!-- Puntos tecnológicos inferiores -->
+    <circle cx="220" cy="405" r="2.5" fill="#00f0ff" />
+    <circle cx="250" cy="405" r="4" fill="#ffffff" filter="url(#ad-glow)" />
+    <circle cx="280" cy="405" r="2.5" fill="#00f0ff" />
+  </g>
+</svg>

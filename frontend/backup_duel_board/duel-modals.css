@@ -1,0 +1,659 @@
+/* ANI-DIMENSION: MODALES OCG */
+
+        /* ==========================================================================
+           MODALES Y CONTROLES OCG BIDIRECCIONALES ("A LA INVERSA")
+           ========================================================================== */
+        .ocg-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(2, 6, 12, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeInModal 0.2s ease;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .ocg-modal-card {
+            width: 480px;
+            max-width: 90%;
+            max-height: 85%;
+            overflow-y: auto;
+            background: rgba(9, 14, 23, 0.98);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.45);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        .ocg-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .chain-badge {
+            font-size: 13px; font-weight: 900; color: var(--accent-gold);
+            letter-spacing: 1px; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
+        .chain-timer-tag {
+            font-size: 12px; font-weight: 800; color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.15); border: 1px solid var(--accent-cyan);
+            border-radius: 4px; padding: 2px 8px;
+        }
+
+        .chain-timer-bar-container {
+            width: 100%; height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px; overflow: hidden;
+        }
+
+        .chain-timer-bar {
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-gold));
+            transition: width 0.1s linear;
+        }
+
+        .chain-prompt-desc {
+            font-size: 12px; color: #f1f5f9; line-height: 1.4;
+        }
+
+        .chain-cards-container {
+            display: flex; flex-wrap: wrap; gap: 10px; max-height: 150px;
+            overflow-y: auto; padding: 6px; background: rgba(4, 6, 10, 0.6);
+            border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chain-card-item {
+            width: 80px; height: 116px;
+            background-size: cover; background-position: center;
+            border: 2px solid var(--accent-cyan); border-radius: 4px;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .chain-card-item:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        .chain-card-item .item-title {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(0, 0, 0, 0.85); font-size: 8.5px;
+            text-align: center; padding: 2px; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .chain-actions-row {
+            display: flex; gap: 8px; justify-content: flex-end;
+        }
+
+        .chain-btn {
+            padding: 8px 14px; font-size: 11px; font-weight: 800;
+            border-radius: 4px; cursor: pointer; border: none;
+            transition: 0.2s;
+        }
+
+        .chain-pass-btn {
+            background: rgba(255, 71, 87, 0.25);
+            border: 1px solid var(--accent-ruby);
+            color: #ff6b81;
+        }
+        .chain-pass-btn:hover {
+            background: var(--accent-ruby); color: #fff;
+        }
+
+        /* BANNER FLOTANTE DE TRIBUTOS */
+        .tribute-floating-banner {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            z-index: 300; background: rgba(9, 14, 23, 0.97);
+            border: 2px solid var(--accent-gold); border-radius: 8px;
+            padding: 8px 16px; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+            display: flex; align-items: center; gap: 12px;
+            animation: fadeInModal 0.25s ease;
+        }
+
+        .tribute-banner-content {
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .tribute-icon { font-size: 22px; color: var(--accent-gold); }
+        .tribute-title { font-size: 11px; font-weight: 900; color: var(--accent-gold); letter-spacing: 0.5px; }
+        .tribute-desc { font-size: 10.5px; color: #cbd5e1; }
+
+        .btn-tribute-confirm {
+            padding: 6px 12px; background: rgba(46, 213, 115, 0.3);
+            border: 1px solid var(--accent-emerald); border-radius: 4px;
+            color: #fff; font-size: 10.5px; font-weight: 800; cursor: pointer;
+        }
+        .btn-tribute-confirm:disabled {
+            opacity: 0.4; cursor: not-allowed;
+        }
+
+        .btn-tribute-cancel {
+            padding: 6px 10px; background: rgba(255, 71, 87, 0.2);
+            border: 1px solid var(--accent-ruby); border-radius: 4px;
+            color: #ff6b81; font-size: 10.5px; font-weight: 800; cursor: pointer;
+        }
+
+        /* VISOR FLOTANTE NO BLOQUEANTE (EXTRA DECK, CEMENTERIO, DESTIERRO) */
+        .non-blocking-drawer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 250;
+            pointer-events: none; /* NO bloquea la pantalla de fondo ni el panel izquierdo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInDrawer 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeInDrawer {
+            from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .gy-drawer-card {
+            pointer-events: auto; /* Permite clics e interacción completa dentro */
+            width: 620px;
+            max-width: 90%;
+            height: auto;
+            max-height: 85%;
+            background: rgba(8, 12, 20, 0.96);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            box-sizing: border-box;
+        }
+
+        .gy-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .gy-drawer-hint {
+            font-size: 10px;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border-left: 2px solid var(--accent-cyan);
+        }
+
+        /* Temas según la zona visualizada */
+        .drawer-theme-extra {
+            border: 2px solid #a855f7;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(168, 85, 247, 0.45);
+        }
+        .drawer-theme-extra .gy-drawer-header {
+            border-bottom-color: rgba(168, 85, 247, 0.35);
+        }
+        .drawer-theme-extra h3 {
+            color: #d8b4fe !important;
+        }
+
+        .drawer-theme-gy {
+            border: 2px solid var(--accent-ruby);
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 71, 87, 0.45);
+        }
+        .drawer-theme-gy .gy-drawer-header {
+            border-bottom-color: rgba(255, 71, 87, 0.35);
+        }
+        .drawer-theme-gy h3 {
+            color: #ff6b81 !important;
+        }
+
+        .drawer-theme-banished {
+            border: 2px solid #f59e0b;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.45);
+        }
+        .drawer-theme-banished .gy-drawer-header {
+            border-bottom-color: rgba(245, 158, 11, 0.35);
+        }
+        .drawer-theme-banished h3 {
+            color: #fbbf24 !important;
+        }
+
+        .modal-close-btn {
+            background: none; border: none; color: #fff; font-size: 16px; cursor: pointer;
+            padding: 2px 6px; border-radius: 4px; transition: background 0.15s;
+        }
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .gy-cards-grid {
+            flex: 1; overflow-y: auto; display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px; padding: 8px; background: rgba(4, 6, 10, 0.8);
+            border-radius: 6px;
+        }
+
+        .gy-card-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            background: rgba(15, 23, 42, 0.7); border: 1.5px solid #334155;
+            border-radius: 6px; padding: 6px; cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            user-select: none;
+        }
+        .gy-card-item:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+        }
+        .gy-card-item.gy-card-selected {
+            border-color: var(--accent-gold) !important;
+            background: rgba(255, 215, 0, 0.12) !important;
+            box-shadow: 0 0 16px var(--accent-gold) !important;
+            transform: scale(1.04) translateY(-2px);
+        }
+
+        .gy-card-img {
+            width: 90px; height: 130px; background-size: cover; background-position: center;
+            border-radius: 4px;
+        }
+        .gy-card-name {
+            font-size: 9px; font-weight: 700; color: #fff; text-align: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
+        }
+
+        /* MENÚ CONTEXTUAL DINÁMICO */
+        .context-card-menu {
+            position: fixed; z-index: 600;
+            background: rgba(9, 14, 23, 0.98);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 6px; padding: 6px;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
+            display: flex; flex-direction: column; gap: 4px;
+            animation: fadeInModal 0.15s ease;
+        }
+
+        .context-menu-title {
+            font-size: 9.5px; font-weight: 800; color: var(--accent-gold);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 4px;
+            text-align: center;
+        }
+
+        .context-btn {
+            background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-cyan);
+            border-radius: 3px; color: #fff; font-size: 9.5px; font-weight: 700;
+            padding: 5px 10px; cursor: pointer; text-align: left; transition: 0.15s;
+        }
+        .context-btn:hover {
+            background: var(--accent-cyan); color: #000;
+        }
+
+        /* VISUALIZADOR DE ESLABONES DE CADENA */
+        .chain-stack-container {
+            position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+            z-index: 120; display: flex; flex-direction: column; align-items: center;
+            gap: 4px; pointer-events: none;
+        }
+        .chain-stack-title {
+            font-size: 9.5px; font-weight: 800; color: var(--accent-gold);
+            text-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+        }
+        .chain-stack-items {
+            display: flex; gap: 6px; align-items: center;
+        }
+        .chain-stack-badge {
+            background: rgba(157, 78, 221, 0.85); border: 1px solid var(--accent-gold);
+            border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 800;
+            color: #fff; box-shadow: 0 0 10px rgba(157, 78, 221, 0.6);
+        }
+
+        /* REGISTRO DE DUELO (DUEL LOG) - ALTURA DINÁMICA PERFECTA SIN SCROLL EXTERNO */
+        .duel-event-log-box {
+            background: rgba(5, 8, 14, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1 1 0;
+            min-height: 0; /* Crucial: permite a flexbox calcular exactamente la altura restante sin provocar scroll en el panel */
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* BOTÓN DE RENDICIÓN OFICIAL */
+        .btn-surrender {
+            width: 100%;
+            padding: 9px 12px;
+            background: rgba(255, 71, 87, 0.12);
+            border: 1px solid rgba(255, 71, 87, 0.45);
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+            color: #ff6b81;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        .btn-surrender:hover {
+            background: rgba(255, 71, 87, 0.28);
+            border-color: var(--accent-ruby);
+            color: #fff;
+            box-shadow: 0 0 14px rgba(255, 71, 87, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .log-title {
+            flex-shrink: 0;
+            font-size: 9.5px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+            padding-bottom: 2px;
+        }
+
+        .log-entries {
+            flex: 1 1 0;
+            min-height: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 9px;
+        }
+        .log-item {
+            padding: 2px 4px; border-radius: 2px; line-height: 1.25;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .log-item.spell { color: #55efc4; border-left: 2px solid #00b894; }
+        .log-item.trap { color: #fd79a8; border-left: 2px solid #e84393; }
+        .log-item.chain { color: #ffeaa7; border-left: 2px solid #fdcb6e; }
+        .log-item.battle { color: #ff7675; border-left: 2px solid #d63031; }
+        .log-item.summon { color: #74b9ff; border-left: 2px solid #0984e3; }
+        .log-item.tribute { color: #fdcb6e; border-left: 2px solid #e17055; }
+
+        /* BADGES DINÁMICOS DE STATS EN CAMPO (ATK / DEF) */
+        .monster-field-stat-badge {
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(3, 7, 18, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-size: 8px;
+            font-weight: 800;
+            color: #fff;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 25;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.3px;
+        }
+
+        .stat-buffed {
+            color: #2ed573 !important;
+            text-shadow: 0 0 6px rgba(46, 213, 115, 0.9);
+            font-weight: 900;
+        }
+
+        .stat-debuffed {
+            color: #ff4757 !important;
+            text-shadow: 0 0 6px rgba(255, 71, 87, 0.9);
+            font-weight: 900;
+        }
+
+        /* EFECTO VISUAL: MONSTRUO ENCADENADO / AFECTADO POR CARTAS CONTINUAS */
+        .monster-trapped {
+            border-color: #c084fc !important;
+            box-shadow: 0 0 16px rgba(192, 132, 252, 0.95), inset 0 0 10px rgba(168, 85, 247, 0.6) !important;
+            animation: pulse-trapped-glow 1.5s infinite alternate !important;
+        }
+
+        @keyframes pulse-trapped-glow {
+            0% {
+                box-shadow: 0 0 8px rgba(192, 132, 252, 0.7), inset 0 0 6px rgba(168, 85, 247, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(192, 132, 252, 1), inset 0 0 14px rgba(168, 85, 247, 0.8);
+            }
+        }
+
+        .attached-effects-badge {
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(88, 28, 135, 0.92);
+            border: 1px solid #c084fc;
+            color: #f3e8ff;
+            font-size: 7.5px;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 30;
+            box-shadow: 0 0 8px rgba(192, 132, 252, 0.8);
+            letter-spacing: 0.5px;
+        }
+
+        .slot-target-highlight {
+            outline: 3px solid #c084fc !important;
+            box-shadow: 0 0 22px #c084fc !important;
+            animation: pulse-trapped-glow 1s infinite alternate;
+        }
+
+        /* OBJETIVO ELEGIBLE PARA TIFÓN DEL ESPACIO MÍSTICO (MST) */
+        .mst-target-candidate {
+            outline: 2px dashed #00f0ff !important;
+            cursor: crosshair !important;
+            animation: pulseMstTarget 0.8s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseMstTarget {
+            from { box-shadow: 0 0 6px #00f0ff, inset 0 0 6px rgba(0, 240, 255, 0.4); }
+            to { box-shadow: 0 0 18px #00f0ff, inset 0 0 12px rgba(0, 240, 255, 0.7); }
+        }
+
+        /* OBJETIVO ELEGIBLE PARA TRAMPAS Y MONSTRUOS (CÍRCULO ATADOR DE HECHIZOS, ETC.) */
+        .trap-target-candidate {
+            outline: 2px dashed #ff0055 !important;
+            cursor: crosshair !important;
+            animation: pulseTrapTarget 0.7s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseTrapTarget {
+            from { box-shadow: 0 0 6px #ff0055, inset 0 0 6px rgba(255, 0, 85, 0.4); }
+            to { box-shadow: 0 0 20px #ff0055, inset 0 0 14px rgba(255, 0, 85, 0.8); }
+        }
+
+        /* SELECCIÓN DE CARTAS A DESCARTAR POR LÍMITE DE MANO */
+        .discard-candidate {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .discard-candidate.discard-selected {
+            border-color: var(--accent-ruby) !important;
+            box-shadow: 0 0 14px var(--accent-ruby);
+            transform: scale(0.96);
+            opacity: 0.85;
+            position: relative;
+        }
+
+        .discard-selected::after {
+            content: "DESCARTAR";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 71, 87, 0.9);
+            color: #fff;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        /* MODAL INTERACTIVO DE SACRIFICIOS (TRIBUTOS OCG) */
+        .tribute-card-choice {
+            width: 90px;
+            height: 135px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px;
+            position: relative;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .tribute-card-choice:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .tribute-card-choice.selected-tribute {
+            border-color: var(--accent-gold);
+            background: rgba(255, 215, 0, 0.15);
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .tribute-card-choice .tribute-card-img {
+            width: 100%;
+            height: 82px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 3px;
+        }
+
+        .tribute-card-choice .tribute-card-name {
+            font-size: 8.5px;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 4px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .tribute-card-choice .tribute-card-atk {
+            font-size: 8px;
+            color: var(--accent-gold);
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        .tribute-card-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--accent-gold);
+            color: #000;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.8);
+        }
+
+        /* AJUSTES RESPONSIVOS PARA PANTALLAS PEQUEÑAS Y MÓVILES (CERO SCROLL) */
+        @media (max-height: 720px) {
+            #right-action-panel {
+                padding: 4px;
+                gap: 4px;
+            }
+            .phase-tracker-box {
+                padding: 4px;
+                gap: 3px;
+            }
+            .phase-item {
+                padding: 3px 6px;
+                gap: 4px;
+            }
+            .phase-hint {
+                display: block;
+                font-size: 7.5px;
+                line-height: 1.2;
+            }
+            .btn-surrender {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+        }
+
+        /* AJUSTES RESPONSIVOS CRÍTICOS PARA MÓVIL EN MODO HORIZONTAL (ALTURA < 550px) */
+        @media (max-height: 550px) {
+            .ocg-modal-card,
+            .gy-modal-card,
+            .game-over-card,
+            #tribute-modal > div,
+            #edit-nick-modal > div,
+            #surrender-modal .ocg-modal-card,
+            #hand-discard-modal .gy-modal-card,
+            #reborn-modal .gy-modal-card {
+                max-width: 94vw !important;
+                max-height: 92vh !important;
+                padding: 10px 14px !important;
+                gap: 6px !important;
+                overflow-y: auto !important;
+                font-size: 11px !important;
+            }
+            .ocg-modal-header h3,
+            .gy-modal-header h3 {
+                font-size: 11.5px !important;
+            }
+            .chain-badge {
+                font-size: 11px !important;
+            }
+            .chain-timer-tag {
+                font-size: 10px !important;
+                padding: 1px 6px !important;
+            }
+            .chain-actions-row button,
+            .btn-tribute-confirm,
+            .btn-tribute-cancel {
+                padding: 6px 12px !important;
+                font-size: 10px !important;
+            }
+        }
+
+        /* REGLAS RESPONSIVAS MOBILE-FIRST (ANCHO <= 768px) */

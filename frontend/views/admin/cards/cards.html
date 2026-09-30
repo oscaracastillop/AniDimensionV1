@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Gerencia de Sobres y Cartas (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css">
+    <link rel="stylesheet" href="../../../css/shop.css?v=2.4">
+    <link rel="stylesheet" href="../../../css/admin.css">
+    <link rel="stylesheet" href="cards.css?v=2.4">
+    <link rel="stylesheet" href="../../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; background: radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%) !important; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container" style="display:flex; flex-direction:column; width:100vw; height:100vh; overflow:hidden;">
+        
+        <!-- UNIFIED SCROLL CONTAINER -->
+        <div class="shop-scroll-content" style="flex:1; padding:10px 16px 90px 16px; overflow-y:auto;">
+            
+            <!-- HEADER DE ADMINISTRACIÓN FIEL A LA TIENDA DE SOBRES -->
+            <div class="shop-header" style="display:flex; justify-content:space-between; align-items:center; padding:4px 2px 10px 2px; border-bottom:1px solid rgba(0, 240, 255, 0.2); margin-bottom:12px;">
+                <div class="shop-title-box" style="display:flex; align-items:center; gap:10px;">
+                    <a href="../admin.html" class="btn-shop-back" title="Volver a la Consola Principal Admin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </a>
+                    <div>
+                        <h1 class="shop-title" style="font-family:'Orbitron', sans-serif; font-size:16px; font-weight:900; color:#fff; margin:0; text-shadow:0 0 10px rgba(0,240,255,0.5);">GERENCIA DE SOBRES Y CARTAS OCG</h1>
+                        <div class="shop-subtitle" style="font-size:10px; color:#94a3b8; margin-top:2px;">ADMINISTRACIÓN DE EXPANSIONES, PRECIOS, BANNER DE OFERTAS, ESTADOS Y DROPS DE NPCS</div>
+                    </div>
+                </div>
+
+                <div class="shop-balance-pill" style="background:rgba(15,23,42,0.85); border:1px solid #38bdf8; color:#38bdf8; font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; padding:4px 12px; border-radius:20px; box-shadow:0 0 10px rgba(56,189,248,0.3);">
+                    ⚡ SUPER ADMIN (SA)
+                </div>
+            </div>
+
+            <!-- REJILLA PRINCIPAL DE SOBRES (RERENDERIZADA DINÁMICAMENTE CON FIEL FORMATO A LA TIENDA DE SOBRES) -->
+            <div id="admin-packs-grid-container" class="shop-grid-container"></div>
+        </div>
+    </div>
+
+    <!-- NAVBAR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/data/packs-data.js"></script>
+    <script src="../../../js/views/admin-cards.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('administracion');
+        });
+    </script>
+</body>
+</html>

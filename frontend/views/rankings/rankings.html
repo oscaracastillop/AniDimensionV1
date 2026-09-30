@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Clasificación Mundial OCG</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <link rel="stylesheet" href="../../css/rankings.css?v=3.0">
+    <link rel="stylesheet" href="../../css/navbar.css">
+</head>
+<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="rankings-page-container">
+        <!-- HEADER SUPERIOR DE LADO A LADO COMPLETO (IDÉNTICO A TIENDA) -->
+        <div class="rankings-header">
+            <div class="rankings-title-box">
+                <div>
+                    <h1 class="rankings-title">TABLAS DE CLASIFICACIÓN OCG</h1>
+                    <div class="rankings-subtitle">TOP 20 OFICIAL • MEJORES DUELISTAS Y CLANES DE ANI DIMENSION</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (ESPACIADO UNIFICADO) -->
+        <div class="rankings-scroll-content">
+
+            <!-- MÉTRICAS Y KPIS DE COMUNIDAD -->
+            <div class="rankings-kpis-grid">
+                <div class="rank-kpi-card">
+                    <div class="rank-kpi-label">TOTAL CUENTAS CREADAS</div>
+                    <div id="kpi-total-users" class="rank-kpi-value" style="color:var(--accent-cyan, #00f0ff);">1,420</div>
+                </div>
+                <div class="rank-kpi-card">
+                    <div class="rank-kpi-label">JUGADORES ONLINE</div>
+                    <div id="kpi-online-users" class="rank-kpi-value"><span style="color:#10b981;">34</span> <span style="color:#94a3b8; font-size:10px; font-weight:600;">ONLINE</span></div>
+                </div>
+                <div class="rank-kpi-card">
+                    <div class="rank-kpi-label">CLANES REGISTRADOS</div>
+                    <div id="kpi-total-clans" class="rank-kpi-value" style="color:#ffd700;">24 CLANES</div>
+                </div>
+                <div class="rank-kpi-card">
+                    <div class="rank-kpi-label">TEMPORADA OCG</div>
+                    <div class="rank-kpi-value" style="color:#fff;">TEMPORADA 1</div>
+                </div>
+            </div>
+
+            <!-- CUADRÍCULA DE 3 TABLEROS PARALELOS (NIVEL, VICTORIAS PVP, CLANES) -->
+            <div class="rankings-columns-grid">
+
+                <!-- TABLERO 1: TOP 20 NIVEL DE JUGADOR -->
+                <div class="rank-board-card board-level">
+                    <div class="rank-board-header">
+                        <h2 class="rank-board-title">TOP 20 NIVEL</h2>
+                    </div>
+
+                    <div class="rank-table-wrap">
+                        <table class="rank-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:36px; text-align:center;">POS</th>
+                                    <th>DUELISTA</th>
+                                    <th style="text-align:right;">NIVEL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-nivel">
+                                <tr><td colspan="3" style="text-align:center; color:#94a3b8; padding:20px;">Cargando Top Nivel...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TABLERO 2: TOP 20 VICTORIAS PVP -->
+                <div class="rank-board-card board-wins">
+                    <div class="rank-board-header">
+                        <h2 class="rank-board-title">TOP 20 VICTORIAS PVP</h2>
+                    </div>
+
+                    <div class="rank-table-wrap">
+                        <table class="rank-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:36px; text-align:center;">POS</th>
+                                    <th>DUELISTA</th>
+                                    <th style="text-align:right;">VICTORIAS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-wins">
+                                <tr><td colspan="3" style="text-align:center; color:#94a3b8; padding:20px;">Cargando Top Victorias...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TABLERO 3: TOP 20 CLANES (MÁS ANCHO) -->
+                <div class="rank-board-card board-clans">
+                    <div class="rank-board-header">
+                        <h2 class="rank-board-title">TOP 20 CLANES</h2>
+                    </div>
+
+                    <div class="rank-table-wrap">
+                        <table class="rank-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:36px; text-align:center;">POS</th>
+                                    <th>CLAN</th>
+                                    <th>LÍDER</th>
+                                    <th style="text-align:center;">MIEMBROS</th>
+                                    <th style="text-align:right;">COPAS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-clans">
+                                <tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:20px;">Cargando Top Clanes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div> <!-- Fin rankings-columns-grid -->
+
+        </div> <!-- Fin rankings-scroll-content -->
+    </div> <!-- Fin rankings-page-container -->
+
+    <!-- NAVBAR INFERIOR Y AUTENTICACIÓN -->
+    <div id="navbar-container"></div>
+    <script src="../../js/core/session.js"></script>
+    <script>
+        if (window.Session && !window.Session.isLoggedIn()) {
+            window.Session.saveUser({ id: 999, username: 'Admin', role: 'admin', starships: 500 });
+        }
+    </script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/rankings.js"></script>
+    <script>
+        async function enforceLandscapeOrientation() {
+            try {
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
+                    await window.Capacitor.Plugins.ScreenOrientation.lock({ orientation: 'landscape' });
+                } else if (screen.orientation && typeof screen.orientation.lock === 'function') {
+                    await screen.orientation.lock('landscape');
+                }
+            } catch (e) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            enforceLandscapeOrientation();
+            if (window.AppNavbar) {
+                window.AppNavbar.init('rankings');
+            }
+        });
+    </script>
+</body>
+</html>

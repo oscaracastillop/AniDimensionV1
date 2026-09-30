@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ani Dimension</string>
+    <string name="title_activity_main">Ani Dimension</string>
+    <string name="package_name">com.anidimension.duel</string>
+    <string name="custom_url_scheme">com.anidimension.duel</string>
+</resources>
