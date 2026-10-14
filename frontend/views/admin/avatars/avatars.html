@@ -3,60 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Gerencia de Avatares (Admin)</title>
+    <title>Ani-Dimension - Gestión de Avatares (Admin)</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../css/global.css">
-    <link rel="stylesheet" href="../../../css/shop.css?v=2.4">
-    <link rel="stylesheet" href="../../../css/admin.css">
-    <link rel="stylesheet" href="../cards/cards.css?v=2.4">
-    <link rel="stylesheet" href="../../../css/navbar.css">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.5">
 </head>
-<body style="margin:0; padding:0; background: radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%) !important; color:#fff; font-family:'Outfit', sans-serif;">
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
-    <div class="admin-page-container" style="display:flex; flex-direction:column; width:100vw; height:100vh; overflow:hidden;">
+    <div class="admin-page-container">
         
-        <!-- UNIFIED SCROLL CONTAINER -->
-        <div class="shop-scroll-content" style="flex:1; padding:10px 16px 90px 16px; overflow-y:auto;">
-            
-            <!-- HEADER DE ADMINISTRACIÓN FIEL A GERENCIA DE SOBRES -->
-            <div class="shop-header" style="display:flex; justify-content:space-between; align-items:center; padding:4px 2px 10px 2px; border-bottom:1px solid rgba(0, 240, 255, 0.2); margin-bottom:12px;">
-                <div class="shop-title-box" style="display:flex; align-items:center; gap:10px;">
-                    <a href="../admin.html" class="btn-shop-back" title="Volver a la Consola Principal Admin">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </a>
-                    <div>
-                        <h1 class="shop-title" style="font-family:'Orbitron', sans-serif; font-size:16px; font-weight:900; color:#fff; margin:0; text-shadow:0 0 10px rgba(0,240,255,0.5);">GERENCIA DE AVATARES Y POTENCIADORES</h1>
-                        <div class="shop-subtitle" style="font-size:10px; color:#94a3b8; margin-top:2px;">ADMINISTRACIÓN DE CÓDIGOS, PRECIOS, BANNERS DE OFERTA Y POTENCIADORES (EXP, STARSHIPS, SUERTE %)</div>
-                    </div>
-                </div>
-
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <!-- BUSCADOR RÁPIDO DE CÓDIGO DE AVATAR (AVA-XXX) -->
-                    <input type="text" id="admin-avatar-search" placeholder="🔍 Buscar código (AVA-001)..." oninput="filterAdminAvatarsGrid()" style="padding:4px 10px; font-size:11px; font-family:'Orbitron', sans-serif; background:rgba(0,0,0,0.7); border:1px solid rgba(0,240,255,0.4); color:#fff; outline:none; border-radius:4px; width:160px;">
-                    
-                    <button onclick="location.href='avatars-detalle.html?mode=new'" style="padding:6px 14px; font-family:'Orbitron', sans-serif; font-size:10px; font-weight:900; color:#020617; background:linear-gradient(135deg, #00f0ff, #0072ff); border:none; border-radius:6px; cursor:pointer; box-shadow:0 0 12px rgba(0,240,255,0.4); display:inline-flex; align-items:center; gap:5px;">
-                        <span>➕ CREAR NUEVO AVATAR</span>
-                    </button>
-
-                    <div class="shop-balance-pill" style="background:rgba(15,23,42,0.85); border:1px solid #38bdf8; color:#38bdf8; font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; padding:4px 12px; border-radius:20px; box-shadow:0 0 10px rgba(56,189,248,0.3);">
-                        ⚡ SUPER ADMIN (SA)
-                    </div>
+        <!-- HEADER FIJO -->
+        <div class="admin-header">
+            <div class="admin-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 class="admin-title">GESTIÓN DE AVATARES DE DUELISTA</h1>
+                    <div class="admin-subtitle">ADMINISTRACIÓN DE AVATARES, STATS (EXP, STARSHIPS, SUERTE %), PRECIOS (⭐ / $ USD) Y BANNERS</div>
                 </div>
             </div>
 
-            <!-- REJILLA PRINCIPAL DE AVATARES (RERENDERIZADA DINÁMICAMENTE CON FIEL FORMATO A GERENCIA DE SOBRES) -->
-            <div id="admin-avatars-grid-container" class="shop-grid-container" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(235px, 1fr)); gap:14px; margin-top:16px; padding-top:8px;"></div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" onclick="openCreateAvatarModal()" class="btn-act-sm btn-act-activate" style="height:28px; padding:0 14px; font-size:9.5px;">
+                    CREAR AVATAR
+                </button>
+
+                <a href="../admin.html" class="btn-shop-back" title="Volver a la Consola Principal Admin">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR DESLIZABLE -->
+        <div class="admin-scroll-content">
+            <div id="admin-avatars-module" class="admin-card-section" style="min-height: calc(100vh - 125px); margin: 0 0 16px 0;">
+                
+                <div class="admin-section-header">
+                    <div class="admin-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px; height:16px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span>CATÁLOGO DE AVATARES REGISTRADOS</span>
+                    </div>
+
+                    <!-- BUSCADOR DINÁMICO EN TIEMPO REAL -->
+                    <div class="admin-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px; color:var(--accent-cyan);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="admin-avatar-search" name="query_search_avatar_box" class="admin-search-input" placeholder="Buscar por código (AVA-001), nombre o banner..." value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="onAvatarsSearch(this)">
+                    </div>
+                </div>
+
+                <!-- TABLA DE REGISTROS DE AVATARES -->
+                <div class="admin-table-container">
+                    <table class="admin-users-table">
+                        <thead>
+                            <tr>
+                                <th style="width:95px;">AVATAR</th>
+                                <th>NOMBRE</th>
+                                <th style="text-align:center;">⚡ EXP</th>
+                                <th style="text-align:center;">⭐ STARSHIPS</th>
+                                <th style="text-align:center;">🍀 SUERTE</th>
+                                <th>PRECIO & MONEDA</th>
+                                <th>BANNER</th>
+                                <th style="text-align:center;">ESTADO</th>
+                                <th style="width:160px; text-align:center;">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-avatars-tbody">
+                            <tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:24px;">Cargando catálogo de avatares...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN -->
+                <div id="admin-avatars-pagination"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL DE CREACIÓN / EDICIÓN DE AVATAR -->
+    <!-- ====================================================================== -->
+    <div id="admin-avatar-modal" class="admin-modal-overlay" style="display:none;">
+        <div class="admin-modal-content" style="max-width:580px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.3); padding-bottom:8px; margin-bottom:14px;">
+                <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:800; color:var(--accent-cyan); display:flex; align-items:center; gap:8px;">
+                    <span>🎴</span>
+                    <span id="modal-avatar-title">CREAR NUEVO AVATAR DE DUELISTA</span>
+                </div>
+                <button onclick="closeAvatarModal()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; font-weight:700;">✕</button>
+            </div>
+
+            <form id="admin-avatar-form" onsubmit="event.preventDefault(); saveAvatarForm();">
+                <input type="hidden" id="form-avatar-edit-mode" value="create">
+
+                <!-- FILA 1: PREVIEW DE IMAGEN + CARGA Y CÓDIGO -->
+                <div style="display:grid; grid-template-columns:100px 1fr; gap:12px; align-items:center; background:rgba(0,0,0,0.4); border:1px solid rgba(0,240,255,0.25); padding:10px; margin-bottom:10px;">
+                    <div style="width:90px; height:90px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); border:1.2px solid rgba(0,240,255,0.4); position:relative; overflow:hidden;">
+                        <img id="form-avatar-preview" src="../../../assets/images/avatars/AVA-002.png" alt="Preview" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.src='../../../assets/images/avatars/AVA-002.png';">
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <div style="display:grid; grid-template-columns:100px 1fr; gap:8px;">
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">CÓDIGO *</label>
+                                <input type="text" id="form-avatar-code" class="admin-form-input" style="font-family:'Orbitron', sans-serif; font-weight:800; color:#ffd700;" readonly>
+                            </div>
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">NOMBRE DEL AVATAR *</label>
+                                <input type="text" id="form-avatar-name" class="admin-form-input" maxlength="45" placeholder="Ej. Kaiba Dragón Supremo" required>
+                            </div>
+                        </div>
+
+                        <!-- CARGA DE ARCHIVO DE IMAGEN -->
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">SELECCIONAR O SUBIR IMAGEN (PNG/JPG/WEBP)</label>
+                            <input type="file" id="form-avatar-file" accept="image/*" class="admin-form-input" onchange="onAvatarFileSelected(this)" style="padding:3px 6px; font-size:10px;">
+                            <input type="hidden" id="form-avatar-image-data" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILA 2: ESTADÍSTICAS UNA A UNA (EXP, STARSHIPS, SUERTE EN DECIMAL) -->
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:6px;">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">⚡ % EXP (MÁX 300%) *</label>
+                        <input type="number" id="form-avatar-exp" class="admin-form-input" min="0" max="300" step="0.1" value="3.0" required>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">⭐ % STARSHIPS (MÁX 300%) *</label>
+                        <input type="number" id="form-avatar-star" class="admin-form-input" min="0" max="300" step="0.1" value="2.0" required>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">🍀 % SUERTE (MÁX 100%) *</label>
+                        <input type="number" id="form-avatar-luck" class="admin-form-input" min="0" max="100" step="0.1" value="1.0" required>
+                    </div>
+                </div>
+
+                <!-- FILA 3: MONEDA Y PRECIO -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">TIPO DE MONEDA *</label>
+                        <select id="form-avatar-currency" class="admin-form-select" onchange="onAvatarCurrencyChange()" required>
+                            <option value="STARSHIPS">⭐ STARSHIPS (Moneda del Juego)</option>
+                            <option value="USD">💵 DÓLARES ($ USD - Pago Externo)</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label" id="form-avatar-price-label">PRECIO EN STARSHIPS *</label>
+                        <input type="number" id="form-avatar-price" class="admin-form-input" min="0" step="any" value="50000" required>
+                    </div>
+                </div>
+
+                <!-- FILA 4: TEXTO DE BANNER Y ESTADO -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">TEXTO DEL BANNER / CINTA</label>
+                        <input type="text" id="form-avatar-banner" class="admin-form-input" maxlength="15" placeholder="Ej. NUEVO, OFERTA, VIP AD">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">ESTADO DE PUBLICACIÓN</label>
+                        <select id="form-avatar-active" class="admin-form-select">
+                            <option value="1">✅ ACTIVO (Visible en Tienda y Colección)</option>
+                            <option value="0">⏸️ INACTIVO (Oculto en Tienda)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ALERTA DE MENSAJES -->
+                <div id="modal-avatar-alert" style="display:none; font-size:10px; padding:6px 10px; margin-top:10px;"></div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                    <button type="button" onclick="closeAvatarModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; padding:6px 14px; font-family:'Orbitron', sans-serif; font-size:9px; cursor:pointer;">CANCELAR</button>
+                    <button type="submit" style="background:linear-gradient(135deg, rgba(0,240,255,0.35), rgba(0,180,216,0.6)); border:1px solid var(--accent-cyan); color:#fff; font-family:'Orbitron', sans-serif; font-weight:800; padding:6px 18px; font-size:9.5px; cursor:pointer; box-shadow:0 0 12px rgba(0,240,255,0.3);">GUARDAR AVATAR</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- NAVBAR Y SCRIPTS -->
     <div id="navbar-container"></div>
     <script src="../../../js/core/session.js"></script>
-    <script src="../../../js/core/navbar.js"></script>
     <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
     <script src="../../../js/data/avatars-data.js"></script>
     <script src="../../../js/views/admin-avatars.js"></script>
     <script>

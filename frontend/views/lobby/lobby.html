@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Portal Informativo y Eventos OCG</title>
+    <title>Ani-Dimension - Portal Informativo y Eventos</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,8 +12,10 @@
     <link rel="stylesheet" href="../../css/lobby.css?v=5.0">
     <link rel="stylesheet" href="lobby.css?v=5.0">
     <link rel="stylesheet" href="../../css/navbar.css">
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
 </head>
-<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div id="welcome-lobby-overlay">
         <!-- CONTENEDOR PRINCIPAL DEL LOBBY -->
@@ -21,10 +23,17 @@
             
             <!-- HEADER SUPERIOR FRANJA DE LADO A LADO (ESTILO UNIFICADO) -->
             <div class="lobby-info-header">
-                <div>
-                    <h1 class="lobby-portal-title">PORTAL DE NOTICIAS Y EVENTOS</h1>
-                    <div class="lobby-portal-subtitle">NOVEDADES OFICIALES, PARCHES DE SISTEMA Y TORNEOS ANI-DIMENSION OCG</div>
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
+                    <div>
+                        <h1 class="lobby-portal-title">PORTAL DE NOTICIAS Y EVENTOS</h1>
+                        <div class="lobby-portal-subtitle">NOVEDADES OFICIALES, PARCHES DE SISTEMA Y TORNEOS ANI DIMENSION</div>
+                    </div>
                 </div>
+
+                <a href="/views/guide/guide.html" class="btn-lobby-guide">
+                    <span>GUÍA DEL DUELISTA / ¿CÓMO JUGAR?</span>
+                </a>
             </div>
 
             <!-- SECCIONES INFORMATIVAS FLOTANDO DIRECTAMENTE EN EL FONDO BLANCO -->
@@ -49,6 +58,7 @@
                     </div>
                 </div>
             </div>
+
 
         </div>
     </div>

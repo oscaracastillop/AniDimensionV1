@@ -8,10 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../css/global.css?v=3.0">
-    <link rel="stylesheet" href="../../../css/duel-board.css?v=3.0">
-    <link rel="stylesheet" href="../../../css/dice.css?v=3.0">
-    <link rel="stylesheet" href="../../../css/duel-modals.css?v=3.0">
+    <link rel="stylesheet" href="../../../css/global.css?v=3.3">
+    <link rel="stylesheet" href="../../../css/duel-board.css?v=5.1">
+    <link rel="stylesheet" href="../../../css/dice.css?v=3.3">
+    <link rel="stylesheet" href="../../../css/duel-modals.css?v=3.3">
 </head>
 <body>
 
@@ -75,12 +75,12 @@
             </div>
         </div>
 
-        <!-- BANNER DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS OCG) -->
+        <!-- BANNER DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS) -->
         <div id="tribute-banner" class="tribute-floating-banner" style="display:none;">
             <div class="tribute-banner-content">
                 <span class="tribute-icon">⭐</span>
                 <div class="tribute-info">
-                    <div class="tribute-title">SELECCIÓN DE SACRIFICIOS REQUERIDA (OCG)</div>
+                    <div class="tribute-title">SELECCIÓN DE SACRIFICIOS REQUERIDA</div>
                     <div id="tribute-desc" class="tribute-desc">Selecciona monstruos en tu campo para tributar.</div>
                 </div>
                 <div style="display:flex; gap:6px;">
@@ -90,7 +90,7 @@
             </div>
         </div>
 
-        <!-- MODAL INTERACTIVO VISUAL DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS OCG) -->
+        <!-- MODAL INTERACTIVO VISUAL DE SELECCIÓN DE SACRIFICIOS (TRIBUTOS) -->
         <div id="tribute-modal" class="ocg-modal-overlay" style="display:none; z-index:9999;">
             <div class="ocg-modal-card" style="width:520px; max-width:94vw; border-color:var(--accent-gold); box-shadow:0 0 35px rgba(255,215,0,0.45);">
                 <div class="ocg-modal-header" style="border-bottom:1px solid rgba(255,215,0,0.3);">
@@ -111,23 +111,20 @@
                     </div>
                     <div style="display:flex; gap:8px;">
                         <button class="btn-tribute-cancel" onclick="cancelTributeSelection()" style="padding:8px 14px; font-size:11px;">Cancelar</button>
-                        <button id="btn-tribute-atk" class="btn-tribute-confirm" onclick="executeTributeSummon('ATK')" disabled style="padding:8px 14px; font-size:11px;">
-                            ⚔️ Invocar (ATK)
-                        </button>
-                        <button id="btn-tribute-def" class="btn-tribute-confirm" onclick="executeTributeSummon('DEF')" disabled style="padding:8px 14px; font-size:11px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(0,180,216,0.5)); border-color:var(--accent-cyan); color:#fff;">
-                            🛡️ Colocar (DEF)
+                        <button id="btn-tribute-confirm" class="btn-tribute-confirm" onclick="executeTributeSummon()" disabled style="padding:8px 16px; font-size:11px;">
+                            Confirmar Invocación (ATK)
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- BANNER DE SELECCIÓN DE OBJETIVOS (TRAMPAS, MAGIAS Y EFECTOS OCG) -->
+        <!-- BANNER DE SELECCIÓN DE OBJETIVOS (TRAMPAS, MAGIAS Y EFECTOS) -->
         <div id="targeting-floating-banner" class="tribute-floating-banner" style="display:none; border-color: #ff0055; box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);">
             <div class="tribute-banner-content">
                 <span id="targeting-icon" class="tribute-icon" style="color: #ff0055;">🎯</span>
                 <div class="tribute-info">
-                    <div id="targeting-title" class="tribute-title" style="color: #ff0055;">SELECCIÓN DE OBJETIVO REQUERIDA (OCG)</div>
+                    <div id="targeting-title" class="tribute-title" style="color: #ff0055;">SELECCIÓN DE OBJETIVO REQUERIDA</div>
                     <div id="targeting-desc" class="tribute-desc">Haz clic en el objetivo en el campo.</div>
                 </div>
                 <div style="display:flex; gap:6px;">
@@ -147,13 +144,9 @@
             <div id="gy-drawer-card-box" class="gy-drawer-card drawer-theme-extra">
                 <div class="gy-drawer-header">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span id="gy-drawer-icon" style="font-size:16px;">🔮</span>
                         <h3 id="gy-modal-title" style="margin:0; font-size:13px; font-weight:800; color:var(--accent-gold);">Extra Deck</h3>
                     </div>
                     <button class="modal-close-btn" onclick="closeGraveyardModal()" title="Cerrar panel (Esc)">✕</button>
-                </div>
-                <div id="gy-drawer-hint" class="gy-drawer-hint">
-                    💡 Haz clic en cualquier carta para ver sus detalles completos en el panel izquierdo en tiempo real.
                 </div>
                 <div id="gy-cards-grid" class="gy-cards-grid">
                     <!-- Cards list -->
@@ -161,52 +154,17 @@
             </div>
         </div>
 
-        <!-- MODAL DE EDICIÓN DE NICK DE USUARIO (MÁXIMO 15 CARACTERES, 1 PALABRA SIN ESPACIOS) -->
-        <div id="edit-nick-modal" class="ocg-modal-overlay" style="display:none; z-index:99999;">
-            <div style="background:linear-gradient(145deg, #0e1626, #070b14); border:1px solid var(--accent-cyan); box-shadow:0 0 25px rgba(0,229,255,0.3); border-radius:12px; padding:22px; width:380px; max-width:92vw; color:#fff; font-family:'Outfit', sans-serif;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(0,229,255,0.2); padding-bottom:8px;">
-                    <div style="font-family:'Orbitron', sans-serif; font-size:14px; font-weight:800; color:var(--accent-cyan); display:flex; align-items:center; gap:8px;">
-                        <span>✏️</span> EDITAR NICK DE USUARIO
-                    </div>
-                    <button onclick="closeEditNickModal()" style="background:transparent; border:none; color:#888; font-size:18px; cursor:pointer; line-height:1;">✕</button>
-                </div>
-
-                <div style="font-size:11px; color:#94a3b8; margin-bottom:14px; line-height:1.4;">
-                    Ingresa tu nuevo nombre de duelista. Debe ser <b style="color:var(--accent-cyan);">una sola palabra</b> (sin espacios en blanco) y tener un <b style="color:var(--accent-gold);">máximo de 15 caracteres</b>.
-                </div>
-
-                <div class="auth-input-group" style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <label class="auth-input-label" style="font-size:10px; font-weight:700; color:var(--accent-cyan); margin:0;">NUEVO NICK</label>
-                        <span id="editNickCharCount" style="font-size:10px; color:#888;">0/15</span>
-                    </div>
-                    <input type="text" id="editNickInput" class="auth-input" maxlength="15" placeholder="Ej: KaibaX (3-15 car.)" 
-                           oninput="onEditNickInputChanged(this)"
-                           onkeydown="if(event.key===' ') { event.preventDefault(); } if(event.key==='Enter') saveEditedNick();"
-                           style="width:100%; box-sizing:border-box; font-size:13px; font-weight:600; letter-spacing:0.5px;">
-                </div>
-
-                <div id="edit-nick-alert" style="display:none; font-size:11px; margin-bottom:14px; padding:8px 10px; border-radius:4px; text-align:left;"></div>
-
-                <div style="display:flex; gap:10px; justify-content:flex-end;">
-                    <button onclick="closeEditNickModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; border-radius:6px; padding:7px 14px; font-size:11px; cursor:pointer; font-weight:600;">CANCELAR</button>
-                    <button id="btn-save-nick" onclick="saveEditedNick()" class="btn-act-vertical" style="padding:7px 16px; font-size:11px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(0,180,216,0.5)); border-color:var(--accent-cyan);">GUARDAR CAMBIOS</button>
-                </div>
-            </div>
-        </div>
-
-        
-<!-- =========================================================================
+        <!-- =========================================================================
              VENTANA DE TIRADA DE DADOS PRE-DUELO (ORDEN DE INICIO)
              ========================================================================= -->
         <div id="dice-roll-modal" style="display:flex;">
             <div class="dice-modal-card">
-                <button class="modal-close-btn" onclick="closeDiceRollModal()" title="Cerrar ventana de dados" style="position:absolute; right:14px; top:14px;">✕</button>
+                <button class="modal-close-btn" onclick="closeDiceRollModal(true)" title="Cancelar y volver a la selección de NPC" style="position:absolute; right:14px; top:14px;">✕</button>
                 <div class="dice-modal-title">
-                    🎲 SORTEO DE DADOS: ELECCIÓN DE ORDEN
+                    SORTEO DE DADOS: ELECCIÓN DE ORDEN
                 </div>
                 <div class="dice-modal-desc">
-                    El duelista con el número mayor gana el derecho de escoger si inicia de <b>Primeras (Turno 1)</b> o de <b>Segundas (Turno 2)</b>.
+                    El número más alto elige el turno de inicio.
                 </div>
 
                 <div class="dice-arena">
@@ -220,29 +178,27 @@
 
                     <!-- DADO DEL NPC -->
                     <div class="die-wrapper">
-                        <div id="dice-npc-label">NPC YUGI</div>
+                        <div id="dice-npc-label">RIVAL</div>
                         <div id="die-npc-cube" class="die-cube die-npc">?</div>
                     </div>
                 </div>
 
-                <div id="dice-status-message">
-                    Presiona el botón para lanzar los dados.
-                </div>
+                <div id="dice-status-message"></div>
 
                 <!-- CONTENEDOR DE ACCIONES DE DADOS -->
                 <div id="dice-actions-container">
                     <button id="btn-roll-dice" class="btn-arena-launch" onclick="rollDice()">
-                        🎲 LANZAR DADOS
+                        LANZAR DADOS
                     </button>
                 </div>
 
                 <!-- SELECTOR DE ORDEN (CUANDO EL JUGADOR GANA) -->
                 <div id="dice-choice-container" style="display:none; gap:12px; justify-content:center;">
                     <button class="btn-act-vertical btn-order-p1" onclick="confirmOrderChoice('player1')">
-                        🥇 IR DE PRIMERAS (Turno 1)
+                        PRIMER TURNO
                     </button>
                     <button class="btn-act-vertical btn-order-p2" onclick="confirmOrderChoice('player2')">
-                        🥈 IR DE SEGUNDAS (Turno 2)
+                        SEGUNDO TURNO
                     </button>
                 </div>
             </div>
@@ -251,35 +207,8 @@
         <!-- =========================================================================
              MODAL DE FIN DE DUELO (GAME OVER / RENDICIÓN)
              ========================================================================= -->
-        <div id="game-over-modal">
-            <div class="game-over-card">
-                <div id="game-over-title" style="font-family:'Orbitron', sans-serif; font-size:20px; font-weight:900; margin-bottom:8px; color:var(--accent-gold);">
-                    🏆 ¡VICTORIA OFICIAL!
-                </div>
-                <div id="game-over-desc" style="font-size:12px; color:#cbd5e1; margin-bottom:20px; line-height:1.5;">
-                    El duelo ha finalizado reglamentariamente.
-                </div>
-
-                <div style="background:rgba(15,23,42,0.8); border:1px solid rgba(0,229,255,0.25); border-radius:8px; padding:14px; margin-bottom:20px; font-size:11px; display:flex; justify-content:space-around;">
-                    <div>
-                        <div style="color:#94a3b8; font-size:9.5px;">ESTADO</div>
-                        <div id="game-over-status-badge" style="font-weight:800; color:var(--accent-cyan);">Concluido</div>
-                    </div>
-                    <div>
-                        <div style="color:#94a3b8; font-size:9.5px;">RECOMPENSA</div>
-                        <div style="font-weight:800; color:var(--accent-gold);">⭐ +50 Starships</div>
-                    </div>
-                </div>
-
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <button class="btn-act-vertical" onclick="returnToDuelMenu()" style="width:100%; padding:10px; font-size:12px; background:linear-gradient(135deg, rgba(0,229,255,0.3), rgba(9,132,227,0.5)); border-color:var(--accent-cyan);">
-                        ⚔️ RETORNAR AL MENÚ DE DUELOS
-                    </button>
-                    <button onclick="returnToLobby()" style="width:100%; padding:9px; font-size:11px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; border-radius:6px; cursor:pointer;">
-                        🏛️ IR AL LOBBY PRINCIPAL
-                    </button>
-                </div>
-            </div>
+        <div id="game-over-modal" style="display:none;">
+            <div id="game-over-modal-content"></div>
         </div>
 
         <!-- MODAL DE MONSTER REBORN (RESURRECCIÓN DUAL DE CEMENTERIOS OCG) -->
@@ -309,6 +238,31 @@
             </div>
         </div>
 
+        <!-- MODAL DE INVOCACIÓN POR FUSIÓN (POLIMERIZACIÓN OCG) -->
+        <div id="fusion-modal" class="ocg-modal-overlay" style="display:none;">
+            <div class="gy-modal-card" style="border-color: #a855f7; box-shadow: 0 0 35px rgba(168, 85, 247, 0.45); width: 720px; max-height: 520px;">
+                <div class="gy-modal-header" style="border-color: rgba(168, 85, 247, 0.3);">
+                    <h3 style="color:#c084fc; font-size:13px; font-weight:900;">🌀 Invocación por Fusión (Polimerización)</h3>
+                    <button class="modal-close-btn" onclick="closeFusionModal()">✕</button>
+                </div>
+                <div id="fusion-modal-sub" style="font-size:10.5px; color:#cbd5e1; padding: 2px 4px;">
+                    Selecciona el Monstruo de Fusión que deseas invocar desde tu Extra Deck:
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px; flex:1; overflow:hidden;">
+                    <div id="fusion-cards-grid" class="gy-cards-grid" style="max-height: 150px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));"></div>
+                    <div style="font-size:11px; font-weight:800; color:var(--accent-cyan); margin-top:2px;">
+                        🧪 Materiales de Fusión Requeridos (Mano / Campo):
+                    </div>
+                    <div id="fusion-materials-list" style="display:flex; flex-wrap:wrap; gap:8px; max-height:100px; overflow-y:auto;"></div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+                    <button id="btn-confirm-fusion" class="btn-tribute-confirm" style="background: linear-gradient(135deg, #a855f7, #6b21a8); border-color:#c084fc;" onclick="confirmFusionSummon()" disabled>
+                        🌀 Confirmar Invocación por Fusión
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MODAL DE DESCARTE POR LÍMITE DE MANO (END PHASE > 6 CARTAS OCG) -->
         <div id="hand-discard-modal" class="ocg-modal-overlay" style="display:none;">
             <div class="gy-modal-card" style="height: auto; max-height: 480px; border-color: var(--accent-gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.45); width: 620px;">
@@ -329,26 +283,23 @@
 
         <!-- MODAL DE CONFIRMACIÓN DE RENDICIÓN -->
         <div id="surrender-modal" class="ocg-modal-overlay" style="display:none;">
-            <div class="ocg-modal-card" style="border-color: var(--accent-ruby); box-shadow: 0 0 35px rgba(255, 71, 87, 0.5); width: 440px; height: auto; text-align: center;">
+            <div class="ocg-modal-card" style="border-color: var(--accent-ruby); box-shadow: 0 0 35px rgba(255, 71, 87, 0.5); width: 420px; height: auto; text-align: center;">
                 <div class="ocg-modal-header" style="border-color: rgba(255, 71, 87, 0.3); justify-content: center;">
-                    <span class="chain-badge" style="color:var(--accent-ruby); text-shadow:0 0 8px rgba(255, 71, 87, 0.6);">🏳️ DECLARAR RENDICIÓN</span>
+                    <span class="chain-badge" style="color:var(--accent-ruby); text-shadow:0 0 8px rgba(255, 71, 87, 0.6);">DECLARAR RENDICIÓN</span>
                 </div>
-                <div style="font-size: 13px; font-weight: 800; color: #ff6b81; margin-top: 6px;">
-                    ¿Estás seguro de que deseas rendirte?
-                </div>
-                <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,71,87,0.25); border-radius: 6px; padding: 12px; margin: 10px 0; text-align: left;">
-                    ⚠️ <strong style="color:#ff6b81;">AVISO DE PENALIZACIÓN OFICIAL:</strong><br>
-                    Por rendición voluntaria <strong>NO</strong> se te concederá ninguna recompensa de duelo:<br>
-                    ❌ <strong>0 Puntos de Experiencia (EXP)</strong><br>
-                    ❌ <strong>0 StarShips ⭐</strong><br>
-                    ❌ <strong>Sin posibilidad de obtener cartas de recompensa</strong>
+                <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,71,87,0.25); border-radius: 0; padding: 10px 14px; margin: 10px 0; text-align: left;">
+                    <div style="color:#ff6b81; font-weight:700; margin-bottom:4px;">Aviso de penalización:</div>
+                    Por rendición voluntaria no recibirás recompensas:<br>
+                    • 0 Puntos de Experiencia (EXP)<br>
+                    • 0 StarShips ⭐<br>
+                    • Sin cartas de recompensa
                 </div>
                 <div style="display:flex; justify-content:center; gap:12px; margin-top:6px;">
-                    <button class="chain-btn chain-pass-btn" style="background:var(--accent-ruby); color:#fff; padding:8px 18px; font-size:11px;" onclick="confirmSurrender()">
-                        🏳️ Sí, Rendirme y Volver al Lobby
+                    <button class="chain-btn chain-pass-btn" style="background:var(--accent-ruby); color:#fff; padding:8px 22px; font-size:11px; font-weight:500 !important;" onclick="confirmSurrender()">
+                        Confirmar Rendición
                     </button>
-                    <button class="chain-btn" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 18px; font-size:11px;" onclick="closeSurrenderModal()">
-                        Cancelar (Seguir Jugando)
+                    <button class="chain-btn" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:8px 22px; font-size:11px; font-weight:500 !important;" onclick="closeSurrenderModal()">
+                        Cancelar
                     </button>
                 </div>
             </div>
@@ -360,60 +311,10 @@
             <div id="context-menu-buttons" style="display:flex; flex-direction:column; gap:4px;"></div>
         </div>
 
-        
-<div id="duel-app" style="display:none;">
-
-        <div id="inspector-panel">
-            <h3>INFO CARTA</h3>
-            
-            <div class="card-img-container">
-                <img id="inspect-img" src="../../../assets/card_back.jpg" alt="Carta">
-            </div>
-
-            <div class="card-meta">
-                <div id="inspect-passcode-bar" style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:3px;">
-                    <span id="inspect-passcode" style="font-family:'Orbitron', sans-serif; font-size:8px; font-weight:900; color:#38bdf8; background:rgba(15,23,42,0.9); border:1px solid rgba(56,189,248,0.4); padding:1px 6px; border-radius:4px; letter-spacing:0.5px;">#--------</span>
-                    <span id="inspect-card-rarity" style="font-family:'Orbitron', sans-serif; font-size:7.5px; font-weight:900; color:#ffd700; background:rgba(0,0,0,0.6); border:1px solid rgba(255,215,0,0.3); padding:1px 5px; border-radius:4px; display:none;">OCG</span>
-                </div>
-                <div class="card-title" id="inspect-title">INFORMACIÓN DE CARTA</div>
-
-                <div class="card-attr-stars" id="inspect-attr-stars">
-                    <span class="card-attr-badge" id="inspect-attr">-</span>
-                    <span class="card-stars-span" id="inspect-stars"></span>
-                </div>
-
-                <div class="card-type-box">
-                    <span id="inspect-type">Selecciona o pasa el cursor sobre una carta</span>
-                    <span class="card-archetype-tag" id="inspect-archetype" style="display:none;">-</span>
-                </div>
-
-                <div class="card-stats-grid" id="inspect-stats-grid">
-                    <div class="stat-box stat-atk">
-                        <span class="stat-label">ATK</span>
-                        <span class="stat-val" id="inspect-atk">-</span>
-                    </div>
-                    <div class="stat-box stat-def">
-                        <span class="stat-label">DEF</span>
-                        <span class="stat-val" id="inspect-def">-</span>
-                    </div>
-                </div>
-
-                <div class="card-desc" id="inspect-desc">
-                    Pasa el cursor o haz clic en cualquier carta de la mano, campo, cementerio o mazo para visualizar sus detalles completos y efectos en tiempo real.
-                </div>
-
-                <!-- SECCIÓN DE CARTAS ASIGNADAS Y EFECTOS CONTINUOS (OCG) -->
-                <div id="inspect-attached-box" style="display:none; margin-top:8px; padding:6px 8px; background:rgba(88,28,135,0.3); border:1px solid rgba(192,132,252,0.5); border-radius:4px; text-align:left;">
-                    <div style="font-size:9.5px; font-weight:800; color:#c084fc; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
-                        <span>🔗</span> CARTAS ASIGNADAS / EFECTOS ACTIVOS:
-                    </div>
-                    <div id="inspect-attached-list" style="font-size:9px; color:#e9d5ff; line-height:1.4;"></div>
-                </div>
-            </div>
-        </div>
+        <div id="duel-app" style="display:none;">
 
         <!-- ==========================================================================
-             PANEL 2: CAMPO CENTRAL DE DUELO (56% ANCHO TOTAL) - DIFERENCIACIÓN CROMÁTICA
+             PANEL 1: CAMPO CENTRAL DE DUELO - DIFERENCIACIÓN CROMÁTICA
              ========================================================================== -->
         <div id="duel-field-panel">
             
@@ -437,7 +338,6 @@
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot zone-purple deck-stack" id="r-deck" title="Main Deck Rival">
                         <div class="card-on-field card-sleeve"></div>
-                        <div class="slot-tooltip">DECK</div>
                         <div class="deck-counter-badge" id="r-deck-counter">35</div>
                     </div>
                     <div class="field-slot zone-cyan" id="r-s0" onclick="onSlotClick('R_S', 0)"></div>
@@ -447,7 +347,7 @@
                     <div class="field-slot zone-cyan" id="r-s4" onclick="onSlotClick('R_S', 4)"></div>
                     <div class="field-slot zone-purple extra-stack" id="r-extra" title="Extra Deck Rival (Clic para ver cartas)" onclick="openExtraDeckModal('player2')">
                         <div class="card-on-field card-sleeve"></div>
-                        <div class="slot-tooltip">EXTRA</div>
+                        <svg class="slot-zone-icon icon-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="13" height="17" rx="1.5"></rect><path d="M4 17V5a2 2 0 0 1 2-2h11"></path></svg>
                         <div class="deck-counter-badge" id="r-extra-counter">15</div>
                     </div>
                     <div class="field-slot spacer-slot"></div>
@@ -456,10 +356,10 @@
                 <!-- FILA 2 (RIVAL FRENTE): [DESTIERRO] | [CEMENTERIO] | 5 MONSTRUOS | [CAMPO] | [SPACER] -->
                 <div class="field-row-9">
                     <div class="field-slot zone-orange" id="r-banished" title="Destierro Rival (Clic para ver)" onclick="openBanishedModal('player2')">
-                        <div class="slot-tooltip">BANISHED</div>
+                        <svg class="slot-zone-icon icon-banished" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"></circle><line x1="5.2" y1="5.2" x2="18.8" y2="18.8"></line></svg>
                     </div>
                     <div class="field-slot zone-ruby" id="r-gy" title="Cementerio Rival (Clic para ver)" onclick="openGraveyardModal('player2')">
-                        <div class="slot-tooltip">GY</div>
+                        <svg class="slot-zone-icon icon-skull" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 2.8 1.4 5.2 3.5 6.5v2.5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V16c2.1-1.3 3.5-3.7 3.5-6.5A7.5 7.5 0 0 0 12 2z"></path><circle cx="9" cy="9.5" r="1.5" fill="currentColor"></circle><circle cx="15" cy="9.5" r="1.5" fill="currentColor"></circle><path d="M10 16.5v3"></path><path d="M14 16.5v3"></path></svg>
                         <div class="deck-counter-badge" id="r-gy-counter" style="display:none; background:var(--accent-ruby);">0</div>
                     </div>
                     <div class="field-slot zone-cyan" id="r-m0" onclick="onSlotClick('R_M', 0)"></div>
@@ -468,7 +368,7 @@
                     <div class="field-slot zone-cyan" id="r-m3" onclick="onSlotClick('R_M', 3)"></div>
                     <div class="field-slot zone-cyan" id="r-m4" onclick="onSlotClick('R_M', 4)"></div>
                     <div class="field-slot zone-emerald" id="r-campo" title="Campo Rival" onclick="onSlotClick('R_CAMPO', 0, event)">
-                        <div class="slot-tooltip">CAMPO</div>
+                        <svg class="slot-zone-icon icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     </div>
                     <div class="field-slot spacer-slot"></div>
                 </div>
@@ -478,13 +378,9 @@
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot spacer-slot"></div>
-                    <div class="field-slot zone-emz" id="emz-0" title="EMZ 1 (Izquierda)" onclick="onSlotClick('EMZ', 0)">
-                        <div class="slot-tooltip">EMZ 1</div>
-                    </div>
+                    <div class="field-slot zone-emz" id="emz-0" title="EMZ 1 (Izquierda)" onclick="onSlotClick('EMZ', 0)"></div>
                     <div class="field-slot spacer-slot"></div>
-                    <div class="field-slot zone-emz" id="emz-1" title="EMZ 2 (Derecha)" onclick="onSlotClick('EMZ', 1)">
-                        <div class="slot-tooltip">EMZ 2</div>
-                    </div>
+                    <div class="field-slot zone-emz" id="emz-1" title="EMZ 2 (Derecha)" onclick="onSlotClick('EMZ', 1)"></div>
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot spacer-slot"></div>
@@ -494,7 +390,7 @@
                 <div class="field-row-9">
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot zone-emerald" id="p-campo" title="Campo Jugador" onclick="onSlotClick('P_CAMPO', 0, event)">
-                        <div class="slot-tooltip">CAMPO</div>
+                        <svg class="slot-zone-icon icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     </div>
                     <div class="field-slot zone-cyan" id="p-m0" onclick="onSlotClick('P_M', 0)"></div>
                     <div class="field-slot zone-cyan" id="p-m1" onclick="onSlotClick('P_M', 1)"></div>
@@ -502,11 +398,11 @@
                     <div class="field-slot zone-cyan" id="p-m3" onclick="onSlotClick('P_M', 3)"></div>
                     <div class="field-slot zone-cyan" id="p-m4" onclick="onSlotClick('P_M', 4)"></div>
                     <div class="field-slot zone-ruby" id="p-gy" title="Cementerio Jugador (Clic para ver)" onclick="openGraveyardModal('player1')">
-                        <div class="slot-tooltip">GY</div>
+                        <svg class="slot-zone-icon icon-skull" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 2.8 1.4 5.2 3.5 6.5v2.5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V16c2.1-1.3 3.5-3.7 3.5-6.5A7.5 7.5 0 0 0 12 2z"></path><circle cx="9" cy="9.5" r="1.5" fill="currentColor"></circle><circle cx="15" cy="9.5" r="1.5" fill="currentColor"></circle><path d="M10 16.5v3"></path><path d="M14 16.5v3"></path></svg>
                         <div class="deck-counter-badge" id="p-gy-counter" style="display:none; background:var(--accent-ruby);">0</div>
                     </div>
                     <div class="field-slot zone-orange" id="p-banished" title="Destierro Jugador (Clic para ver)" onclick="openBanishedModal('player1')">
-                        <div class="slot-tooltip">BANISHED</div>
+                        <svg class="slot-zone-icon icon-banished" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"></circle><line x1="5.2" y1="5.2" x2="18.8" y2="18.8"></line></svg>
                     </div>
                 </div>
 
@@ -515,7 +411,7 @@
                     <div class="field-slot spacer-slot"></div>
                     <div class="field-slot zone-purple extra-stack" id="p-extra" title="Extra Deck Jugador (Clic para ver cartas)" onclick="openExtraDeckModal('player1')">
                         <div class="card-on-field card-sleeve"></div>
-                        <div class="slot-tooltip">EXTRA</div>
+                        <svg class="slot-zone-icon icon-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="13" height="17" rx="1.5"></rect><path d="M4 17V5a2 2 0 0 1 2-2h11"></path></svg>
                         <div class="deck-counter-badge" id="p-extra-counter">15</div>
                     </div>
                     <div class="field-slot zone-cyan" id="p-s0" onclick="onSlotClick('P_S', 0)"></div>
@@ -525,12 +421,106 @@
                     <div class="field-slot zone-cyan" id="p-s4" onclick="onSlotClick('P_S', 4)"></div>
                     <div class="field-slot zone-purple deck-stack" id="p-deck" title="Main Deck Jugador">
                         <div class="card-on-field card-sleeve"></div>
-                        <div class="slot-tooltip">DECK</div>
                         <div class="deck-counter-badge" id="p-deck-counter">35</div>
                     </div>
                     <div class="field-slot spacer-slot"></div>
                 </div>
 
+            </div>
+
+            <!-- CAJA FLOTANTE LP RIVAL (COSTADO IZQUIERDO CENTRAL - CLIC PARA VER PERFIL) -->
+            <div class="board-lp-box rival-lp-box" id="board-rival-lp-box" onclick="openDuelistProfileDrawer('rival')" title="Ver información del perfil del Rival">
+                <div class="board-lp-info-col">
+                    <span id="board-rival-name" class="board-user-name">NPC Principiante (Nv. 1)</span>
+                </div>
+                <div class="board-lp-val rival-lp-color" id="rival-lp">8000</div>
+            </div>
+
+            <!-- CAJA FLOTANTE LP JUGADOR (COSTADO DERECHO CENTRAL - CLIC PARA VER PERFIL) -->
+            <div class="board-lp-box player-lp-box" id="board-player-lp-box" onclick="openDuelistProfileDrawer('player')" title="Ver información de tu Perfil">
+                <div class="board-lp-info-col">
+                    <span id="player-name-val" class="board-user-name">Admin</span>
+                </div>
+                <div class="board-lp-val player-lp-color" id="player-lp">8000</div>
+            </div>
+
+            <!-- CÁPSULA VERTICAL DE FASES: JUGADOR (ESQUINA INFERIOR IZQUIERDA) -->
+            <div class="board-phase-capsule player-phase-capsule" id="player-phase-tracker">
+                <div class="phase-capsule-title">FASES</div>
+                <div class="phase-capsule-btn" id="phase-btn-p-DRAW" onclick="attemptPhaseChange('DRAW')">DP</div>
+                <div class="phase-capsule-btn" id="phase-btn-p-STANDBY" onclick="attemptPhaseChange('STANDBY')">SP</div>
+                <div class="phase-capsule-btn active-phase" id="phase-btn-p-MAIN_1" onclick="attemptPhaseChange('MAIN_1')">M1</div>
+                <div class="phase-capsule-btn" id="phase-btn-p-BATTLE" onclick="attemptPhaseChange('BATTLE')">BP</div>
+                <div class="phase-capsule-btn" id="phase-btn-p-MAIN_2" onclick="attemptPhaseChange('MAIN_2')">M2</div>
+                <div class="phase-capsule-btn" id="phase-btn-p-END" onclick="attemptPhaseChange('END')">EP</div>
+            </div>
+
+            <!-- CÁPSULA VERTICAL DE FASES: RIVAL (ESQUINA SUPERIOR DERECHA) -->
+            <div class="board-phase-capsule rival-phase-capsule tracker-disabled" id="rival-phase-tracker">
+                <div class="phase-capsule-title">RIVAL</div>
+                <div class="phase-capsule-btn" id="phase-btn-r-DRAW">DP</div>
+                <div class="phase-capsule-btn" id="phase-btn-r-STANDBY">SP</div>
+                <div class="phase-capsule-btn" id="phase-btn-r-MAIN_1">M1</div>
+                <div class="phase-capsule-btn" id="phase-btn-r-BATTLE">BP</div>
+                <div class="phase-capsule-btn" id="phase-btn-r-MAIN_2">M2</div>
+                <div class="phase-capsule-btn" id="phase-btn-r-END">EP</div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN NEÓN (GRUPO EN ESQUINA INFERIOR DERECHA) -->
+            <div class="board-action-buttons-group">
+                <button class="neon-icon-action-btn btn-bug" id="btn-report-bug" onclick="reportDuelBug()" title="Reportar Error en el Log (Auditoría) 🐛" style="background: rgba(220, 38, 38, 0.25); border: 1px solid rgba(239, 68, 68, 0.7); color: #fca5a5;">
+                    <svg class="neon-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="8" height="14" x="8" y="6" rx="4"/>
+                        <path d="m19 7-3 2"/>
+                        <path d="m5 7 3 2"/>
+                        <path d="m19 19-3-2"/>
+                        <path d="m5 19 3-2"/>
+                        <path d="M20 13h-4"/>
+                        <path d="M4 13h4"/>
+                        <path d="m10 4 1 2"/>
+                        <path d="m14 4-1 2"/>
+                    </svg>
+                </button>
+                <div class="board-action-buttons-divider"></div>
+                <button class="neon-icon-action-btn btn-log" id="btn-toggle-log" onclick="toggleDuelEventLog()" title="Registro de Duelo">
+                    <svg class="neon-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <line x1="10" y1="9" x2="8" y2="9"></line>
+                    </svg>
+                </button>
+                <div class="board-action-buttons-divider"></div>
+                <button class="neon-icon-action-btn btn-surrender" id="btn-surrender" onclick="promptSurrender()" title="Rendirse del Duelo">
+                    <svg class="neon-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                        <line x1="4" y1="22" x2="4" y2="15"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- VENTANA FLOTANTE DEL REGISTRO DE DUELO (NO MODAL / ARRASTRABLE) -->
+            <div id="duel-event-log-window" class="floating-log-window">
+                <div class="floating-log-header" id="floating-log-drag-handle">
+                    <span class="floating-log-title">📜 REGISTRO DE DUELO (ÚLTIMOS MOVIMIENTOS)</span>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button class="floating-log-btn-bug" onclick="reportDuelBug()" title="Reportar Error en este momento del Duelo" style="background: #dc2626; color: white; border: 1px solid #ef4444; border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; font-weight: bold;">🐛 Reportar Bug</button>
+                        <button class="floating-log-close" onclick="toggleDuelEventLog()" title="Cerrar ventana">✕</button>
+                    </div>
+                </div>
+                <div id="duel-event-log" class="floating-log-entries">
+                    <div class="log-item">⚔️ Duelo iniciado según reglas oficiales.</div>
+                </div>
+            </div>
+
+            <!-- VENTANA FLOTANTE DE PERFIL DEL DUELISTA (NO MODAL / FLOTANTE) -->
+            <div id="duelist-profile-drawer" class="duelist-profile-drawer">
+                <div class="duelist-profile-header">
+                    <span class="duelist-profile-title" id="duelist-profile-title">👤 INFORMACIÓN DEL DUELISTA</span>
+                    <button class="duelist-profile-close" onclick="closeDuelistProfileDrawer()" title="Cerrar ventana">✕</button>
+                </div>
+                <div class="duelist-profile-body" id="duelist-profile-body"></div>
             </div>
 
             <!-- MANO JUGADOR FLOTANTE INFERIOR -->
@@ -540,126 +530,33 @@
 
         </div>
 
-        <!-- ==========================================================================
-             PANEL 3: CONTROL DE DUELO LATERAL DERECHO - FASES OFICIALES KONAMI
-             ========================================================================== -->
-        <div id="right-action-panel">
-            <h3>Control de Duelo</h3>
-
-            <!-- VIDAS DE RIVAL Y JUGADOR EN UNA SOLA LÍNEA COMPACTA -->
-            <div class="user-status-box duel-lp-single-row">
-                <div class="lp-col rival-col">
-                    <div class="lp-label"><span>🎮 RIVAL:</span> <span style="color:#fff;">NPC Yugi</span></div>
-                    <div class="lp-value lp-rival-val" id="rival-lp">LP: 8000</div>
-                </div>
-                <div class="lp-divider-v"></div>
-                <div class="lp-col player-col">
-                    <div class="lp-label" style="display:flex; align-items:center; gap:6px;">
-                        <span>👤 JUGADOR:</span> 
-                        <span id="player-name-val" style="color:#fff;">Admin</span>
-                    </div>
-                    <div class="lp-value lp-player-val" id="player-lp">LP: 8000</div>
-                </div>
-            </div>
-
-            <!-- TRACKER Y CONTROL DE FASES REGLAMENTARIAS (OCG / TCG) -->
-            <div class="phase-tracker-box">
-                <div class="phase-turn-header">
-                    <span id="turn-num-label" style="color:var(--accent-gold);">TURNO 1</span>
-                    <span id="turn-player-badge" class="turn-player-tag my-turn">TU TURNO</span>
-                </div>
-
-                <div class="phases-list">
-                    <!-- 1. DRAW PHASE -->
-                    <div class="phase-item" id="phase-item-DRAW" onclick="attemptPhaseChange('DRAW')">
-                        <div class="phase-badge">DP</div>
-                        <div class="phase-meta">
-                            <div class="phase-name"><span>Draw Phase</span></div>
-                            <div class="phase-hint">Robo de carta & Mágicas Rápidas / Trampas</div>
-                        </div>
-                    </div>
-
-                    <!-- 2. STANDBY PHASE -->
-                    <div class="phase-item" id="phase-item-STANDBY" onclick="attemptPhaseChange('STANDBY')">
-                        <div class="phase-badge">SP</div>
-                        <div class="phase-meta">
-                            <div class="phase-name"><span>Standby Phase</span></div>
-                            <div class="phase-hint">Mantenimiento de efectos & Respuestas</div>
-                        </div>
-                    </div>
-
-                    <!-- 3. MAIN PHASE 1 -->
-                    <div class="phase-item active-phase" id="phase-item-MAIN_1" onclick="attemptPhaseChange('MAIN_1')">
-                        <div class="phase-badge">M1</div>
-                        <div class="phase-meta">
-                            <div class="phase-name"><span>Main Phase 1</span></div>
-                            <div class="phase-hint">Invocaciones, Mágicas, SET & Efectos</div>
-                        </div>
-                    </div>
-
-                    <!-- 4. BATTLE PHASE -->
-                    <div class="phase-item" id="phase-item-BATTLE" onclick="attemptPhaseChange('BATTLE')">
-                        <div class="phase-badge">BP</div>
-                        <div class="phase-meta">
-                            <div class="phase-name"><span>Battle Phase</span></div>
-                            <div class="phase-hint">Declarar Ataques & Paso de Daño</div>
-                        </div>
-                    </div>
-
-                    <!-- 5. MAIN PHASE 2 -->
-                    <div class="phase-item" id="phase-item-MAIN_2" onclick="attemptPhaseChange('MAIN_2')">
-                        <div class="phase-badge">M2</div>
-                        <div class="phase-meta">
-                            <div class="phase-name"><span>Main Phase 2</span></div>
-                            <div class="phase-hint">Estrategia post-combate & Colocar SET</div>
-                        </div>
-                    </div>
-
-                    <!-- 6. END PHASE -->
-                    <div class="phase-item" id="phase-item-END" onclick="attemptPhaseChange('END')">
-                        <div class="phase-badge">EP</div>
-                        <div class="phase-meta">
-                            <div class="phase-name"><span>End Phase</span></div>
-                            <div class="phase-hint">Límite de mano (6) & Fin de turno</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <!-- REGISTRO DE EVENTOS DE DUELO OCG EN TIEMPO REAL -->
-            <div class="duel-event-log-box">
-                <div class="log-title">📜 Registro de Duelo OCG</div>
-                <div id="duel-event-log" class="log-entries">
-                    <div class="log-item">⚔️ Duelo iniciado según reglas oficiales OCG Konami.</div>
-                </div>
-            </div>
-
-            <!-- BOTÓN OFICIAL DE RENDICIÓN -->
-            <button id="btn-surrender" class="btn-surrender" onclick="promptSurrender()" title="Rendirse del duelo y regresar al Lobby">
-                🏳️ Rendirse del Duelo
-            </button>
-        </div>
-
             </div>
         </div>
 
     <!-- SCRIPTS MODULARES REGLAMENTARIOS -->
     <script src="/socket.io/socket.io.js"></script>
+    <script src="../../../js/core/sound-manager.js?v=6.0"></script>
     <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
     <script src="../../../js/core/socket.js"></script>
     <script>
         // Garantizar que la referencia socket exista globalmente antes de cargar los controladores
         window.socket = window.getSocket ? window.getSocket() : (window.socket || (typeof io !== 'undefined' ? io() : null));
         var socket = window.socket;
     </script>
-    <script src="../../../js/data/packs-data.js?v=3.3"></script>
-    <script src="../../../js/data/deck-manager.js?v=3.3"></script>
-    <script src="../../../js/duel/duel-state-client.js?v=3.3"></script>
-    <script src="../../../js/duel/duel-ui.js?v=3.3"></script>
-    <script src="../../../js/duel/duel-actions.js?v=3.3"></script>
-    <script src="../../../js/duel/duel-chains.js?v=3.3"></script>
-    <script src="../../../js/views/duel-npc.js?v=3.3"></script>
+    <script src="../../../js/data/packs-data.js?v=6.0"></script>
+    <script src="../../../js/data/avatars-data.js?v=6.0"></script>
+    <script src="../../../js/data/vip-data.js?v=6.0"></script>
+    <script src="../../../js/data/potenciadores-data.js?v=6.0"></script>
+    <script src="../../../js/data/npcs-adventure-data.js?v=6.0"></script>
+    <script src="../../../js/data/playmats-data.js?v=6.1"></script>
+    <script src="../../../js/data/sleeves-data.js?v=6.1"></script>
+    <script src="../../../js/duel/duel-cosmetics.js?v=6.0"></script>
+    <script src="../../../js/data/deck-manager.js?v=6.0"></script>
+    <script src="../../../js/duel/duel-state-client.js?v=6.0"></script>
+    <script src="../../../js/duel/duel-ui.js?v=6.2"></script>
+    <script src="../../../js/duel/duel-actions.js?v=6.2"></script>
+    <script src="../../../js/duel/duel-chains.js?v=6.2"></script>
+    <script src="../../../js/views/duel-npc.js?v=6.2"></script>
 </body>
 </html>

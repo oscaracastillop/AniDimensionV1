@@ -16,6 +16,13 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-color: #020408 !important;
+    background-image: linear-gradient(rgba(2, 4, 8, 0.45), rgba(2, 4, 8, 0.45)), url('/assets/images/backgrounds/shop.jpg') !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    color: #fff;
 }
 
 *,
@@ -38,7 +45,8 @@ body {
     padding: 0 !important;
     padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
     box-sizing: border-box !important;
-    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    background: transparent !important;
+    background-image: none !important;
     color: #fff;
     font-family: 'Outfit', sans-serif;
     position: relative;
@@ -125,15 +133,21 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
+    width: auto !important;
+    min-width: 68px;
     height: 28px;
     border-radius: 0 !important; /* RECTO */
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9.5px;
+    font-weight: 500 !important;
+    padding: 0 12px !important;
     text-decoration: none;
     transition: all 0.2s ease;
     margin-right: 4px;
+    box-sizing: border-box;
 }
 
 .btn-shop-back:hover {
@@ -308,7 +322,7 @@ body {
     color: #fff !important;
     font-family: 'Orbitron', sans-serif !important;
     font-size: 8.5px !important;
-    font-weight: 800 !important;
+    font-weight: 500 !important;
     letter-spacing: 0.5px !important;
     text-transform: uppercase !important;
     display: inline-flex !important;
@@ -333,6 +347,7 @@ body {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(218, 165, 32, 0.55)) !important;
     border-color: var(--accent-gold, #ffd700) !important;
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.2) !important;
+    font-weight: 500 !important;
 }
 
 .btn-shop-vip:hover {
@@ -354,7 +369,7 @@ body {
     color: #64748b !important;
     font-family: 'Orbitron', sans-serif !important;
     font-size: 8.5px !important;
-    font-weight: 800 !important;
+    font-weight: 500 !important;
     letter-spacing: 0.5px !important;
     text-transform: uppercase !important;
     display: inline-flex !important;
@@ -417,7 +432,8 @@ body {
         margin: 0 !important;
         padding: 0 !important;
         padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
-        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+        background: transparent !important;
+        background-image: none !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
     }
@@ -576,7 +592,8 @@ body {
         margin: 0 !important;
         padding: 0 !important;
         padding-bottom: calc(44px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
-        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+        background: transparent !important;
+        background-image: none !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
     }
@@ -719,57 +736,59 @@ body {
    ========================================================================== */
 .avatars-shop-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)) !important;
-    gap: 14px !important;
-    padding: 16px 10px 18px 10px !important;
-    margin-top: 10px !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 8px !important;
+    padding: 4px 0 18px 0 !important;
+    margin: 0 auto !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
 
 .avatar-shop-card {
-    background: linear-gradient(180deg, #0f172a 0%, #060b18 100%) !important;
+    background: linear-gradient(180deg, #0e172a 0%, #060b18 100%) !important;
     border: 1.5px solid rgba(0, 240, 255, 0.35) !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
+    border-radius: 0 !important;
+    padding: 6px 6px 8px 6px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: space-between !important;
     position: relative !important;
     overflow: hidden !important;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
-    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.22s ease !important;
+    min-height: 235px !important;
+    box-sizing: border-box !important;
 }
 
 .avatar-shop-card:hover {
-    transform: translateY(-3px) !important;
+    transform: translateY(-2px) !important;
     border-color: #00f0ff !important;
-    box-shadow: 0 10px 24px rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 8px 20px rgba(0, 240, 255, 0.25) !important;
 }
 
 .avatar-shop-card.is-active-avatar {
-    border: 2px solid #2ed573 !important;
-    box-shadow: 0 0 18px rgba(46, 213, 115, 0.4) !important;
+    border: 1.5px solid #10b981 !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.4) !important;
 }
 
 .avatar-shop-card.is-owned-avatar:not(.is-active-avatar) {
-    border-color: rgba(59, 130, 246, 0.6) !important;
+    border-color: rgba(0, 240, 255, 0.5) !important;
 }
 
 /* BANNER BADGE RIBBON */
 .avatar-card-banner {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background: linear-gradient(135deg, #00f0ff, #0072ff);
+    top: 5px;
+    right: 5px;
+    background: #00f0ff;
     color: #020617;
     font-family: 'Orbitron', sans-serif;
-    font-size: 8px;
+    font-size: 7.5px;
     font-weight: 900;
-    padding: 2px 7px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
+    padding: 1.5px 5px;
+    border-radius: 0 !important;
+    letter-spacing: 0.4px;
     text-transform: uppercase;
     box-shadow: 0 2px 6px rgba(0, 240, 255, 0.3);
     z-index: 2;
@@ -777,18 +796,19 @@ body {
 
 /* AVATAR IMAGE */
 .avatar-card-img-wrap {
-    width: 90px;
-    height: 90px;
-    border-radius: 0;
+    width: 78px;
+    height: 78px;
+    border-radius: 0 !important;
     border: none;
     overflow: visible;
-    margin-top: 12px;
-    margin-bottom: 8px;
+    margin-top: 14px;
+    margin-bottom: 4px;
     background: transparent;
     box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .avatar-card-img-wrap img {
@@ -802,126 +822,310 @@ body {
 /* INFO */
 .avatar-card-info {
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    width: 100%;
 }
 
 .avatar-card-code {
     font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
+    font-size: 9.5px;
     font-weight: 800;
     color: #00f0ff;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .avatar-card-name {
-    font-size: 10px;
+    font-size: 9px;
     color: #94a3b8;
     margin-top: 1px;
 }
 
 /* BOOSTERS CONTAINER */
 .avatar-card-boosters {
-    display: flex;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
     width: 100%;
-    justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .booster-tag {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    padding: 3px 2px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0 !important;
+    padding: 2px 1px;
 }
 
-.booster-tag.exp {
-    border-color: rgba(0, 240, 255, 0.3);
-}
-.booster-tag.star {
-    border-color: rgba(255, 215, 0, 0.3);
-}
-.booster-tag.suerte {
-    border-color: rgba(168, 85, 247, 0.3);
+.booster-tag .b-lbl {
+    font-size: 6.5px;
+    color: #94a3b8;
+    font-weight: 500;
 }
 
-.b-lbl {
+.booster-tag .b-val {
+    font-family: 'Orbitron', sans-serif;
     font-size: 7.5px;
     font-weight: 800;
-    color: #64748b;
-    font-family: 'Orbitron', sans-serif;
 }
 
-.b-val {
-    font-size: 9px;
-    font-weight: 900;
-    font-family: 'Orbitron', sans-serif;
-}
-
-.booster-tag.exp .b-val { color: #00f0ff; }
+.booster-tag.exp .b-val { color: #38bdf8; }
 .booster-tag.star .b-val { color: #ffd700; }
-.booster-tag.suerte .b-val { color: #a855f7; }
+.booster-tag.suerte .b-val { color: #c084fc; }
 
-/* FOOTER & ACCIONES */
 .avatar-card-footer {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
+}
+
+.btn-avatar-action {
+    width: 100% !important;
+    height: 24px !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+    border-radius: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+    text-transform: uppercase !important;
+}
+
+.btn-avatar-action.equip {
+    background: rgba(0, 240, 255, 0.15) !important;
+    border: 1px solid #00f0ff !important;
+    color: #00f0ff !important;
+}
+
+.btn-avatar-action.equip:hover {
+    background: #00f0ff !important;
+    color: #020617 !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6) !important;
+}
+
+.btn-avatar-action.equipped {
+    background: rgba(16, 185, 129, 0.2) !important;
+    border: 1px solid #10b981 !important;
+    color: #10b981 !important;
+    cursor: default !important;
+}
+
+.btn-avatar-action.buy {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(245, 158, 11, 0.45)) !important;
+    border: 1px solid #ffd700 !important;
+    color: #fef08a !important;
+}
+
+.btn-avatar-action.buy:hover {
+    background: #ffd700 !important;
+    color: #020617 !important;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.6) !important;
 }
 
 .avatar-price {
     font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     color: #ffd700;
 }
 
-.btn-avatar-action {
-    width: 100%;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-    text-transform: uppercase;
+/* REGLA GENERAL TIENDA: BOTONES SIN NEGRITA */
+.shop-page-container button,
+.shop-card button,
+.btn-shop-access,
+.btn-shop-back,
+.btn-shop-vip,
+.btn-shop-disabled,
+.btn-filter-pill,
+.btn-filter-currency-pill,
+.btn-avatar-action,
+.btn-buy-pack,
+.btn-buy-responsive,
+.rarity-btn {
+    font-weight: 500 !important;
 }
 
-.btn-avatar-action.buy {
-    background: linear-gradient(135deg, #ffd700, #ff8c00);
-    color: #020617;
-    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+/* ==========================================================================
+   TIENDA DE TAPETES Y FUNDAS - RESPONSIVE DESIGN @MEDIA
+   ========================================================================== */
+.shop-cosmetics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 320px)) !important;
+    gap: 16px !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 10px 5px 30px 5px !important;
+    box-sizing: border-box !important;
 }
 
-.btn-avatar-action.buy:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+.shop-cosmetic-card {
+    width: 100% !important;
+    max-width: 320px !important;
+    box-sizing: border-box !important;
 }
 
-.btn-avatar-action.equip {
-    background: linear-gradient(135deg, #00f0ff, #0072ff);
-    color: #020617;
-    box-shadow: 0 3px 10px rgba(0, 240, 255, 0.3);
+@media (max-width: 768px) and (orientation: portrait) {
+    .shop-cosmetics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 280px)) !important;
+        gap: 12px !important;
+        padding: 8px 4px 24px 4px !important;
+    }
+    .shop-filter-bar {
+        padding: 4px 8px !important;
+        overflow-x: auto;
+    }
 }
 
-.btn-avatar-action.equip:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 15px rgba(0, 240, 255, 0.5);
+@media (max-width: 480px) and (orientation: portrait) {
+    .shop-cosmetics-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        padding: 6px 2px 20px 2px !important;
+    }
+    .shop-cosmetic-card {
+        max-width: 100% !important;
+        margin: 0 auto;
+    }
 }
 
-.btn-avatar-action.equipped {
-    background: rgba(46, 213, 115, 0.2);
-    color: #2ed573;
-    border: 1px solid rgba(46, 213, 115, 0.5);
-    cursor: default;
+/* ==========================================================================
+   GLOBAL SHOP RESPONSIVE (MOBILE & TABLET PORTRAIT <= 768px / <= 480px)
+   ========================================================================== */
+@media (max-width: 768px) and (orientation: portrait) {
+    .shop-header {
+        padding: 6px 10px !important;
+    }
+
+    .shop-title {
+        font-size: 12.5px !important;
+    }
+
+    .shop-subtitle {
+        font-size: 8px !important;
+    }
+
+    .shop-header-icon {
+        width: 26px !important;
+        height: 26px !important;
+    }
+
+    .shop-header-icon svg {
+        width: 13px !important;
+        height: 13px !important;
+    }
+
+    .shop-balance-pill {
+        padding: 3px 8px !important;
+        font-size: 9px !important;
+    }
+
+    .shop-grid-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        padding-bottom: 24px !important;
+    }
+
+    .shop-card {
+        min-height: 235px !important;
+        padding: 6px !important;
+    }
+
+    .shop-card-artwork {
+        height: 85px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .shop-card-title {
+        font-size: 10px !important;
+        line-height: 1.15 !important;
+        margin-bottom: 2px !important;
+    }
+
+    .shop-card-desc {
+        font-size: 8.5px !important;
+        line-height: 1.25 !important;
+        margin-bottom: 6px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    .btn-shop-access,
+    .btn-shop-vip,
+    .btn-shop-disabled {
+        min-width: 80px !important;
+        max-width: 90% !important;
+        font-size: 8px !important;
+        height: 23px !important;
+        padding: 2px 8px !important;
+    }
+
+    .avatars-shop-grid {
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)) !important;
+        gap: 8px !important;
+        padding: 10px 5px !important;
+    }
+
+    .avatar-card-img-wrap {
+        width: 65px !important;
+        height: 65px !important;
+    }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+    .shop-header {
+        padding: 4px 8px !important;
+    }
+
+    .btn-shop-back {
+        min-width: 52px !important;
+        padding: 0 6px !important;
+        font-size: 8.5px !important;
+        height: 24px !important;
+    }
+
+    .shop-balance-pill {
+        padding: 2px 6px !important;
+        font-size: 8px !important;
+    }
+
+    .shop-grid-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 6px !important;
+    }
+
+    .shop-card {
+        min-height: 215px !important;
+        padding: 5px !important;
+    }
+
+    .shop-card-artwork {
+        height: 72px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .shop-card-title {
+        font-size: 9px !important;
+    }
+
+    .shop-card-badge {
+        font-size: 7px !important;
+        padding: 1px 4px !important;
+    }
+
+    .btn-shop-access,
+    .btn-shop-vip,
+    .btn-shop-disabled {
+        font-size: 7.5px !important;
+        height: 22px !important;
+    }
 }

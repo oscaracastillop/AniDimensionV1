@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Tienda Dimensional OCG</title>
+    <title>Ani-Dimension - Tienda Dimensional</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,36 +12,39 @@
     <link rel="stylesheet" href="../../css/shop.css?v=4.0">
     <link rel="stylesheet" href="shop.css?v=4.0">
     <link rel="stylesheet" href="../../css/navbar.css">
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
 </head>
 <body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="shop-page-container">
         <!-- HEADER SUPERIOR CONGELADO / FIJO -->
         <div class="shop-header">
-            <div class="shop-title-box">
+            <div class="shop-title-box" style="display:flex; align-items:center; gap:14px;">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
                 <div>
-                    <h1 class="shop-title">TIENDA DIMENSIONAL OCG</h1>
-                    <div class="shop-subtitle">SOBRES, FUNDAS, TAPETES, POTENCIADORES Y BENEFICIOS VIP AD</div>
+                    <h1 class="shop-title">TIENDA DIMENSIONAL</h1>
+                    <div class="shop-subtitle">SOBRES, FUNDAS, TAPETES, POTENCIADORES, RECARGAS Y BENEFICIOS VIP AD</div>
                 </div>
             </div>
 
             <div class="shop-balance-pill">
                 <span>STARSHIPS:</span>
-                <span id="shop-user-coins">⭐ 500</span>
+                <span id="shop-user-coins">⭐ ---</span>
             </div>
         </div>
 
         <!-- CONTENEDOR CENTRAL DESLIZABLE (SCROLL ULTRA-LIMPIO) -->
         <div class="shop-scroll-content">
 
-            <!-- CUADRÍCULA DE 5 CATEGORÍAS PRINCIPALES (1 FILA DE 5) -->
+            <!-- CUADRÍCULA DE CATEGORÍAS PRINCIPALES -->
             <div class="shop-grid-container">
 
                 <!-- 1. SOBRES DE CARTAS -->
                 <div class="shop-card">
                     <div>
                         <div class="shop-card-header">
-                            <span class="shop-card-badge active">Disponible</span>
+                            <span class="shop-card-badge active">500 ⭐ / SOBRE</span>
                         </div>
                         <div class="shop-card-artwork">
                             <img src="../../assets/images/shop/sobres.png" alt="Sobres de Cartas" class="shop-card-img">
@@ -49,7 +52,7 @@
                         </div>
                         <div class="shop-card-title">Sobres de Cartas</div>
                         <div class="shop-card-desc">
-                            Expansiones oficiales OCG y booster packs de cartas coleccionables. Consigue cartas de monstruos, magias y trampas con diferentes rarezas para tu Deck.
+                            Expansiones oficiales y booster packs de 3 cartas por sobre. Consigue monstruos, magias y trampas con diferentes rarezas para tu Deck.
                         </div>
                     </div>
                     <button class="btn-shop-access" onclick="location.href='shop-sobres.html'">
@@ -58,41 +61,47 @@
                     </button>
                 </div>
 
-                <!-- 2. FUNDAS DE CARTAS (REVERSOS DE CARTAS) -->
+                <!-- 2. RECARGA DE STARSHIPS ($ USD) -->
                 <div class="shop-card">
                     <div>
                         <div class="shop-card-header">
-                            <span class="shop-card-badge upcoming">Próximamente</span>
+                            <span class="shop-card-badge" style="background:linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(245, 158, 11, 0.5)); border:1px solid #ffd700; color:#ffd700;">⭐ MONEDAS USD</span>
                         </div>
-                        <div class="shop-card-artwork">
-                            <img src="../../assets/images/shop/fundas.png" alt="Fundas y Reversos" class="shop-card-img">
+                        <div class="shop-card-artwork" style="display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(255, 215, 0, 0.18) 0%, rgba(7, 13, 27, 0.95) 75%);">
+                            <svg viewBox="0 0 64 64" fill="none" style="width:48px; height:48px; filter:drop-shadow(0 0 10px rgba(255,215,0,0.7));">
+                                <polygon points="32,4 40,22 60,25 45,39 49,59 32,49 15,59 19,39 4,25 24,22" stroke="#ffd700" stroke-width="2.2" fill="rgba(255,215,0,0.2)"/>
+                                <circle cx="32" cy="34" r="8" stroke="#f59e0b" stroke-width="1.5" fill="rgba(255,215,0,0.3)"/>
+                            </svg>
                             <div class="shop-card-glow-overlay"></div>
                         </div>
-                        <div class="shop-card-title">Fundas y Reversos</div>
+                        <div class="shop-card-title">Recarga de StarShips</div>
                         <div class="shop-card-desc">
-                            Protectores y reversos personalizados para vestir el dorso de tus cartas Ani Dimension. Personaliza el diseño visual de tus cartas en cada combate.
+                            Adquiere paquetes de StarShips con bonificaciones masivas de hasta +100% de monedas extra para abrir sobres y desbloquear cosméticos.
                         </div>
                     </div>
-                    <button class="btn-shop-disabled" disabled>Próximamente</button>
+                    <button class="btn-shop-access" onclick="location.href='shop-estrellas.html'">
+                        <span>Recargar StarShips</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
                 </div>
 
-                <!-- 3. TAPETES DE DUELO -->
+                <!-- 3. MERCADO DE CARTAS SINGLES ($ USD) -->
                 <div class="shop-card">
                     <div>
                         <div class="shop-card-header">
-                            <span class="shop-card-badge active">Disponible</span>
+                            <span class="shop-card-badge" style="background:rgba(0,240,255,0.15); border:1px solid #00f0ff; color:#00f0ff;">VENTA DIRECTA</span>
                         </div>
-                        <div class="shop-card-artwork">
-                            <img src="../../assets/images/shop/tapetes.png" alt="Tapetes de Combate" class="shop-card-img">
+                        <div class="shop-card-artwork" style="display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(0, 240, 255, 0.18) 0%, rgba(7, 13, 27, 0.95) 75%);">
+                            <img src="https://images.ygoprodeck.com/images/cards_small/89631139.jpg" alt="Cartas Singles" style="height:78px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.6));" onerror="this.onerror=null; this.src='../../assets/images/cards/placeholder.png';">
                             <div class="shop-card-glow-overlay"></div>
                         </div>
-                        <div class="shop-card-title">Tapetes de Duelo</div>
+                        <div class="shop-card-title">Cartas Singles ($ USD)</div>
                         <div class="shop-card-desc">
-                            Superficies de combate cósmicas con zonas reglamentarias OCG. Equipa tableros personalizados de duelo con hologramas y animaciones interactivas.
+                            Compra directa de cartas individuales de los sobres oficiales (Blue-Eyes, Dark Magician, Exodia, Raigeki, Monster Reborn, Mirror Force).
                         </div>
                     </div>
-                    <button class="btn-shop-access" onclick="location.href='shop-tapetes.html'">
-                        <span>Ver Tapetes</span>
+                    <button class="btn-shop-access" onclick="location.href='shop-cartas.html'">
+                        <span>Ver Cartas Singles</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </button>
                 </div>
@@ -118,25 +127,28 @@
                     </button>
                 </div>
 
-                <!-- 4. POTENCIADORES -->
+                <!-- 5. POTENCIADORES DE AVATAR -->
                 <div class="shop-card">
                     <div>
                         <div class="shop-card-header">
-                            <span class="shop-card-badge upcoming">Próximamente</span>
+                            <span class="shop-card-badge active">Disponible</span>
                         </div>
                         <div class="shop-card-artwork">
-                            <img src="../../assets/images/shop/potenciadores.png" alt="Potenciadores" class="shop-card-img">
+                            <img src="../../assets/images/shop/potenciadores.png" alt="Potenciadores de Avatar" class="shop-card-img">
                             <div class="shop-card-glow-overlay"></div>
                         </div>
-                        <div class="shop-card-title">Potenciadores OCG</div>
+                        <div class="shop-card-title">Potenciadores de Avatar</div>
                         <div class="shop-card-desc">
-                            Orbes de experiencia OCG, multiplicadores de recompensas StarShips y modificadores estéticos de dados 3D para tus partidas competitivas.
+                            Orbes sagrados de EXP, multiplicadores de StarShips y orbes de suerte cósmicos para potenciar de forma permanente a tu avatar activo.
                         </div>
                     </div>
-                    <button class="btn-shop-disabled" disabled>Próximamente</button>
+                    <button class="btn-shop-access" onclick="location.href='shop-potenciadores.html'">
+                        <span>Ver Potenciadores</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
                 </div>
 
-                <!-- 5. PASE VIP AD -->
+                <!-- 6. PASE VIP AD -->
                 <div class="shop-card">
                     <div>
                         <div class="shop-card-header">
@@ -153,6 +165,48 @@
                     </div>
                     <button class="btn-shop-access btn-shop-vip" onclick="location.href='shop-vip.html'">
                         <span>Ver Pase VIP</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+
+                <!-- 7. FUNDAS DE CARTAS -->
+                <div class="shop-card">
+                    <div>
+                        <div class="shop-card-header">
+                            <span class="shop-card-badge active">Disponible</span>
+                        </div>
+                        <div class="shop-card-artwork">
+                            <img src="../../assets/images/shop/fundas.png" alt="Fundas y Reversos" class="shop-card-img" onerror="this.onerror=null; this.src='../../assets/images/sleeves/SLV-001.png';">
+                            <div class="shop-card-glow-overlay"></div>
+                        </div>
+                        <div class="shop-card-title">Fundas y Reversos</div>
+                        <div class="shop-card-desc">
+                            Protectores y reversos personalizados para vestir el dorso de tus cartas Ani Dimension. Personaliza el diseño visual de tus cartas.
+                        </div>
+                    </div>
+                    <button class="btn-shop-access" onclick="location.href='shop-fundas.html'">
+                        <span>Ver Fundas</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+
+                <!-- 8. TAPETES DE DUELO -->
+                <div class="shop-card">
+                    <div>
+                        <div class="shop-card-header">
+                            <span class="shop-card-badge active">Disponible</span>
+                        </div>
+                        <div class="shop-card-artwork">
+                            <img src="../../assets/images/shop/tapetes.png" alt="Tapetes de Combate" class="shop-card-img">
+                            <div class="shop-card-glow-overlay"></div>
+                        </div>
+                        <div class="shop-card-title">Tapetes de Duelo</div>
+                        <div class="shop-card-desc">
+                            Superficies de combate cósmicas con zonas reglamentarias. Equipa tableros personalizados de duelo con hologramas.
+                        </div>
+                    </div>
+                    <button class="btn-shop-access" onclick="location.href='shop-tapetes.html'">
+                        <span>Ver Tapetes</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </button>
                 </div>

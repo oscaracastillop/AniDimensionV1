@@ -16,5 +16,14 @@ window.selectedDiscardIndices = [];
 window.pendingRebornData = null;
 window.diceRollInterval = null;
 window.lastDiceWinner = null;
-window.currentUser = (window.Session && window.Session.getUser()) || { id: 999, username: 'Admin', role: 'admin' };
+window.currentUser = (window.Session && window.Session.getUser()) || { id: 1, username: 'Admin', role: 'admin' };
 var currentUser = window.currentUser;
+
+window.getActiveDuelRoomId = function() {
+    if (typeof currentPvpRoomId !== 'undefined' && currentPvpRoomId) return currentPvpRoomId;
+    if (window.lastDuelState && window.lastDuelState.roomId) return window.lastDuelState.roomId;
+    const urlParams = new URLSearchParams(window.location.search);
+    const r = urlParams.get('room');
+    if (r) return r;
+    return 'ROOM_DEMO';
+};

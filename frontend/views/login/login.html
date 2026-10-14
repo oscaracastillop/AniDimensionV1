@@ -19,9 +19,6 @@
 
             <!-- CONTENEDOR CENTRAL: LOGIN -->
             <div class="login-center-container">
-                <h1 class="login-main-title">ANI-DIMENSION</h1>
-                <div class="login-subtitle">SISTEMA DE DUELOS OCG VIRTUAL</div>
-
                 <div class="login-card">
                     <div class="auth-tabs">
                         <span class="auth-tab-btn">INICIO DE SESIÓN</span>
@@ -30,21 +27,195 @@
                     <div id="auth-login-panel">
                         <div class="auth-input-group">
                             <label class="auth-input-label">USUARIO DE DUELISTA</label>
-                            <input type="text" id="usernameInput" class="auth-input" value="Admin" placeholder="Ingresa tu usuario..." autocomplete="username">
+                            <input type="text" id="usernameInput" class="auth-input" placeholder="Ingresa tu usuario..." autocomplete="username">
                         </div>
 
                         <div class="auth-input-group">
                             <label class="auth-input-label">CONTRASEÑA</label>
-                            <input type="password" id="passwordInput" class="auth-input" value="Oscar1982" placeholder="Ingresa tu contraseña..." autocomplete="current-password" onkeydown="if(event.key==='Enter') performLogin()">
+                            <input type="password" id="passwordInput" class="auth-input" placeholder="Ingresa tu contraseña..." autocomplete="current-password" onkeydown="if(event.key==='Enter') performLogin()">
                         </div>
 
-                        <div id="login-alert-box" style="display:none; font-size:10px; margin-bottom:6px; padding:5px 8px; border-radius:6px; text-align:left;"></div>
+                        <div id="login-alert-box" style="display:none; font-size:10px; margin-bottom:6px; padding:5px 8px; border-radius:0; text-align:left;"></div>
 
                         <button id="btn-login-submit" class="btn-act-vertical" onclick="performLogin()">ENTRAR A LA DIMENSIÓN</button>
 
                         <div class="auth-toggle-wrapper">
                             <a href="../register/register.html" class="auth-toggle-link">¿No tienes cuenta? Regístrate como nuevo duelista</a>
                         </div>
+
+                        <div style="margin-top:10px; padding-top:8px; border-top:1px dashed rgba(0, 240, 255, 0.25); text-align:center;">
+                            <button type="button" class="btn-force-logout-trigger" onclick="openForceLogoutModal()" style="background:none; border:none; color:var(--accent-cyan, #00f0ff); font-size:9.5px; font-family:'Outfit',sans-serif; text-decoration:underline; cursor:pointer; padding:3px; opacity:0.9;">
+                                🔓 ¿Sesión activa o bloqueada en otro dispositivo? Desbloquear
+                            </button>
+                        </div>
+
+
+                        <div id="login-server-status" style="margin-top:6px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:8.5px; font-family:'Outfit', sans-serif; color:#94a3b8;">
+                            <span id="ad-conn-indicator" style="width:6.5px; height:6.5px; border-radius:50%; background:#10b981; box-shadow:0 0 6px #10b981; display:inline-block;"></span>
+                            <span id="ad-conn-text" style="letter-spacing:0.3px; font-weight:600; color:#10b981;">Servidor central de Ani-Dimension conectado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: GESTIÓN Y DESCARGA DE RECURSOS DE AUDIO (BGM Y SFX) -->
+            <div id="resource-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:999; justify-content:center; align-items:center;">
+                <div style="background:rgba(9, 17, 34, 0.98); border:1.5px solid var(--accent-cyan, #00f0ff); box-shadow:0 0 35px rgba(0,240,255,0.35); width:clamp(300px, 34vw, 420px); padding:18px 22px; text-align:center; box-sizing:border-box;">
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="font-family:'Orbitron',sans-serif; font-size:12.5px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; text-shadow:0 0 10px rgba(0,240,255,0.6);">
+                            📦 DESCARGAR RECURSOS
+                        </div>
+                        <span id="resource-modal-badge" class="resource-status-badge badge-empty">VERIFICANDO</span>
+                    </div>
+
+                    <div style="font-family:'Outfit',sans-serif; font-size:10px; color:#cbd5e1; margin-bottom:10px; line-height:1.4; text-align:left;">
+                        Descarga el paquete completo de <b>Música de Fondo (BGM)</b> y <b>Efectos de Duelo (SFX)</b> directamente desde el servidor para jugar con audio completo en tu APK o navegador.
+                    </div>
+
+                    <!-- MENSAJE DE SEGURIDAD TOTAL: LOS SONIDOS SON 100% OPCIONALES -->
+                    <div style="background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.35); padding:8px 10px; margin-bottom:12px; text-align:left;">
+                        <div style="display:flex; align-items:flex-start; gap:6px;">
+                            <span style="font-size:13px; line-height:1;">💡</span>
+                            <div style="font-family:'Outfit',sans-serif; font-size:9.5px; color:#a7f3d0; line-height:1.35;">
+                                <b>100% Opcional:</b> No descargar los sonidos <b>NO bloquea la jugabilidad</b>, no genera ningún error ni detiene tus partidas. Puedes jugar perfectamente con o sin ellos.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CONTENEDOR DE PROGRESO DE DESCARGA -->
+                    <div style="background:rgba(2, 6, 23, 0.6); border:1px solid rgba(255,255,255,0.08); padding:10px; margin-bottom:12px;">
+                        <div class="resource-info-row">
+                            <span style="color:#94a3b8;">Progreso del Paquete</span>
+                            <span id="resource-percent-txt" class="resource-info-val" style="color:var(--accent-cyan, #00f0ff); font-size:12px;">0%</span>
+                        </div>
+
+                        <div class="resource-progress-track">
+                            <div id="resource-progress-bar" class="resource-progress-fill" style="width:0%;"></div>
+                        </div>
+
+                        <div class="resource-info-row" style="font-size:9px;">
+                            <span>Archivos: <b id="resource-files-txt" style="color:#fff;">0 / 75</b></span>
+                            <span>Peso: <b id="resource-mb-txt" style="color:#fff;">0 MB / ~124 MB</b></span>
+                        </div>
+
+                        <div id="resource-current-file-txt" class="resource-current-file">
+                            Listo para iniciar la descarga.
+                        </div>
+                    </div>
+
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" id="btn-start-download-res" onclick="startResourceDownload()" style="flex:1; background:linear-gradient(135deg, rgba(0,240,255,0.35), rgba(2,132,199,0.6)); border:1.2px solid var(--accent-cyan, #00f0ff); color:#fff; padding:8px 10px; font-family:'Orbitron',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:0.5px; cursor:pointer; box-shadow:0 0 12px rgba(0,240,255,0.3);">
+                                📥 DESCARGAR SONIDOS
+                            </button>
+                            <button type="button" id="btn-cancel-download-res" onclick="cancelResourceDownload()" style="display:none; flex:0.6; background:rgba(239,68,68,0.25); border:1.2px solid #ef4444; color:#fca5a5; padding:8px 10px; font-family:'Orbitron',sans-serif; font-size:9px; font-weight:700; cursor:pointer;">
+                                ⏹️ CANCELAR
+                            </button>
+                        </div>
+
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" id="btn-clear-resources" onclick="clearDownloadedResources()" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid #475569; color:#94a3b8; padding:6px 10px; font-family:'Outfit',sans-serif; font-size:9.5px; cursor:pointer;">
+                                🗑️ Liberar Espacio (Borrar Audios)
+                            </button>
+                            <button type="button" onclick="closeResourceModal()" style="flex:0.6; background:rgba(255,255,255,0.08); border:1px solid #64748b; color:#cbd5e1; padding:6px 10px; font-family:'Outfit',sans-serif; font-size:10px; cursor:pointer;">
+                                ✕ Cerrar
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MODAL: CIERRE DE SESIÓN REMOTA / DESBLOQUEO DE CUENTA -->
+            <div id="force-logout-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:999; justify-content:center; align-items:center;">
+                <div style="background:rgba(9, 17, 34, 0.96); border:1.5px solid var(--accent-cyan, #00f0ff); box-shadow:0 0 30px rgba(0,240,255,0.3); width:clamp(280px, 32vw, 380px); padding:16px 20px; text-align:center; box-sizing:border-box;">
+                    <div style="font-family:'Orbitron',sans-serif; font-size:12.5px; font-weight:800; color:#fff; text-transform:uppercase; margin-bottom:4px; letter-spacing:1px; text-shadow:0 0 10px rgba(0,240,255,0.6);">
+                        🔓 DESBLOQUEAR / CERRAR SESIÓN REMOTA
+                    </div>
+                    <div style="font-family:'Outfit',sans-serif; font-size:10px; color:#94a3b8; margin-bottom:12px; line-height:1.35;">
+                        Ingresa tus credenciales para cerrar de inmediato cualquier sesión abierta en otros dispositivos y permitir el acceso en este dispositivo.
+                    </div>
+
+                    <div class="auth-input-group" style="text-align:left; margin-bottom:8px;">
+                        <label class="auth-input-label">USUARIO DE DUELISTA</label>
+                        <input type="text" id="forceUsernameInput" class="auth-input" placeholder="Tu usuario..." autocomplete="username">
+                    </div>
+
+                    <div class="auth-input-group" style="text-align:left; margin-bottom:10px;">
+                        <label class="auth-input-label">CONTRASEÑA</label>
+                        <input type="password" id="forcePasswordInput" class="auth-input" placeholder="Tu contraseña..." autocomplete="current-password" onkeydown="if(event.key==='Enter') performForceLogout()">
+                    </div>
+
+                    <div id="force-logout-alert" style="display:none; font-size:10px; margin-bottom:8px; padding:5px 8px; border-radius:0; text-align:left;"></div>
+
+                    <div style="display:flex; gap:8px; margin-top:8px;">
+                        <button type="button" id="btn-force-logout-submit" onclick="performForceLogout()" style="flex:1; background:linear-gradient(135deg, rgba(0,240,255,0.3), rgba(2,132,199,0.5)); border:1.2px solid var(--accent-cyan, #00f0ff); color:#fff; padding:7px 10px; font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.5px; cursor:pointer;">
+                            DESBLOQUEAR
+                        </button>
+                        <button type="button" onclick="closeForceLogoutModal()" style="flex:0.6; background:rgba(255,255,255,0.06); border:1.2px solid #64748b; color:#cbd5e1; padding:7px 10px; font-family:'Outfit',sans-serif; font-size:10.5px; cursor:pointer;">
+                            CANCELAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: CRÉDITOS OFICIALES (DESARROLLADO POR OSCAR CASTILLO) -->
+            <div id="credits-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:999; justify-content:center; align-items:center;" onclick="if(event.target===this) closeCreditsModal()">
+                <div class="credits-modal-card">
+                    <div class="credits-modal-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:16px;">📜</span>
+                            <span class="credits-modal-title">CRÉDITOS OFICIALES</span>
+                        </div>
+                        <button type="button" onclick="closeCreditsModal()" class="credits-btn-close">✕</button>
+                    </div>
+
+                    <div class="credits-modal-body">
+                        <div class="credits-logo-wrap">
+                            <div style="font-family:'Orbitron', sans-serif; font-size:15px; font-weight:900; color:#00f0ff; letter-spacing:1px; text-shadow:0 0 12px rgba(0,240,255,0.6);">
+                                ANI DIMENSION ONLINE
+                            </div>
+                            <div style="font-size:9.5px; color:#94a3b8; font-family:'Outfit', sans-serif; margin-top:2px;">
+                                El Metaverso de Duelos Anime en Tiempo Real
+                            </div>
+                        </div>
+
+                        <div class="credits-role-card" style="border:1.2px solid rgba(255, 215, 0, 0.45); background:linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(0, 0, 0, 0.5));">
+                            <div style="font-size:9px; font-family:'Orbitron', sans-serif; color:#ffd700; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;">
+                                👑 CREADOR & DESARROLLADOR PRINCIPAL
+                            </div>
+                            <div style="font-size:17px; font-family:'Orbitron', sans-serif; color:#ffffff; font-weight:900; margin-top:4px; text-shadow:0 0 14px rgba(255,215,0,0.6);">
+                                Oscar Castillo
+                            </div>
+                            <div style="font-size:9.5px; color:#cbd5e1; margin-top:3px; font-family:'Outfit', sans-serif;">
+                                Arquitectura de Software, Full-Stack Development & Motor de Duelos
+                            </div>
+                        </div>
+
+                        <div class="credits-info-grid">
+                            <div class="credits-info-item">
+                                <span class="credits-info-lbl">⚡ MOTOR DE DUELOS</span>
+                                <span class="credits-info-val">Core Dimension Engine (100% Nativo)</span>
+                            </div>
+                            <div class="credits-info-item">
+                                <span class="credits-info-lbl">🎴 MODO AVENTURA</span>
+                                <span class="credits-info-val">12 Eras • 193 Duelistas Canónicos</span>
+                            </div>
+                            <div class="credits-info-item">
+                                <span class="credits-info-lbl">🌐 DESARROLLADO POR</span>
+                                <span class="credits-info-val" style="color:#00f0ff; font-weight:700;">Ani Dimension</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:10px; margin-bottom:12px; font-size:8.5px; color:#64748b; font-family:'Outfit', sans-serif; text-align:center;">
+                            © 2026 Ani Dimension • Todos los derechos reservados.
+                        </div>
+
+                        <button type="button" class="btn-credits-close-action" onclick="closeCreditsModal()">
+                            ENTENDIDO
+                        </button>
                     </div>
                 </div>
             </div>
@@ -57,7 +228,27 @@
         </div>
     </div>
 
+    <!-- BOTÓN FLOTANTE OFICIAL EN LA PARTE INFERIOR IZQUIERDA: CRÉDITOS -->
+    <div class="credits-float-wrapper" id="bottom-left-credits-action">
+        <button type="button" id="btn-open-credits-modal" class="btn-credits-float" onclick="openCreditsModal()" title="Ver créditos oficiales y desarrollador de Ani-Dimension">
+            <span class="credits-float-icon">📜</span>
+            <span class="credits-float-text">CRÉDITOS</span>
+        </button>
+    </div>
+
+    <!-- BOTÓN FLOTANTE OFICIAL EN LA PARTE INFERIOR DERECHA: DESCARGA DE RECURSOS / SONIDOS -->
+    <div class="sound-float-wrapper" id="bottom-right-sound-action">
+        <button type="button" id="btn-open-resource-modal" class="btn-resource-manager-float" onclick="openResourceModal()" title="Descargar paquete completo de música de fondo y efectos de sonido">
+            <span class="sound-float-icon">🔊</span>
+            <span class="sound-float-text">DESCARGAR SONIDOS</span>
+            <span id="login-resource-pill" class="sound-float-pill">⚪ OPCIONAL</span>
+        </button>
+    </div>
+
     <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/resource-downloader.js"></script>
+    <script src="../../js/core/sound-manager.js"></script>
     <script src="../../js/views/login.js"></script>
 </body>
 </html>

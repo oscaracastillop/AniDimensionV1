@@ -3,71 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Tienda de Tapetes</title>
+    <title>Ani-Dimension - Tienda de Tapetes de Duelo</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/global.css">
-    <link rel="stylesheet" href="../../css/shop.css?v=2.1">
-    <link rel="stylesheet" href="shop.css?v=2.1">
-    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="shop.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
 </head>
 <body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="shop-page-container">
-        <!-- HEADER FIJO CON BOTÓN VOLVER -->
+        
+        <!-- HEADER FIJO -->
         <div class="shop-header">
             <div class="shop-title-box">
-                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </a>
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
                 <div>
-                    <h1 class="shop-title">CATÁLOGO DE TAPETES</h1>
-                    <div class="shop-subtitle">SUPERFICIES CÓSMICAS DE DUELO EN ALTA DEFINICIÓN</div>
+                    <h1 class="shop-title">CATÁLOGO DE TAPETES DE DUELO</h1>
+                    <div class="shop-subtitle">SUPERFICIES CÓSMICAS DE DUELO EN ALTA DEFINICIÓN - VITALICIOS</div>
                 </div>
             </div>
 
-            <div class="shop-balance-pill">
-                <span>STARSHIPS:</span>
-                <span id="shop-user-coins">⭐ 500</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <div class="shop-balance-pill">
+                    <span>STARSHIPS:</span>
+                    <span id="shop-user-coins">⭐ ---</span>
+                </div>
+                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
+                    VOLVER
+                </a>
             </div>
         </div>
 
-        <!-- CONTENEDOR CENTRAL DESLIZABLE (LISTO PARA INYECTAR ÍTEMS) -->
+        <!-- BARRA DE FILTROS CÓSMICOS (MONEDA) -->
+        <div class="shop-filter-bar">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-family:'Orbitron', sans-serif; font-size:8px; font-weight:800; color:#ffd700; text-transform:uppercase;">
+                    MONEDA:
+                </span>
+                <div class="filter-pills-group" id="filter-currency-group">
+                    <button type="button" class="btn-filter-currency-pill active" onclick="setTapeteCurrencyFilter('ALL', this)">TODAS</button>
+                    <button type="button" class="btn-filter-currency-pill" onclick="setTapeteCurrencyFilter('STARSHIPS', this)">⭐ STARSHIPS</button>
+                    <button type="button" class="btn-filter-currency-pill" onclick="setTapeteCurrencyFilter('USD', this)">💵 DÓLARES ($)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE CON GRID DINÁMICO DE CARDS -->
         <div class="shop-scroll-content">
-            <div class="shop-empty-category-container">
-                <div class="shop-empty-icon" style="color:#c084fc;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:100%; height:100%;">
-                        <ellipse cx="12" cy="12" rx="10" ry="6"></ellipse>
-                        <circle cx="12" cy="12" r="2"></circle>
-                    </svg>
-                </div>
-                <div class="shop-empty-title">CATÁLOGO DE TAPETES EN PREPARACIÓN</div>
-                <div class="shop-empty-desc">
-                    Aquí podrás seleccionar tapetes de combate con zonas reglamentarias OCG, fondos de nebulosa y efectos sonoros.
-                </div>
+            <div id="shop-tapetes-grid" class="shop-cosmetics-grid" style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px; padding:12px 10px 40px 10px;">
+                <!-- Se inyectan dinámicamente las cards -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DE COMPRA EN STARSHIPS -->
+    <div id="shop-tapete-confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #ffd700; box-shadow:0 0 35px rgba(255,215,0,0.3), 0 10px 40px rgba(0,0,0,0.85); width:100%; max-width:440px; padding:22px 20px; text-align:center; box-sizing:border-box; color:#fff;">
+            <div style="font-family:'Orbitron', sans-serif; font-size:13px; font-weight:900; color:#ffd700; letter-spacing:0.5px; margin-bottom:4px;">
+                CONFIRMAR COMPRA DE TAPETE
+            </div>
+            
+            <div id="modal-tapete-buy-details" style="background:rgba(0,0,0,0.55); border:1px solid rgba(255,215,0,0.3); padding:12px; margin:12px 0; text-align:center; font-size:11px; line-height:1.5;">
+                <!-- Dinámico -->
+            </div>
+
+            <div style="font-size:9.5px; color:#94a3b8; margin-bottom:18px; line-height:1.4;">
+                Los tapetes son <b>vitalicios</b> y podrás activarlos cuando desees desde tu colección o la tienda.
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button type="button" onclick="closeTapeteConfirmModal()" style="padding:7px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#cbd5e1; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:500; cursor:pointer;">
+                    CANCELAR
+                </button>
+                <button id="btn-modal-confirm-tapete-buy" type="button" style="padding:7px 20px; background:linear-gradient(135deg, #ffd700 0%, #f59e0b 100%); border:1px solid #ffd700; color:#000; font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:500; cursor:pointer; box-shadow:0 0 16px rgba(255,215,0,0.55);">
+                    CONFIRMAR COMPRA
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- NAVBAR INFERIOR Y AUTENTICACIÓN -->
+    <!-- MODAL DE NOTIFICACIÓN DE ÉXITO -->
+    <div id="shop-tapete-notice-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #00f0ff; box-shadow:0 0 35px rgba(0,240,255,0.3), 0 10px 40px rgba(0,0,0,0.85); width:100%; max-width:420px; padding:22px 20px; text-align:center; box-sizing:border-box; color:#fff;">
+            <div id="modal-tapete-notice-title" style="font-family:'Orbitron', sans-serif; font-size:13px; font-weight:900; color:#00f0ff; letter-spacing:0.5px; margin-bottom:8px;">
+                ¡COMPRA EXITOSA!
+            </div>
+            
+            <div id="modal-tapete-notice-msg" style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.25); padding:10px; margin:10px 0 16px 0; font-size:10.5px; color:#cbd5e1; line-height:1.4;">
+                <!-- Dinámico -->
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button type="button" onclick="closeTapeteNoticeModal()" style="padding:7px 20px; background:linear-gradient(135deg, rgba(0,240,255,0.3), rgba(0,180,216,0.6)); border:1px solid var(--accent-cyan); color:#fff; font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:500; cursor:pointer;">
+                    ACEPTAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR Y SCRIPTS -->
     <div id="navbar-container"></div>
     <script src="../../js/core/session.js"></script>
     <script src="../../js/core/navbar.js"></script>
-    <script src="../../js/views/shop.js"></script>
+    <script src="../../js/data/playmats-data.js"></script>
+    <script src="../../js/views/shop-tapetes.js"></script>
     <script>
-        async function enforceLandscapeOrientation() {
-            try {
-                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
-                    await window.Capacitor.Plugins.ScreenOrientation.lock({ orientation: 'landscape' });
-                } else if (screen.orientation && typeof screen.orientation.lock === 'function') {
-                    await screen.orientation.lock('landscape');
-                }
-            } catch (e) {}
-        }
         document.addEventListener('DOMContentLoaded', () => {
-            enforceLandscapeOrientation();
             if (window.AppNavbar) window.AppNavbar.init('tienda');
         });
     </script>

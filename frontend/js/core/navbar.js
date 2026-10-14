@@ -41,6 +41,18 @@ const AppNavbar = {
                 <circle cx="12" cy="14" r="1.5"/>
             </svg>
         `,
+        eventos: `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+        `,
+        chat: `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <line x1="8" y1="10" x2="16" y2="10"/>
+                <line x1="8" y1="14" x2="12" y2="14"/>
+            </svg>
+        `,
         admin: `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"/>
@@ -78,10 +90,15 @@ const AppNavbar = {
             if (path.includes('/views/lobby/')) active = 'lobby';
             else if (path.includes('/views/rankings/')) active = 'rankings';
             else if (path.includes('/views/duels/')) active = 'duels';
+            else if (path.includes('/views/eventos/')) active = 'eventos';
             else if (path.includes('/views/shop/')) active = 'tienda';
+            else if (path.includes('/views/chat/')) active = 'chat';
             else if (path.includes('/views/admin/')) active = 'admin';
             else if (path.includes('/views/profile/')) active = 'perfil';
         }
+
+        const user = (window.Session && typeof window.Session.getUser === 'function') ? window.Session.getUser() : null;
+        const isAdmin = Boolean(user && (user.role === 'admin' || user.isAdmin || (user.username && user.username.toLowerCase() === 'admin')));
 
         const nav = document.createElement('nav');
         nav.id = 'neon-footer-navbar';
@@ -106,25 +123,39 @@ const AppNavbar = {
                     <span class="neon-nav-label">Duelos</span>
                 </button>
 
-                <!-- 4. TIENDA -->
+                <!-- 4. EVENTOS -->
+                <button type="button" class="neon-nav-item nav-eventos ${active === 'eventos' ? 'active' : ''}" onclick="AppNavbar.onNavigate('eventos')">
+                    <div class="neon-nav-icon">${this.icons.eventos}</div>
+                    <span class="neon-nav-label">Eventos</span>
+                </button>
+
+                <!-- 5. TIENDA -->
                 <button type="button" class="neon-nav-item nav-tienda ${active === 'tienda' ? 'active' : ''}" onclick="AppNavbar.onNavigate('tienda')">
                     <div class="neon-nav-icon">${this.icons.tienda}</div>
                     <span class="neon-nav-label">Tienda</span>
                 </button>
 
-                <!-- 5. ADMINISTRACION -->
-                <button type="button" class="neon-nav-item nav-admin ${active === 'admin' ? 'active' : ''}" onclick="AppNavbar.onNavigate('admin')">
-                    <div class="neon-nav-icon">${this.icons.admin}</div>
-                    <span class="neon-nav-label">Administración</span>
+                <!-- 6. CHAT -->
+                <button type="button" class="neon-nav-item nav-chat ${active === 'chat' ? 'active' : ''}" onclick="AppNavbar.onNavigate('chat')">
+                    <div class="neon-nav-icon">${this.icons.chat}</div>
+                    <span class="neon-nav-label">Chat</span>
                 </button>
 
-                <!-- 6. PERFIL -->
+                <!-- 7. ADMINISTRACION (SOLO SUPER ADMIN) -->
+                ${isAdmin ? `
+                <button type="button" class="neon-nav-item nav-admin ${active === 'admin' ? 'active' : ''}" onclick="AppNavbar.onNavigate('admin')">
+                    <div class="neon-nav-icon">${this.icons.admin}</div>
+                    <span class="neon-nav-label">Admin</span>
+                </button>
+                ` : ''}
+
+                <!-- 8. PERFIL -->
                 <button type="button" class="neon-nav-item nav-perfil ${active === 'perfil' ? 'active' : ''}" onclick="AppNavbar.onNavigate('perfil')">
                     <div class="neon-nav-icon">${this.icons.perfil}</div>
                     <span class="neon-nav-label">Perfil</span>
                 </button>
 
-                <!-- 7. SALIR -->
+                <!-- 9. SALIR -->
                 <button type="button" class="neon-nav-item nav-salir" onclick="AppNavbar.onNavigate('salir')">
                     <div class="neon-nav-icon">${this.icons.salir}</div>
                     <span class="neon-nav-label">Salir</span>
@@ -137,6 +168,9 @@ const AppNavbar = {
 
     // Enrutador directo a VISTAS DEDICADAS CON RUTAS ABSOLUTAS
     onNavigate: function(menuKey) {
+        if (window.SoundManager) {
+            window.SoundManager.playSFX('ui_click');
+        }
         switch (menuKey) {
             case 'lobby':
                 if (window.location.pathname === '/views/lobby/lobby.html') {
@@ -162,11 +196,27 @@ const AppNavbar = {
                 }
                 break;
 
+            case 'eventos':
+                if (window.location.pathname === '/views/eventos/eventos.html') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.location.href = '/views/eventos/eventos.html';
+                }
+                break;
+
             case 'tienda':
                 if (window.location.pathname === '/views/shop/shop.html') {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
                     window.location.href = '/views/shop/shop.html';
+                }
+                break;
+
+            case 'chat':
+                if (window.location.pathname === '/views/chat/chat.html') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    window.location.href = '/views/chat/chat.html';
                 }
                 break;
 
@@ -193,7 +243,12 @@ const AppNavbar = {
     },
 
     executeLogout: function() {
-        if (typeof logoutToLogin === 'function') {
+        if (window.SoundManager) {
+            window.SoundManager.playSFX('button');
+        }
+        if (typeof Session !== 'undefined' && typeof Session.logout === 'function') {
+            Session.logout('/views/login/login.html');
+        } else if (typeof logoutToLogin === 'function') {
             logoutToLogin();
         } else if (typeof Session !== 'undefined' && Session.clearUser) {
             Session.clearUser();
@@ -202,12 +257,72 @@ const AppNavbar = {
             localStorage.clear();
             window.location.href = '/views/login/login.html';
         }
+    },
+
+    /**
+     * Asegura la carga de SoundManager y reproduce la música en bucle correspondiente a la sección
+     */
+    initAudio: function() {
+        const setupBgm = () => {
+            if (!window.SoundManager) return;
+            const p = (window.location.pathname || '').toLowerCase();
+
+            // Determinar la pista adecuada para la sección actual
+            if (p.includes('/login') || p.includes('/register')) {
+                window.SoundManager.playBGM('login', true);
+            } else if (p.includes('/shop')) {
+                window.SoundManager.playBGM('shop', true);
+            } else if (p.includes('/eventos') || p.includes('/puzzle') || p.includes('/subasta') || p.includes('/torneos')) {
+                window.SoundManager.playBGM('events', true);
+            } else if (p.includes('/deck-builder') || p.includes('/catalog')) {
+                window.SoundManager.playBGM('deck', true);
+            } else if (p.includes('/profile')) {
+                window.SoundManager.playBGM('profile', true);
+            } else if (p.includes('/duel-npc') || p.includes('/duel-pvp')) {
+                // Las pantallas de duelo gestionan su propia música dinámica por NPC
+            } else {
+                // Menús principales, Lobby, Rankings, Chat, Select-NPC, etc.
+                window.SoundManager.playBGM('menu', true);
+            }
+        };
+
+        if (!window.SoundManager) {
+            const script = document.createElement('script');
+            script.src = '/js/core/sound-manager.js';
+            script.onload = setupBgm;
+            script.onerror = () => {
+                // Fallback a ruta relativa si la absoluta fallara
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = '../../js/core/sound-manager.js';
+                fallbackScript.onload = setupBgm;
+                document.head.appendChild(fallbackScript);
+            };
+            document.head.appendChild(script);
+        } else {
+            setupBgm();
+        }
+
+        // Listener global de efectos SFX al interactuar con botones y tarjetas
+        document.addEventListener('click', (e) => {
+            const el = e.target.closest('button, a, .shop-card, .btn-shop-access, .card-slot, .fc-btn-duel, .era-tab-item, .btn-medals-showcase');
+            if (el && window.SoundManager) {
+                // No duplicar si el botón ya tiene un sonido específico
+                if (!el.getAttribute('onclick')?.includes('playSFX')) {
+                    window.SoundManager.playSFX('button');
+                }
+            }
+        }, true);
     }
 };
 
 // Auto-inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => AppNavbar.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        AppNavbar.init();
+        AppNavbar.initAudio();
+    });
 } else {
     AppNavbar.init();
+    AppNavbar.initAudio();
 }
+

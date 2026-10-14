@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Arena de Duelos OCG</title>
+    <title>Ani-Dimension - Arena de Duelos</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/global.css">
-    <link rel="stylesheet" href="../../css/admin.css">
-    <link rel="stylesheet" href="menu.css?v=3.0">
-    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/global.css?v=4.0">
+    <link rel="stylesheet" href="../../css/admin.css?v=4.0">
+    <link rel="stylesheet" href="menu.css?v=4.0">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.0">
 </head>
-<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="duel-menu-page-container">
-        <!-- HEADER EN ESTILO ADMINISTRACIÓN FIJO -->
+        <!-- HEADER EN ESTILO ADMINISTRACIÓN FIJO (IDÉNTICO A TIENDA) -->
         <div class="admin-header duel-menu-header">
-            <div class="admin-title-box">
+            <div class="admin-title-box duel-menu-title-box" style="display:flex; align-items:center; gap:14px;">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
                 <div>
-                    <h1 class="admin-title">ARENA DE DUELOS OCG</h1>
-                    <div class="admin-subtitle">MODALIDADES DE COMBATE - SELECCIÓN DE MÓDULOS DE DUELO</div>
+                    <h1 class="admin-title duel-menu-title">ARENA DE DUELOS</h1>
+                    <div class="admin-subtitle duel-menu-subtitle">MODALIDADES DE COMBATE - SELECCIÓN DE MÓDULOS DE DUELO</div>
                 </div>
             </div>
         </div>
 
         <!-- CONTENEDOR CENTRAL DESLIZABLE (SCROLL ULTRA-LIMPIO) -->
         <div class="duel-menu-scroll-content">
-
-
 
         <!-- GRID DE 5 MÓDULOS DE DUELO UNIFICADOS -->
         <div class="admin-modules-grid">
@@ -46,14 +45,14 @@
                         <div class="duel-card-glow-overlay"></div>
                     </div>
 
-                    <div class="admin-module-title">Duelos VS NPC</div>
+                    <div class="admin-module-title">Modo Aventura (50 NPCs)</div>
                     <div class="admin-module-desc">
-                        Pon a prueba tus estrategias OCG contra la Inteligencia Artificial oficial de <b>Yugi Muto</b>. Incluye tirada previa de dados 3D, cadenas LIFO y reglas reglamentarias.
+                        Campaña de 50 duelistas (Niveles 1 al 100) al estilo Forbidden Memories. Progresión secuencial, Decks con Rituales y Fusiones, 50 Medallas y drops de cartas.
                     </div>
                 </div>
 
-                <a href="npc/select-npc.html" class="btn-module-access">
-                    <span>Entrar a Duelos VS NPC</span>
+                <a href="npc/select-npc.html?t=20261010_1" class="btn-module-access" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    <span>Entrar a Modo Aventura</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
             </div>
@@ -62,21 +61,24 @@
             <div class="admin-module-card">
                 <div>
                     <div class="admin-module-header">
-                        <span class="admin-module-badge upcoming">Próximamente</span>
+                        <span class="admin-module-badge active">Activo</span>
                     </div>
 
                     <div class="duel-card-artwork">
-                        <img src="../../assets/images/duels/pvp.jpg" alt="Duelos PvP Online" class="duel-card-img">
+                        <img src="../../assets/images/duels/pvp.jpg" alt="Duelos PvP Online" class="duel-card-img" onerror="this.onerror=null; this.src='../../assets/images/duels/npc.jpg';">
                         <div class="duel-card-glow-overlay"></div>
                     </div>
 
                     <div class="admin-module-title">Duelos PvP Online</div>
                     <div class="admin-module-desc">
-                        Enfréntate a duelistas conectados en tiempo real a nivel mundial. Matchmaking automático, salas privadas de combate y sincronización de tablero vía WebSockets.
+                        Enfréntate a duelistas en tiempo real. Salas de duelo con rango de niveles, contraseñas, reloj de 2 minutos y sincronización multijugador.
                     </div>
                 </div>
 
-                <button class="btn-module-disabled" disabled>Próximamente</button>
+                <a href="pvp/lobby-pvp.html" class="btn-module-access" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    <span>Entrar a Duelos PvP</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
             </div>
 
             <!-- MÓDULO 3: CONSTRUCCIÓN DE DECKS -->
@@ -97,7 +99,7 @@
                     </div>
                 </div>
 
-                <a href="deck-builder.html" class="btn-module-access">
+                <a href="deck-builder.html" class="btn-module-access" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
                     <span>Entrar a Construcción</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
@@ -107,21 +109,24 @@
             <div class="admin-module-card">
                 <div>
                     <div class="admin-module-header">
-                        <span class="admin-module-badge upcoming">Próximamente</span>
+                        <span class="admin-module-badge active">Activo</span>
                     </div>
 
                     <div class="duel-card-artwork">
-                        <img src="../../assets/images/duels/catalog.jpg" alt="Catálogo de Cartas" class="duel-card-img">
+                        <img src="../../assets/images/duels/catalog.jpg" alt="Catálogo de Cartas" class="duel-card-img" onerror="this.onerror=null; this.src='https://images.ygoprodeck.com/images/cards_small/89631139.jpg';">
                         <div class="duel-card-glow-overlay"></div>
                     </div>
 
-                    <div class="admin-module-title">Catálogo de Cartas</div>
+                    <div class="admin-module-title">Álbum de Colección y Catálogo</div>
                     <div class="admin-module-desc">
-                        Explora la enciclopedia completa oficial de cartas OCG/TCG. Consulta efectos reglamentarios, estadísticas ATK/DEF, rarezas, arquetipos y filtros avanzados.
+                        Explora la enciclopedia oficial organizada en capítulos por sobre de expansión. Visualiza tus cartas coleccionadas a color, cartas faltantes, porcentajes y progreso global.
                     </div>
                 </div>
 
-                <button class="btn-module-disabled" disabled>Próximamente</button>
+                <a href="catalog.html" class="btn-module-access" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    <span>Entrar al Catálogo</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
             </div>
 
             <!-- MÓDULO 5: TORNEOS COMPETITIVOS -->
@@ -138,7 +143,7 @@
 
                     <div class="admin-module-title">Torneos Competitivos</div>
                     <div class="admin-module-desc">
-                        Compite en torneos eliminatorios comunitarios oficiales OCG con tabla de brackets en vivo, salas de espectador en tiempo real y recompensas en StarShips.
+                        Compite en torneos eliminatorios comunitarios oficiales con tabla de brackets en vivo, salas de espectador en tiempo real y recompensas en StarShips.
                     </div>
                 </div>
 
@@ -150,7 +155,9 @@
         </div> <!-- Fin de duel-menu-scroll-content -->
     </div> <!-- Fin de duel-menu-page-container -->
 
+    <script src="../../js/core/sound-manager.js"></script>
     <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
     <script src="../../js/core/navbar.js"></script>
     <script>
         async function enforceLandscapeOrientation() {
@@ -165,6 +172,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             enforceLandscapeOrientation();
+            if (window.SoundManager && typeof window.SoundManager.playBGM === 'function') {
+                window.SoundManager.playBGM('menu', true);
+            }
             if (window.Session && !window.Session.isLoggedIn()) {
                 window.Session.saveUser({ id: 999, username: 'Admin', role: 'admin', starships: 500 });
             }

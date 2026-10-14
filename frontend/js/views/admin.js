@@ -11,8 +11,26 @@ const ADMIN_PAGE_SIZE = 10;
 let currentEditingUser = null;
 let currentBanningUser = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.Session && !window.Session.requireAuth('/views/login/login.html')) {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.Session && !window.Session.requireAdmin('/views/lobby/lobby.html')) {
+        return;
+    }
+
+    // Verificar en SQL Server directamente
+    try {
+        const uid = window.Session.getUserId();
+        const token = window.Session.getSessionToken();
+        const res = await fetch('/api/admin/verify-access', {
+            headers: { 'x-user-id': String(uid), 'x-session-token': token }
+        });
+        if (!res.ok) {
+            alert('Acceso Denegado: No tienes privilegios de Administrador en la base de datos.');
+            window.location.href = '/views/lobby/lobby.html';
+            return;
+        }
+    } catch (e) {
+        alert('Error de verificación con el servidor.');
+        window.location.href = '/views/lobby/lobby.html';
         return;
     }
 
@@ -24,7 +42,7 @@ async function initAdminView() {
     if (user) {
         const badgeEl = document.getElementById('admin-user-status');
         if (badgeEl) {
-            badgeEl.textContent = user.isAdmin ? '⚡ SUPER ADMIN (SA)' : '⚡ DUELISTA AUTORIZADO';
+            badgeEl.textContent = '⚡ SUPER ADMIN (SA)';
         }
     }
 
@@ -348,7 +366,7 @@ function openBanUserModal(userId) {
         dateInput.value = defaultDate.toISOString().slice(0, 16);
     }
 
-    reasonInput.value = user.BanReason || 'Violación de términos de conducta y duelos OCG';
+    reasonInput.value = user.BanReason || 'Violación de términos de conducta y duelos';
 
     const alertBox = document.getElementById('ban-user-alert');
     if (alertBox) alertBox.style.display = 'none';

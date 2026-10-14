@@ -15,7 +15,10 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    background: radial-gradient(circle at center, rgba(14, 22, 38, 0.95) 0%, rgba(5, 8, 14, 0.98) 100%);
+    background: linear-gradient(rgba(2, 4, 8, 0.45), rgba(2, 4, 8, 0.45)), url('../assets/login.jpg'), url('/assets/login.jpg'), url('../../assets/login.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
     z-index: 200;
 }
 
@@ -106,32 +109,19 @@
     box-sizing: border-box;
 }
 
-/* TÍTULO PRINCIPAL CON NEÓN BRILLANTE */
-.login-main-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(18px, 2.2vw, 28px);
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin: 0;
-    text-align: center;
-    line-height: 1.1;
-    background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan, #00f0ff) 60%, #00b4d8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.8));
+/* LOGO OFICIAL ANI-DIMENSION */
+.login-brand-logo {
+    width: clamp(70px, 8.5vw, 115px);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.7));
+    margin-bottom: 2px;
 }
 
+/* TÍTULO PRINCIPAL Y SUBTÍTULO OCULTOS */
+.login-main-title,
 .login-subtitle {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(7.5px, 0.75vw, 9.5px);
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    color: var(--accent-cyan, #00f0ff);
-    text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
-    margin: 0 0 2px 0;
-    opacity: 0.9;
-    line-height: 1;
+    display: none !important;
 }
 
 /* ==========================================================================
@@ -449,3 +439,458 @@ select.auth-input option {
         border-radius: 0 !important;
     }
 }
+
+/* ==========================================================================
+   MEDIA QUERY: DISPOSITIVOS MÓVILES EN VERTICAL / PORTRAIT (ANCHO <= 640PX)
+   ========================================================================== */
+@media (max-width: 640px) and (orientation: portrait), (max-width: 500px) {
+    .login-dragon {
+        opacity: 0.18 !important;
+        width: 180px !important;
+    }
+
+    .login-dragon-left {
+        left: -40px !important;
+    }
+
+    .login-dragon-right {
+        right: -40px !important;
+    }
+
+    .login-center-container {
+        width: min(92vw, 360px) !important;
+    }
+
+    .login-main-title {
+        font-size: 16px !important;
+    }
+
+    .login-subtitle {
+        font-size: 8px !important;
+    }
+
+    .login-card {
+        padding: 12px 14px !important;
+    }
+}
+
+/* ==========================================================================
+   ESTILOS: GESTOR DE DESCARGA DE RECURSOS (AUDIO & SFX)
+   ========================================================================== */
+.btn-resource-manager {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 7px 10px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 78, 59, 0.4));
+    border: 1.2px solid rgba(16, 185, 129, 0.6);
+    color: #6ee7b7;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-resource-manager:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 78, 59, 0.6));
+    border-color: #10b981;
+    color: #ffffff;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.45);
+    transform: translateY(-1px);
+}
+
+.resource-status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 8.5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-radius: 0;
+    text-transform: uppercase;
+}
+
+.badge-ready {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid #10b981;
+    color: #34d399;
+}
+
+.badge-empty {
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid #64748b;
+    color: #cbd5e1;
+}
+
+.badge-downloading {
+    background: rgba(0, 240, 255, 0.2);
+    border: 1px solid var(--accent-cyan, #00f0ff);
+    color: var(--accent-cyan, #00f0ff);
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    from { box-shadow: 0 0 6px rgba(0,240,255,0.3); }
+    to { box-shadow: 0 0 16px rgba(0,240,255,0.7); }
+}
+
+.resource-progress-track {
+    width: 100%;
+    height: 14px;
+    background: rgba(2, 6, 23, 0.85);
+    border: 1.2px solid rgba(0, 240, 255, 0.35);
+    position: relative;
+    overflow: hidden;
+    margin: 8px 0;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.resource-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00f0ff, #10b981, #00f0ff);
+    background-size: 200% 100%;
+    animation: progressShine 2s linear infinite;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.7);
+    transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes progressShine {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+.resource-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.resource-info-val {
+    font-family: 'Orbitron', sans-serif;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.resource-current-file {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    color: #38bdf8;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   BOTÓN FLOTANTE INFERIOR IZQUIERDO: CRÉDITOS OFICIALES
+   ========================================================================== */
+.credits-float-wrapper {
+    position: fixed;
+    bottom: 18px;
+    left: 18px;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+}
+
+.btn-credits-float {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    background: linear-gradient(135deg, rgba(2, 6, 23, 0.9), rgba(0, 240, 255, 0.22));
+    border: 1.5px solid #00f0ff;
+    color: #00f0ff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(0, 240, 255, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+}
+
+.btn-credits-float:hover {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.4), rgba(2, 132, 199, 0.85));
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.65);
+    transform: translateY(-2px);
+}
+
+.btn-credits-float:active {
+    transform: translateY(0);
+}
+
+.credits-float-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.credits-float-text {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+
+/* ==========================================================================
+   BOTÓN FLOTANTE INFERIOR DERECHO: GESTOR DE SONIDOS (AUDIO BGM & SFX)
+   ========================================================================== */
+.sound-float-wrapper {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+}
+
+.btn-resource-manager-float {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.9), rgba(16, 185, 129, 0.35));
+    border: 1.5px solid #10b981;
+    color: #6ee7b7;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(16, 185, 129, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+}
+
+.btn-resource-manager-float:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.55), rgba(6, 78, 59, 0.95));
+    border-color: #34d399;
+    color: #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.65);
+    transform: translateY(-2px);
+}
+
+.btn-resource-manager-float:active {
+    transform: translateY(0);
+}
+
+.sound-float-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.sound-float-text {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+
+.sound-float-pill {
+    font-size: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    padding: 2px 6px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(16, 185, 129, 0.6);
+    border-radius: 3px;
+    color: #a7f3d0;
+    letter-spacing: 0.4px;
+}
+
+/* ==========================================================================
+   SECCIÓN DE CRÉDITOS Y DESARROLLADOR
+   ========================================================================== */
+.auth-credits-footer {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    color: #94a3b8;
+    flex-wrap: wrap;
+}
+
+.auth-credits-dev {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-credits-trigger {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: var(--accent-cyan, #00f0ff);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    padding: 2px 7px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.btn-credits-trigger:hover {
+    background: rgba(0, 240, 255, 0.25);
+    border-color: #00f0ff;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+/* MODAL CRÉDITOS */
+.credits-modal-card {
+    background: rgba(9, 17, 34, 0.98);
+    border: 1.5px solid #00f0ff;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
+    width: clamp(300px, 34vw, 420px);
+    padding: 20px 22px;
+    text-align: center;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.credits-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+}
+
+.credits-modal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+.credits-btn-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.credits-btn-close:hover {
+    color: #ffffff;
+}
+
+.credits-logo-wrap {
+    margin-bottom: 14px;
+}
+
+.credits-role-card {
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.credits-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.credits-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(2, 6, 23, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 9.5px;
+}
+
+.credits-info-lbl {
+    font-family: 'Orbitron', sans-serif;
+    color: #94a3b8;
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+.credits-info-val {
+    font-family: 'Outfit', sans-serif;
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.btn-credits-close-action {
+    width: 100%;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(2, 132, 199, 0.5));
+    border: 1.2px solid #00f0ff;
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-credits-close-action:hover {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.45), rgba(2, 132, 199, 0.7));
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+@media (max-width: 520px) {
+    .credits-float-wrapper {
+        bottom: 10px;
+        left: 10px;
+    }
+    .btn-credits-float {
+        padding: 7px 11px;
+        font-size: 8.5px;
+        gap: 6px;
+    }
+    .credits-float-text {
+        font-size: 8.5px;
+    }
+    .sound-float-wrapper {
+        bottom: 10px;
+        right: 10px;
+    }
+    .btn-resource-manager-float {
+        padding: 7px 11px;
+        font-size: 8.5px;
+        gap: 6px;
+    }
+    .sound-float-text {
+        font-size: 8.5px;
+    }
+}
+

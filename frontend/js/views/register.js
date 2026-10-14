@@ -16,6 +16,10 @@ async function enforceLandscapeOrientation() {
 
 document.addEventListener('DOMContentLoaded', () => {
     enforceLandscapeOrientation();
+    // Iniciar música en bucle
+    if (window.SoundManager) {
+        window.SoundManager.playBGM('login', true);
+    }
     // Si ya está autenticado, redirigir al Lobby
     if (window.Session && window.Session.isLoggedIn()) {
         window.location.href = '../lobby/lobby.html';
@@ -23,6 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadCountries();
+
+    // Efectos hover en inputs y botones
+    document.querySelectorAll('.auth-input, .btn-act-vertical, .auth-toggle-link').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            if (window.SoundManager) window.SoundManager.playSFX('login_hover');
+        });
+    });
 });
 
 function showRegisterAlert(message, isError = true) {
@@ -33,6 +44,7 @@ function showRegisterAlert(message, isError = true) {
     alertBox.style.display = 'block';
 
     if (isError) {
+        if (window.SoundManager) window.SoundManager.playSFX('login_error');
         alertBox.style.background = 'rgba(255, 71, 87, 0.15)';
         alertBox.style.border = '1px solid #ff4757';
         alertBox.style.color = '#ff6b81';
@@ -79,7 +91,7 @@ async function performRegister() {
     const username = userIn ? userIn.value.trim() : '';
     const email = emailIn ? emailIn.value.trim() : '';
     const password = passIn ? passIn.value : '';
-    const country_id = countryIn ? parseInt(countryIn.value, 10) : 1;
+    const countryIsoCode = (countryIn && countryIn.value ? countryIn.value.trim().toUpperCase() : 'CO');
 
     if (!username || !email || !password) {
         showRegisterAlert('Todos los campos son obligatorios.');
@@ -114,19 +126,19 @@ async function performRegister() {
                 username,
                 email,
                 password,
-                country_id: isNaN(country_id) ? 1 : country_id
+                countryIsoCode: countryIsoCode
             })
         });
 
         const data = await response.json();
 
-        if (response.ok) {
-            showRegisterAlert('¡Cuenta creada con éxito! Redirigiendo al login...', false);
+        if (response.ok && data.success) {
+            showRegisterAlert(data.message || '¡Cuenta creada con éxito! Redirigiendo al login...', false);
             setTimeout(() => {
                 window.location.href = '../login/login.html';
             }, 1200);
         } else {
-            showRegisterAlert(data.error || 'No se pudo crear la cuenta.');
+            showRegisterAlert(data.message || data.error || 'No se pudo crear la cuenta.');
             if (btn) {
                 btn.disabled = false;
                 btn.textContent = 'CREAR CUENTA';
@@ -142,4 +154,20 @@ async function performRegister() {
     }
 }
 
+// Control del Modal de Créditos Oficiales (Oscar Castillo)
+function openCreditsModal() {
+    if (window.SoundManager) window.SoundManager.playSFX('button');
+    const modal = document.getElementById('credits-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCreditsModal() {
+    if (window.SoundManager) window.SoundManager.playSFX('button');
+    const modal = document.getElementById('credits-modal');
+    if (modal) modal.style.display = 'none';
+}
+
 window.performRegister = performRegister;
+window.openCreditsModal = openCreditsModal;
+window.closeCreditsModal = closeCreditsModal;
+

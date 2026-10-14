@@ -38,8 +38,10 @@ function initLobbyUser() {
         lvlEl.textContent = `Nv. ${lvl}`;
     }
     if (coinsEl) {
-        const coins = (user.balances && user.balances.coins) || user.starships || 500;
-        coinsEl.textContent = `⭐ ${coins} STARSHIPS`;
+        const coins = (window.Session && typeof window.Session.getStarships === 'function')
+            ? window.Session.getStarships()
+            : ((user.balances && user.balances.coins) || user.starships || 5000);
+        coinsEl.textContent = `⭐ ${coins.toLocaleString()} STARSHIPS`;
     }
 }
 
@@ -53,16 +55,16 @@ async function loadLobbyContent() {
         const eventsContainer = document.getElementById('lobby-events-container');
         if (eventsContainer && data.events) {
             eventsContainer.innerHTML = data.events.map(evt => `
-                <div class="event-card" style="border-left-color:${evt.badgeColor || 'var(--accent-gold)'};">
+                <div class="event-card">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
                         <span class="event-badge" style="background:${evt.badgeColor || 'var(--accent-gold)'}22; color:${evt.badgeColor || 'var(--accent-gold)'}; border:1px solid ${evt.badgeColor || 'var(--accent-gold)'}55;">
                             ${evt.badge}
                         </span>
-                        <span style="font-size:10px; color:#64748b;">Expira: ${evt.endDate}</span>
+                        <span style="font-size:10px; color:#64748b;">${evt.endDate === 'Próximamente' ? 'Fase: En Desarrollo' : 'Expira: ' + evt.endDate}</span>
                     </div>
                     <div class="event-title">${evt.title}</div>
                     <div class="event-desc">${evt.description}</div>
-                    <div class="event-reward">⭐ Recompensa: ${evt.reward}</div>
+                    <div class="event-reward">${evt.reward}</div>
                 </div>
             `).join('');
         }

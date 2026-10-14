@@ -8,45 +8,112 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/global.css">
-    <link rel="stylesheet" href="../../css/shop.css?v=2.1">
-    <link rel="stylesheet" href="shop.css?v=2.1">
-    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="shop.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <script src="../../js/core/sound-manager.js"></script>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
 </head>
 <body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="shop-page-container">
-        <!-- HEADER FIJO CON BOTÓN VOLVER -->
+        <!-- HEADER FIJO CON BOTÓN VOLVER (ESTÁNDAR TIENDA) -->
         <div class="shop-header">
             <div class="shop-title-box">
-                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </a>
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
                 <div>
                     <h1 class="shop-title">AVATARES DE DUELISTA</h1>
                     <div class="shop-subtitle">ICONOS LEGENDARIOS Y MARCOS ANIMADOS DE PERFIL</div>
                 </div>
             </div>
 
-            <div class="shop-balance-pill">
-                <span>STARSHIPS:</span>
-                <span id="shop-user-coins">⭐ 500</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <div class="shop-balance-pill">
+                    <span>STARSHIPS:</span>
+                    <span id="shop-user-coins">⭐ ---</span>
+                </div>
+                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    VOLVER
+                </a>
             </div>
         </div>
 
-        <!-- CONTENEDOR CENTRAL DESLIZABLE (LISTO PARA INYECTAR ÍTEMS) -->
-        <div class="shop-scroll-content">
-            <div class="shop-empty-category-container">
-                <div class="shop-empty-icon" style="color:#ff4757;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:100%; height:100%;">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+        <!-- BARRA DE FILTROS CÓSMICOS (TIPO DE MONEDA) -->
+        <div class="shop-filter-bar">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-family:'Orbitron', sans-serif; font-size:9px; font-weight:800; color:#ffd700; text-transform:uppercase;">
+                    FILTRAR POR MONEDA:
+                </span>
+                <div class="filter-pills-group" id="filter-currency-group">
+                    <button type="button" class="btn-filter-currency-pill active" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); setAvatarCurrencyFilter('ALL', this);">TODOS</button>
+                    <button type="button" class="btn-filter-currency-pill" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); setAvatarCurrencyFilter('STARSHIPS', this);">⭐ STARSHIPS</button>
+                    <button type="button" class="btn-filter-currency-pill" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); setAvatarCurrencyFilter('USD', this);">💵 DÓLARES ($ USD)</button>
                 </div>
-                <div class="shop-empty-title">CATÁLOGO DE AVATARES EN PREPARACIÓN</div>
-                <div class="shop-empty-desc">
-                    Aquí podrás desbloquear avatares oficiales de Yugi Muto, Seto Kaiba, Joey Wheeler y marcos neón para tu perfil.
-                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (5px MÁRGENES LATERALES) -->
+        <div class="shop-scroll-content" style="padding:8px 5px 20px 5px !important;">
+            <div id="shop-avatars-grid-container">
+                <!-- Se inyectan dinámicamente las cards -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL PERSONALIZADO CYBER SHARP: CONFIRMACIÓN DE COMPRA EN STARSHIPS -->
+    <!-- ====================================================================== -->
+    <div id="shop-avatar-confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #ffd700; box-shadow:0 0 35px rgba(255,215,0,0.3), 0 10px 40px rgba(0,0,0,0.85); width:100%; max-width:440px; padding:20px 18px; text-align:center; box-sizing:border-box; color:#fff; border-radius:0;">
+            <div id="modal-avatar-buy-icon" style="font-size:32px; margin-bottom:4px; filter:drop-shadow(0 0 12px #ffd700);">⭐</div>
+            
+            <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:#ffd700; letter-spacing:0.5px; margin-bottom:4px;">
+                CONFIRMAR COMPRA DE AVATAR
+            </div>
+            
+            <div id="modal-avatar-buy-details" style="background:rgba(0,0,0,0.55); border:1px solid rgba(255,215,0,0.3); padding:10px; margin:10px 0; text-align:center; font-size:10.5px; line-height:1.4;">
+                <!-- Dinámico -->
+            </div>
+
+            <div style="font-size:9px; color:#94a3b8; margin-bottom:14px; line-height:1.35;">
+                🛡️ Este avatar se desbloqueará de forma permanente en tu colección y podrás equiparlo cuando desees.
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button type="button" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); closeAvatarConfirmModal();" style="padding:6px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#cbd5e1; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:500; cursor:pointer; border-radius:0;">
+                    CANCELAR
+                </button>
+                <button id="btn-modal-avatar-confirm-buy" type="button" style="padding:6px 20px; background:linear-gradient(135deg, #ffd700 0%, #f59e0b 100%); border:1px solid #ffd700; color:#000; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:700; cursor:pointer; box-shadow:0 0 16px rgba(255,215,0,0.55); border-radius:0;" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    CONFIRMAR COMPRA ⭐
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL PERSONALIZADO CYBER SHARP: NOTIFICACIÓN DE ÉXITO / ALERTA -->
+    <!-- ====================================================================== -->
+    <div id="shop-avatar-notice-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #00f0ff; box-shadow:0 0 35px rgba(0,240,255,0.3), 0 10px 40px rgba(0,0,0,0.85); width:100%; max-width:420px; padding:20px 18px; text-align:center; box-sizing:border-box; color:#fff; border-radius:0;">
+            <div id="modal-avatar-notice-icon" style="font-size:32px; margin-bottom:4px;">✨</div>
+            
+            <div id="modal-avatar-notice-title" style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:#00f0ff; letter-spacing:0.5px; margin-bottom:6px;">
+                ¡AVATAR DESBLOQUEADO!
+            </div>
+            
+            <div id="modal-avatar-notice-msg" style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.25); padding:10px; margin:8px 0 14px 0; font-size:10px; color:#cbd5e1; line-height:1.4;">
+                <!-- Dinámico -->
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button type="button" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); closeAvatarNoticeModal();" style="padding:6px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#cbd5e1; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:500; cursor:pointer; border-radius:0;">
+                    CONTINUAR EN TIENDA
+                </button>
+                <a href="../profile/profile.html" style="padding:6px 18px; background:linear-gradient(135deg, rgba(0,240,255,0.3), rgba(0,180,216,0.6)); border:1px solid var(--accent-cyan); color:#fff; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 0 14px rgba(0,240,255,0.4); border-radius:0;" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    <span>VER EN PERFIL →</span>
+                </a>
             </div>
         </div>
     </div>
@@ -58,18 +125,11 @@
     <script src="../../js/data/avatars-data.js"></script>
     <script src="../../js/views/shop-avatares.js"></script>
     <script>
-        async function enforceLandscapeOrientation() {
-            try {
-                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
-                    await window.Capacitor.Plugins.ScreenOrientation.lock({ orientation: 'landscape' });
-                } else if (screen.orientation && typeof screen.orientation.lock === 'function') {
-                    await screen.orientation.lock('landscape');
-                }
-            } catch (e) {}
-        }
         document.addEventListener('DOMContentLoaded', () => {
-            enforceLandscapeOrientation();
             if (window.AppNavbar) window.AppNavbar.init('tienda');
+            if (window.SoundManager && typeof window.SoundManager.playBGM === 'function') {
+                window.SoundManager.playBGM('shop', true);
+            }
         });
     </script>
 </body>

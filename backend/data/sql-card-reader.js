@@ -61,12 +61,84 @@ const OCG_RACES = {
     0x1000000: 'Cyberse'
 };
 
+const OCG_RACES_ES = {
+    0x1: 'Guerrero',
+    0x2: 'Lanzador de Conjuros',
+    0x4: 'Hada',
+    0x8: 'Demonio',
+    0x10: 'Zombi',
+    0x20: 'Máquina',
+    0x40: 'Aqua',
+    0x80: 'Piro',
+    0x100: 'Roca',
+    0x200: 'Bestia Alada',
+    0x400: 'Planta',
+    0x800: 'Insecto',
+    0x1000: 'Trueno',
+    0x2000: 'Dragón',
+    0x4000: 'Bestia',
+    0x8000: 'Guerrero-Bestia',
+    0x10000: 'Dinosaurio',
+    0x20000: 'Pez',
+    0x40000: 'Serpiente Marina',
+    0x80000: 'Reptil',
+    0x100000: 'Psíquico',
+    0x200000: 'Bestia Divina',
+    0x400000: 'Dios Creador',
+    0x800000: 'Wyrm',
+    0x1000000: 'Ciberso'
+};
+
+const OCG_ATTRIBUTES_ES = {
+    0x01: 'TIERRA',
+    0x02: 'AGUA',
+    0x04: 'FUEGO',
+    0x08: 'VIENTO',
+    0x10: 'LUZ',
+    0x20: 'OSCURIDAD',
+    0x40: 'DIVINIDAD'
+};
+
 function formatOcgCard(row) {
-    const rawType = Number(row.type || 0);
-    const rawRace = Number(row.race || 0);
-    const rawAttr = Number(row.attribute || 0);
+    if (typeof row.race === 'string' && typeof row.type === 'string' && isNaN(Number(row.race))) {
+        const cId = parseInt(row.id || row.card_id || row.CardId, 10);
+        return {
+            id: cId,
+            card_id: cId,
+            name: row.name || row.Name,
+            name_es: row.name_es || row.Name_ES || row.name || row.Name,
+            type: row.type || row.CardType,
+            typeCode: ((row.type || row.CardType || '').includes('Spell') ? 2 : ((row.type || row.CardType || '').includes('Trap') ? 4 : 1)),
+            typeLine: row.typeLine || row.TypeLine || `[ ${row.race || row.Race} / ${row.type || row.CardType} ]`,
+            typeLine_es: row.typeLine_es || row.TypeLine_ES || `[ ${row.race_es || row.Race_ES || row.race || row.Race} / ${row.type || row.CardType} ]`,
+            race: row.race || row.Race,
+            race_es: row.race_es || row.Race_ES || row.race || row.Race,
+            attribute: row.attribute || row.Attribute,
+            attribute_es: row.attribute_es || row.Attribute_ES || row.attribute || row.Attribute,
+            atk: row.atk !== undefined && row.atk !== null ? parseInt(row.atk, 10) : null,
+            def: row.def !== undefined && row.def !== null ? parseInt(row.def, 10) : null,
+            level: row.level !== undefined && row.level !== null ? parseInt(row.level, 10) : 0,
+            rank: 0,
+            rarity: row.rarity || row.Rarity || 'COMMON',
+            desc: row.desc || row.Description || '',
+            desc_es: row.desc_es || row.Description_ES || row.desc || row.Description || '',
+            description: row.description || row.Description || row.desc || '',
+            description_es: row.description_es || row.Description_ES || row.desc_es || '',
+            image_url: row.image_url || row.ImageUrl || `https://images.ygoprodeck.com/images/cards_small/${cId}.jpg`,
+            image_large: row.image_large || row.ImageLargeUrl || `https://images.ygoprodeck.com/images/cards/${cId}.jpg`
+        };
+    }
+
+    const rawType = Number(row.type !== undefined ? row.type : (row.typeCode || 0));
+    const rawRace = Number(row.race !== undefined ? row.race : (row.raceCode || 0));
+    const rawAttr = Number(row.attribute !== undefined ? row.attribute : (row.attributeCode || 0));
+    const rawLevel = Number(row.level !== undefined ? row.level : 0);
+    const isMonster = Boolean(rawType & 0x1);
 
     let typeStr = 'Normal Monster';
+    let monsterSubtypes = [];
+    let monsterSubtypesEs = [];
+
     if (rawType & 0x2) {
         if (rawType & 0x10000) typeStr = 'Quick-Play Spell';
         else if (rawType & 0x20000) typeStr = 'Continuous Spell';
@@ -78,69 +150,105 @@ function formatOcgCard(row) {
         if (rawType & 0x20000) typeStr = 'Continuous Trap';
         else if (rawType & 0x100000) typeStr = 'Counter Trap';
         else typeStr = 'Normal Trap';
-    } else if (rawType & 0x1) {
+    } else if (isMonster) {
         const parts = [];
-        if (rawType & 0x200000) parts.push('Flip');
-        if (rawType & 0x40) parts.push('Fusion');
-        if (rawType & 0x80) parts.push('Ritual');
-        if (rawType & 0x2000) parts.push('Synchro');
-        if (rawType & 0x800000) parts.push('Xyz');
-        if (rawType & 0x4000000) parts.push('Link');
-        if (rawType & 0x20) parts.push('Effect');
-        else if (rawType & 0x10) parts.push('Normal');
+        if (rawType & 0x40) { parts.push('Fusion'); monsterSubtypes.push('Fusion'); monsterSubtypesEs.push('Fusión'); }
+        if (rawType & 0x80) { parts.push('Ritual'); monsterSubtypes.push('Ritual'); monsterSubtypesEs.push('Ritual'); }
+        if (rawType & 0x2000) { parts.push('Synchro'); monsterSubtypes.push('Synchro'); monsterSubtypesEs.push('Sincronía'); }
+        if (rawType & 0x800000) { parts.push('Xyz'); monsterSubtypes.push('Xyz'); monsterSubtypesEs.push('Xyz'); }
+        if (rawType & 0x4000000) { parts.push('Link'); monsterSubtypes.push('Link'); monsterSubtypesEs.push('Enlace'); }
+        if (rawType & 0x200000) { parts.push('Flip'); monsterSubtypes.push('Flip'); monsterSubtypesEs.push('Volteo'); }
+        if (rawType & 0x2000000) { parts.push('Pendulum'); monsterSubtypes.push('Pendulum'); monsterSubtypesEs.push('Péndulo'); }
+        if (rawType & 0x1000) { parts.push('Tuner'); monsterSubtypes.push('Tuner'); monsterSubtypesEs.push('Cantante'); }
+        if (rawType & 0x200) { parts.push('Spirit'); monsterSubtypes.push('Spirit'); monsterSubtypesEs.push('Espíritu'); }
+        if (rawType & 0x400) { parts.push('Union'); monsterSubtypes.push('Union'); monsterSubtypesEs.push('Unión'); }
+        if (rawType & 0x800) { parts.push('Gemini'); monsterSubtypes.push('Gemini'); monsterSubtypesEs.push('Géminis'); }
+
+        if (rawType & 0x20) {
+            parts.push('Effect');
+            monsterSubtypes.push('Effect');
+            monsterSubtypesEs.push('Efecto');
+        } else if (rawType & 0x10 || monsterSubtypes.length === 0) {
+            parts.push('Normal');
+            monsterSubtypes.push('Normal');
+            monsterSubtypesEs.push('Normal');
+        }
         parts.push('Monster');
         typeStr = parts.join(' ');
     }
 
     let attrStr = OCG_ATTRIBUTES[rawAttr];
+    let attrStrEs = OCG_ATTRIBUTES_ES[rawAttr];
     if (!attrStr) {
-        if (rawType & 0x2) attrStr = 'SPELL';
-        else if (rawType & 0x4) attrStr = 'TRAP';
-        else attrStr = 'EARTH';
+        if (rawType & 0x2) { attrStr = 'SPELL'; attrStrEs = 'MÁGICA'; }
+        else if (rawType & 0x4) { attrStr = 'TRAP'; attrStrEs = 'TRAMPA'; }
+        else { attrStr = 'EARTH'; attrStrEs = 'TIERRA'; }
     }
 
     let raceStr = OCG_RACES[rawRace];
+    let raceStrEs = OCG_RACES_ES[rawRace];
     if (!raceStr) {
-        if (rawType & 0x2) raceStr = 'Spell';
-        else if (rawType & 0x4) raceStr = 'Trap';
-        else raceStr = 'Warrior';
+        if (rawType & 0x2) { raceStr = 'Spell'; raceStrEs = 'Mágica'; }
+        else if (rawType & 0x4) { raceStr = 'Trap'; raceStrEs = 'Trampa'; }
+        else { raceStr = 'Warrior'; raceStrEs = 'Guerrero'; }
     }
 
+    const typeLine = isMonster ? `[ ${raceStr} / ${monsterSubtypes.join(' / ')} ]` : `[ ${raceStr} / ${typeStr} ]`;
+    const typeLineEs = isMonster ? `[ ${raceStrEs} / ${monsterSubtypesEs.join(' / ')} ]` : `[ ${raceStrEs} / ${typeStr} ]`;
+
+    const atkVal = isMonster && row.atk !== null && row.atk !== undefined ? parseInt(row.atk, 10) : null;
+    const defVal = isMonster && !(rawType & 0x4000000) && row.def !== null && row.def !== undefined ? parseInt(row.def, 10) : null;
+    const levelVal = isMonster ? (rawLevel & 0xFF) : 0;
+    const rankVal = isMonster && (rawType & 0x800000) ? (rawLevel & 0xFF) : 0;
+
     return {
-        id: parseInt(row.id, 10),
-        card_id: parseInt(row.id, 10),
+        id: parseInt(row.id || row.card_id, 10),
+        card_id: parseInt(row.id || row.card_id, 10),
         ot: row.ot || 1,
         alias: row.alias || 0,
         setcode: row.setcode || '0',
         type: typeStr,
         typeCode: rawType,
+        typeLine: typeLine,
+        typeLine_es: typeLineEs,
         race: raceStr,
+        race_es: raceStrEs,
         raceCode: rawRace,
         attribute: attrStr,
+        attribute_es: attrStrEs,
         attributeCode: rawAttr,
-        atk: (rawType & 0x1) && row.atk !== null ? parseInt(row.atk, 10) : null,
-        def: (rawType & 0x1) && !(rawType & 0x4000000) && row.def !== null ? parseInt(row.def, 10) : null,
-        level: (rawType & 0x1) ? (row.level & 0xFF) : 0,
+        atk: atkVal,
+        def: defVal,
+        level: levelVal,
+        rank: rankVal,
+        rarity: row.rarity || 'COMMON',
         category: Number(row.category || 0),
-        name: row.name || `Carta #${row.id}`,
+        name: row.name || `Carta #${row.id || row.card_id}`,
+        name_es: row.name_es || row.name || `Carta #${row.id || row.card_id}`,
         desc: row.desc || '',
-        image_url: `../../../assets/images/cards/${row.id}.jpg`
+        desc_es: row.desc_es || row.descEs || row.description_es || row.desc || '',
+        description: row.desc || '',
+        description_es: row.desc_es || row.descEs || row.description_es || row.desc || '',
+        image_url: (row.image_url && (row.image_url.startsWith('http') || row.image_url.startsWith('/'))) 
+            ? row.image_url 
+            : `https://images.ygoprodeck.com/images/cards_small/${row.id || row.card_id}.jpg`,
+        image_large: `https://images.ygoprodeck.com/images/cards/${row.id || row.card_id}.jpg`
     };
 }
 
 // Carga inmediata de la base de datos oficial cards.cdb
 try {
-    const cdbIndexPath = path.resolve(__dirname, '../ocgcore/cdb/cards_index.json');
+    const cdbIndexPath = path.resolve(__dirname, 'cards_index.json');
     if (fs.existsSync(cdbIndexPath)) {
         const cdbData = JSON.parse(fs.readFileSync(cdbIndexPath, 'utf-8'));
         Object.values(cdbData).forEach(card => {
             const formatted = formatOcgCard(card);
             cardDbCache.set(formatted.id, formatted);
         });
-        console.log(`✅ [CARDS.CDB] Cargadas exitosamente ${cardDbCache.size} cartas oficiales Konami OCG en memoria.`);
+        console.log(`✅ [CORE DIMENSION DB] Cargadas exitosamente ${cardDbCache.size} cartas en memoria.`);
     }
 } catch (e) {
-    console.warn('[CARDS.CDB] Advertencia al leer cards_index.json:', e.message);
+    console.warn('[CORE DIMENSION DB] Advertencia al leer cards_index.json:', e.message);
 }
 /**
  * Carga e hidrata todas las cartas desde SQL Server a memoria para acceso ultra rápido
@@ -151,13 +259,24 @@ async function loadCardsFromSqlServer() {
         const pool = new sql.ConnectionPool(sqlConfig);
         await pool.connect();
         
-        // Consulta del esquema oficial OCG (Tabla datas + texts en SQL Server)
+        // Consulta del catálogo unificado oficial desde la tabla centralizada dbo.Cards
         const result = await pool.request().query(`
             SELECT 
-                d.id, d.ot, d.alias, d.setcode, d.type, d.atk, d.def, d.level, d.race, d.attribute, d.category,
-                t.name, t.[desc], t.str1, t.str2, t.str3, t.str4
-            FROM datas d
-            LEFT JOIN texts t ON d.id = t.id
+                CardId AS id, CardId AS card_id, 1 AS ot, 0 AS alias, '0' AS setcode,
+                CardType AS type,
+                CASE 
+                    WHEN CardType LIKE '%Spell%' THEN 2
+                    WHEN CardType LIKE '%Trap%' THEN 4
+                    ELSE 1
+                END AS typeCode,
+                Atk AS atk, Def AS def, Level AS level,
+                Race AS race, Attribute AS attribute,
+                Name AS name, Name_ES AS name_es,
+                Description AS [desc], Description_ES AS desc_es,
+                Rarity AS rarity, TypeLine AS typeLine, TypeLine_ES AS typeLine_es,
+                Race_ES AS race_es, Attribute_ES AS attribute_es,
+                ImageUrl AS image_url, ImageLargeUrl AS image_large
+            FROM dbo.Cards
         `);
 
         if (result.recordset && result.recordset.length > 0) {
@@ -204,7 +323,8 @@ function ocgCardReader(cardId) {
         atk: 1000,
         def: 1000,
         desc: 'Carta reglamentaria oficial OCG.',
-        image_url: `../../../assets/images/cards/${cardId}.jpg`
+        image_url: `https://images.ygoprodeck.com/images/cards_small/${cardId}.jpg`,
+        image_large: `https://images.ygoprodeck.com/images/cards/${cardId}.jpg`
     };
 }
 

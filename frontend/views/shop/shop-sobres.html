@@ -12,25 +12,30 @@
     <link rel="stylesheet" href="../../css/shop.css?v=2.1">
     <link rel="stylesheet" href="shop.css?v=2.1">
     <link rel="stylesheet" href="../../css/navbar.css">
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
 </head>
 <body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="shop-page-container">
-        <!-- HEADER FIJO CON BOTÓN VOLVER -->
+        <!-- HEADER FIJO CON BOTÓN VOLVER (IDÉNTICO A TIENDA PRINCIPAL) -->
         <div class="shop-header">
-            <div class="shop-title-box">
-                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </a>
+            <div class="shop-title-box" style="display:flex; align-items:center; gap:14px;">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
                 <div>
                     <h1 class="shop-title">CATÁLOGO DE SOBRES</h1>
-                    <div class="shop-subtitle">BOOSTER PACKS Y EXPANSIONES REGLAMENTARIAS OCG</div>
+                    <div class="shop-subtitle">BOOSTER PACKS Y EXPANSIONES OFICIALES</div>
                 </div>
             </div>
 
-            <div class="shop-balance-pill">
-                <span>STARSHIPS:</span>
-                <span id="shop-user-coins">⭐ 500</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <div class="shop-balance-pill">
+                    <span>STARSHIPS:</span>
+                    <span id="shop-user-coins">⭐ ---</span>
+                </div>
+                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    VOLVER
+                </a>
             </div>
         </div>
 
@@ -46,7 +51,7 @@
                 </div>
                 <div class="shop-empty-title">CATÁLOGO DE SOBRES EN PREPARACIÓN</div>
                 <div class="shop-empty-desc">
-                    Aquí se mostrarán los sobres de cartas oficiales OCG, probabilidades de rareza y tirada de apertura.
+                    Aquí se mostrarán los sobres de cartas oficiales, probabilidades de rareza y tirada de apertura.
                 </div>
             </div>
         </div>
@@ -54,6 +59,7 @@
 
     <!-- NAVBAR INFERIOR Y AUTENTICACIÓN -->
     <div id="navbar-container"></div>
+    <script src="../../js/core/sound-manager.js"></script>
     <script src="../../js/core/session.js"></script>
     <script src="../../js/core/navbar.js"></script>
     <script src="../../js/data/packs-data.js"></script>
@@ -71,6 +77,9 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
             enforceLandscapeOrientation();
+            if (window.SoundManager && typeof window.SoundManager.playBGM === 'function') {
+                window.SoundManager.playBGM('shop', true);
+            }
             if (window.AppNavbar) window.AppNavbar.init('tienda');
         });
     </script>

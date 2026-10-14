@@ -3,49 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Membresía VIP</title>
+    <title>Ani-Dimension - Membresía Pase VIP AD</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/global.css">
-    <link rel="stylesheet" href="../../css/shop.css">
-    <link rel="stylesheet" href="shop.css">
-    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="shop.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
 </head>
 <body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="shop-page-container">
-        <!-- HEADER FIJO CON BOTÓN VOLVER -->
+        
+        <!-- HEADER FIJO CON BOTÓN VOLVER Y BALANCE -->
         <div class="shop-header">
             <div class="shop-title-box">
-                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </a>
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
                 <div>
-                    <h1 class="shop-title">PASE DE BATALLA Y MEMBRESÍA VIP</h1>
-                    <div class="shop-subtitle">BENEFICIOS EXCLUSIVOS, BOOSTS DE RECOMPENSAS Y TÍTULOS ÚNICOS</div>
+                    <h1 class="shop-title">PASE DE TEMPORADA VIP AD</h1>
+                    <div class="shop-subtitle">MEMBRESÍAS TEMPORALES POR DÍAS Y MULTIPLICADORES DE DUELO</div>
                 </div>
             </div>
 
-            <div class="shop-balance-pill">
-                <span>STARSHIPS:</span>
-                <span id="shop-user-coins">⭐ 500</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <div class="shop-balance-pill">
+                    <span>STARSHIPS:</span>
+                    <span id="shop-user-coins">⭐ —</span>
+                </div>
+                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- BARRA DE FILTROS (TIPO DE MONEDA) -->
+        <div class="shop-filter-bar">
+            <!-- FILTRO POR TIPO DE MONEDA -->
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-family:'Orbitron', sans-serif; font-size:9px; font-weight:800; color:#c084fc; text-transform:uppercase;">
+                    FILTRAR POR MONEDA:
+                </span>
+                <div class="filter-pills-group" id="filter-vip-currency-group">
+                    <button type="button" class="btn-filter-currency-pill active" onclick="setVipCurrencyFilter('ALL', this)">TODOS</button>
+                    <button type="button" class="btn-filter-currency-pill" onclick="setVipCurrencyFilter('STARSHIPS', this)">⭐ STARSHIPS</button>
+                    <button type="button" class="btn-filter-currency-pill" onclick="setVipCurrencyFilter('USD', this)">💵 DÓLARES ($ USD)</button>
+                </div>
             </div>
         </div>
 
         <!-- CONTENEDOR CENTRAL DESLIZABLE -->
         <div class="shop-scroll-content">
-            <div class="shop-empty-category-container">
-                <div class="shop-empty-icon" style="color:#ffd700;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:100%; height:100%;">
-                        <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
-                    </svg>
-                </div>
-                <div class="shop-empty-title">BENEFICIOS VIP Y PASE DE TEMPORADA EN PREPARACIÓN</div>
-                <div class="shop-empty-desc">
-                    Muy pronto podrás activar tu membresía VIP para obtener multiplicadores permanentes de StarShips, acceso prioritario a torneos y cosméticos legendarios.
-                </div>
+            
+            <!-- GRID DINÁMICO DE PASES VIP -->
+            <div id="shop-vip-grid-container" class="shop-grid-container">
+                <!-- Se inyectan dinámicamente las cards -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL PERSONALIZADO CYBER SHARP: CONFIRMACIÓN DE COMPRA VIP EN STARSHIPS -->
+    <!-- ====================================================================== -->
+    <div id="shop-vip-confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #c084fc; box-shadow:0 0 35px rgba(192,132,252,0.35), 0 10px 40px rgba(0,0,0,0.85); width:100%; max-width:440px; padding:22px 20px; text-align:center; box-sizing:border-box; color:#fff;">
+            <div style="font-size:36px; margin-bottom:6px; filter:drop-shadow(0 0 12px #c084fc);">👑</div>
+            
+            <div style="font-family:'Orbitron', sans-serif; font-size:13px; font-weight:900; color:#c084fc; letter-spacing:0.5px; margin-bottom:4px;">
+                CONFIRMAR ADQUISICIÓN DE PASE VIP
+            </div>
+            
+            <div id="modal-vip-buy-details" style="background:rgba(0,0,0,0.55); border:1px solid rgba(192,132,252,0.3); padding:12px; margin:12px 0; text-align:center; font-size:11px; line-height:1.5;">
+                <!-- Dinámico -->
+            </div>
+
+            <div style="font-size:9.5px; color:#94a3b8; margin-bottom:18px; line-height:1.4;">
+                ⏳ Los beneficios se activarán inmediatamente y se sumarán a tus bonificaciones globales de duelos durante los días de vigencia del pase.
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button type="button" onclick="closeVipConfirmModal()" style="padding:7px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#cbd5e1; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:500; cursor:pointer; border-radius:0;">
+                    CANCELAR
+                </button>
+                <button id="btn-modal-vip-confirm-buy" type="button" style="padding:7px 20px; background:linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); border:1px solid #c084fc; color:#fff; font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:500; cursor:pointer; box-shadow:0 0 16px rgba(168,85,247,0.55); border-radius:0;">
+                    ACTIVAR PASE VIP ⭐
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL PERSONALIZADO CYBER SHARP: NOTIFICACIÓN DE ÉXITO / ALERTA -->
+    <!-- ====================================================================== -->
+    <div id="shop-vip-notice-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #00f0ff; box-shadow:0 0 35px rgba(0,240,255,0.3), 0 10px 40px rgba(0,0,0,0.85); width:100%; max-width:420px; padding:22px 20px; text-align:center; box-sizing:border-box; color:#fff;">
+            <div id="modal-vip-notice-icon" style="font-size:36px; margin-bottom:6px;">✨</div>
+            
+            <div id="modal-vip-notice-title" style="font-family:'Orbitron', sans-serif; font-size:13px; font-weight:900; color:#00f0ff; letter-spacing:0.5px; margin-bottom:8px;">
+                ¡PASE VIP ACTIVADO!
+            </div>
+            
+            <div id="modal-vip-notice-msg" style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.25); padding:10px; margin:10px 0 16px 0; font-size:10.5px; color:#cbd5e1; line-height:1.4;">
+                <!-- Dinámico -->
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button type="button" onclick="closeVipNoticeModal()" style="padding:7px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#cbd5e1; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:500; cursor:pointer; border-radius:0;">
+                    CONTINUAR EN TIENDA
+                </button>
+                <a href="../profile/profile.html" style="padding:7px 18px; background:linear-gradient(135deg, rgba(168,85,247,0.4), rgba(124,58,237,0.7)); border:1px solid #c084fc; color:#fff; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:500; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 0 14px rgba(168,85,247,0.5); border-radius:0;">
+                    <span>VER EN PERFIL →</span>
+                </a>
             </div>
         </div>
     </div>
@@ -54,7 +126,8 @@
     <div id="navbar-container"></div>
     <script src="../../js/core/session.js"></script>
     <script src="../../js/core/navbar.js"></script>
-    <script src="../../js/views/shop.js"></script>
+    <script src="../../js/data/vip-data.js"></script>
+    <script src="../../js/views/shop-vip.js"></script>
     <script>
         async function enforceLandscapeOrientation() {
             try {

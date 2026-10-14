@@ -7,6 +7,13 @@
 html, body {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+    background-color: #020408 !important;
+    background-image: linear-gradient(rgba(2, 4, 8, 0.45), rgba(2, 4, 8, 0.45)), url('/assets/images/backgrounds/admin.jpg') !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    color: #fff;
 }
 
 html::-webkit-scrollbar, body::-webkit-scrollbar {
@@ -26,7 +33,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     box-sizing: border-box !important;
     font-family: 'Outfit', sans-serif;
     color: #fff;
-    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+    background: transparent !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
@@ -37,9 +44,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
    ========================================================================== */
 .admin-header {
     width: 100% !important;
-    flex-shrink: 0;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    flex-shrink: 0 !important;
     margin: 0 !important;
-    padding: 6px 16px !important;
+    padding: 0 16px !important;
     background: #091122 !important;
     border-top: none !important;
     border-left: none !important;
@@ -47,36 +57,57 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
     border-radius: 0 !important; /* RECTO DE LADO A LADO */
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22), 0 2px 10px rgba(0, 240, 255, 0.12) !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
     box-sizing: border-box !important;
-    z-index: 10;
+    z-index: 10 !important;
 }
 
 .admin-title-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+}
+
+.admin-header img,
+.admin-title-box img {
+    height: 40px !important;
+    max-height: 40px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.65)) !important;
+    flex-shrink: 0 !important;
 }
 
 .admin-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(13px, 1.6vw, 16px);
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: 1px;
-    color: #fff;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-    line-height: 1.1;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
+    letter-spacing: 0.8px !important;
+    color: #fff !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+    line-height: 1.1 !important;
+}
+
+.admin-subtitle {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 9.5px !important;
+    font-weight: 500 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.3px !important;
+    margin-top: 1px !important;
+    text-transform: uppercase !important;
+    line-height: 1.1 !important;
 }
 
 .admin-badge {
     background: rgba(245, 158, 11, 0.2);
     border: 1.5px solid rgba(245, 158, 11, 0.6);
     color: #f59e0b;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 10.5px;
     padding: 4px 12px;
     border-radius: 0 !important; /* RECTO */
@@ -260,7 +291,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .admin-module-badge {
     font-size: 8px !important;
-    font-weight: 800 !important;
+    font-weight: 500 !important;
     padding: 2px 7px !important;
     border-radius: 0 !important; /* RECTO */
     text-transform: uppercase !important;
@@ -289,7 +320,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .admin-module-title {
     font-family: 'Orbitron', sans-serif !important;
     font-size: 11px !important;
-    font-weight: 800 !important;
+    font-weight: 700 !important;
     color: #fff !important;
     margin-bottom: 4px !important;
     letter-spacing: 0.5px !important;
@@ -309,22 +340,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 /* BOTONES DE ACCESO A MÓDULOS (RECTOS Y CONTENIDOS) */
 .btn-module-access {
     width: auto !important;
-    min-width: 105px !important;
-    max-width: 82% !important;
+    min-width: 140px !important;
+    max-width: 90% !important;
     align-self: center !important;
-    margin: 4px auto 0 auto !important;
-    height: 25px !important;
+    margin: 6px auto 0 auto !important;
+    height: 32px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 6px !important;
+    gap: 8px !important;
     background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(0, 180, 216, 0.55)) !important;
     border: 1.2px solid var(--accent-cyan) !important;
     color: #fff !important;
     font-family: 'Orbitron', sans-serif !important;
-    font-size: 8.5px !important;
-    font-weight: 800 !important;
-    padding: 5px 12px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    padding: 6px 16px !important;
     border-radius: 0 !important; /* RECTO */
     text-decoration: none !important;
     transition: all 0.2s ease !important;
@@ -342,11 +373,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .btn-module-disabled {
     width: auto !important;
-    min-width: 105px !important;
-    max-width: 82% !important;
+    min-width: 140px !important;
+    max-width: 90% !important;
     align-self: center !important;
-    margin: 4px auto 0 auto !important;
-    height: 25px !important;
+    margin: 6px auto 0 auto !important;
+    height: 32px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -354,9 +385,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     border: 1.2px solid rgba(255, 255, 255, 0.15) !important;
     color: #64748b !important;
     font-family: 'Orbitron', sans-serif !important;
-    font-size: 8.5px !important;
-    font-weight: 700 !important;
-    padding: 5px 12px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    padding: 6px 16px !important;
     border-radius: 0 !important; /* RECTO */
     cursor: not-allowed !important;
     box-sizing: border-box !important;
@@ -403,13 +434,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 .admin-table tbody td,
+.admin-users-table tbody td,
+.admin-table tbody td *,
+.admin-users-table tbody td *,
+#gifts-history-container,
+#gifts-history-container * {
+    font-weight: 400 !important;
+}
+
+.admin-table tbody td,
 .admin-users-table tbody td {
     padding: 6px 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     color: #cbd5e1;
     font-family: 'Outfit', sans-serif;
     font-size: 10px;
-    font-weight: 400;
     vertical-align: middle;
     white-space: nowrap;
 }
@@ -419,13 +458,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     color: #64748b !important;
     font-family: 'Orbitron', sans-serif !important;
     font-size: 9px !important;
-    font-weight: 700 !important;
+    font-weight: 400 !important;
     width: 45px;
 }
 
 .col-user {
     color: #ffffff !important;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
     font-size: 10px !important;
 }
 
@@ -437,7 +476,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     border: 1px solid rgba(255, 215, 0, 0.45) !important;
     padding: 1px 4px !important;
     border-radius: 0 !important;
-    font-weight: 800 !important;
+    font-weight: 400 !important;
     margin-left: 4px;
 }
 
@@ -460,13 +499,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .user-country-pill .country-name {
     font-size: 9.5px;
+    font-weight: 400 !important;
 }
 
 .col-level {
     font-family: 'Orbitron', sans-serif !important;
     color: var(--accent-cyan) !important;
     font-size: 9.5px !important;
-    font-weight: 700 !important;
+    font-weight: 400 !important;
 }
 
 .col-ban-exp {
@@ -487,7 +527,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .status-badge {
     font-family: 'Orbitron', sans-serif !important;
     font-size: 7.5px !important;
-    font-weight: 700 !important;
+    font-weight: 400 !important;
     padding: 2px 6px !important;
     border-radius: 0 !important;
     text-transform: uppercase !important;
@@ -541,42 +581,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     text-decoration: none;
 }
 
-.btn-act-edit {
+.btn-act-edit,
+.btn-act-activate,
+.btn-act-toggle,
+.btn-act-inactivate,
+.btn-create-user-admin {
     background: rgba(0, 240, 255, 0.12) !important;
-    border: 1px solid rgba(0, 240, 255, 0.45) !important;
+    border: 1.2px solid rgba(0, 240, 255, 0.45) !important;
     color: #00f0ff !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    border-radius: 0 !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.15) !important;
 }
 
-.btn-act-edit:hover {
+.btn-act-edit:hover,
+.btn-act-activate:hover,
+.btn-act-toggle:hover,
+.btn-act-inactivate:hover,
+.btn-create-user-admin:hover {
     background: #00f0ff !important;
     color: #020617 !important;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
-}
-
-.btn-act-toggle,
-.btn-act-inactivate {
-    background: rgba(245, 158, 11, 0.12) !important;
-    border: 1px solid rgba(245, 158, 11, 0.45) !important;
-    color: #f59e0b !important;
-}
-
-.btn-act-toggle:hover,
-.btn-act-inactivate:hover {
-    background: #f59e0b !important;
-    color: #020617 !important;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5) !important;
-}
-
-.btn-act-activate {
-    background: rgba(16, 185, 129, 0.12) !important;
-    border: 1px solid rgba(16, 185, 129, 0.45) !important;
-    color: #10b981 !important;
-}
-
-.btn-act-activate:hover {
-    background: #10b981 !important;
-    color: #020617 !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.75) !important;
+    transform: translateY(-1px) !important;
 }
 
 .btn-act-ban {
@@ -588,34 +619,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .btn-act-ban:hover {
     background: #ef4444 !important;
     color: #ffffff !important;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
-}
-
-/* BOTÓN DE CREAR NUEVO USUARIO (SIN DOBLE + Y TOTALMENTE RECTO) */
-.btn-create-user-admin {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(16, 185, 129, 0.55)) !important;
-    border: 1.2px solid #10b981 !important;
-    color: #fff !important;
-    font-family: 'Orbitron', sans-serif !important;
-    font-size: 9.5px !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.6px !important;
-    padding: 6px 14px !important;
-    border-radius: 0 !important; /* TOTALMENTE RECTO */
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
-
-.btn-create-user-admin:hover {
-    background: #10b981 !important;
-    color: #020617 !important;
-    box-shadow: 0 0 18px rgba(16, 185, 129, 0.6) !important;
-    transform: scale(1.02);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6) !important;
 }
 
 /* BUSCADOR DE USUARIOS */
@@ -687,7 +691,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
         overflow: hidden !important;
         padding: 0 !important;
         padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
-        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+        background: transparent !important;
     }
 
     .admin-header {
@@ -748,7 +752,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
         overflow: hidden !important;
         padding: 0 !important;
         padding-bottom: calc(44px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
-        background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important;
+        background: transparent !important;
     }
 
     .admin-header {
@@ -790,3 +794,202 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
         border-radius: 0 !important;
     }
 }
+
+/* ==========================================================================
+   PAGINACIÓN Y CONTADOR DE REGISTROS DE USUARIOS (TEXTO PEQUEÑO Y ELEGANTE)
+   ========================================================================== */
+#admin-users-pagination,
+.admin-pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.rankings-page-info,
+.admin-page-info,
+#admin-users-pagination .rankings-page-info {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.3px !important;
+}
+
+.page-num-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    color: #94a3b8;
+    padding: 3px 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-num-btn:hover,
+.page-num-btn.active {
+    background: rgba(0, 240, 255, 0.25);
+    border-color: var(--accent-cyan);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+/* ==========================================================================
+   MODALES DEL PANEL DE ADMINISTRACIÓN (CYBER SHARP GLASS)
+   ========================================================================== */
+.admin-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(3, 7, 18, 0.88) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999 !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+}
+
+.admin-modal-content {
+    background: #091122 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.5) !important;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    max-width: 560px;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    padding: 16px 18px !important;
+    box-sizing: border-box !important;
+    color: #fff !important;
+}
+
+.admin-modal-content.modal-lg {
+    max-width: 920px !important;
+    width: 95vw !important;
+}
+
+
+.admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.admin-form-label {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+}
+
+.admin-form-input,
+.admin-form-select {
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 1.2px solid rgba(0, 240, 255, 0.3) !important;
+    color: #fff !important;
+    padding: 6px 10px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 11px !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    transition: all 0.2s ease !important;
+}
+
+.admin-form-input:focus,
+.admin-form-select:focus {
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4) !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.admin-form-select option {
+    background: #091122 !important;
+    color: #fff !important;
+    padding: 6px !important;
+}
+
+/* ==========================================================================
+   MÓDULOS DE TAPETES Y FUNDAS (RESPONSIVE @MEDIA)
+   ========================================================================== */
+.admin-table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 900px) {
+    .admin-editor-layout {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    .admin-editor-preview-col {
+        width: 100% !important;
+        max-width: 320px !important;
+        flex: 0 0 auto !important;
+    }
+    .admin-editor-form-col {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header {
+        padding: 6px 10px !important;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .admin-title {
+        font-size: 11.5px !important;
+    }
+    .admin-subtitle {
+        font-size: 7.5px !important;
+    }
+    .admin-section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .admin-search-box {
+        width: 100%;
+    }
+    .admin-search-input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .admin-users-table {
+        min-width: 680px;
+    }
+    .admin-modules-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-header {
+        padding: 4px 6px !important;
+    }
+    .btn-shop-back, .btn-act-sm {
+        height: 24px !important;
+        font-size: 8.5px !important;
+        padding: 0 8px !important;
+    }
+    .admin-modules-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+}
+
+
+

@@ -3,92 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ani-Dimension - Selección de NPC (Yugi Muto)</title>
-    <!-- Google Fonts: Outfit & Orbitron -->
+    <title>Ani-Dimension - Modo Aventura (12 Eras del Anime)</title>
+    <!-- Google Fonts: Orbitron & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Orbitron:wght@600;800;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../css/global.css">
-    <link rel="stylesheet" href="../../../css/admin.css">
-    <link rel="stylesheet" href="select-npc.css">
-    <link rel="stylesheet" href="../../../css/navbar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=5.1">
+    <link rel="stylesheet" href="select-npc.css?v=5.1">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=5.1">
 </head>
-<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
-    <div class="npc-select-page-container">
-        <!-- HEADER EN ESTILO ARENA / ADMINISTRACIÓN FIJO -->
-        <div class="admin-header npc-select-header">
-            <div class="admin-title-box">
+    <div class="adventure-page-container">
+        <!-- HEADER EN ESTILO CYBERPUNK FIJO -->
+        <div class="adventure-header">
+            <div class="adventure-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
                 <div>
-                    <h1 class="admin-title">SALA DE DUELOS VS NPC</h1>
-                    <div class="admin-subtitle">DUELISTA NPC PRINCIPIANTE (NIVEL 1 - MAZO INICIAL)</div>
+                    <h1 class="adventure-title">MODO AVENTURA</h1>
+                    <div class="adventure-subtitle" id="adventure-subtitle-text">MULTIVERSO DEL ANIME • 12 ERAS • 193 DUELISTAS</div>
                 </div>
             </div>
-        </div>
 
-        <!-- CONTENEDOR CENTRAL DESLIZABLE (SCROLL ULTRA-LIMPIO) -->
-        <div class="npc-select-scroll-content">
+            <!-- BANNER INFORMATIVO DE LA ERA ACTIVA (INTEGRADO EN EL HEADER) -->
+            <div class="era-header-banner" id="era-header-banner">
+                <div class="era-hud-badge" id="era-hud-badge">ERA 01</div>
+                <div class="era-hud-info">
+                    <div class="era-hud-title" id="era-hud-title">Inicios en Ciudad Domino</div>
+                    <div class="era-hud-subtitle" id="era-hud-subtitle">Escuela Domino, Tienda Kame y Coliseo Kaiba</div>
+                </div>
+                <div class="era-hud-meta">
+                    <span class="era-hud-range" id="era-hud-range">Nv. 4 - 20</span>
+                    <span class="era-hud-pack" id="era-hud-pack">Sobre LOB</span>
+                </div>
+            </div>
 
-        <!-- GRID COMPACTO DE NPCS (NPC NIVEL 1 PRINCIPIANTE) -->
-        <div class="npc-grid" style="display:flex; justify-content:center; align-items:center; width:100%; min-height:220px;">
-
-            <!-- LEVEL 1 - NPC PRINCIPIANTE -->
-            <div class="npc-compact-card lvl-5" style="max-width:320px; width:100%;">
-                <div class="npc-card-top">
-                    <div class="npc-badge-lvl">LVL 1</div>
-                    <div class="npc-avatar-box">
-                        <div class="npc-icon-frame" style="border-radius:0;">
-                            <img src="../../../assets/images/avatars/AVA-002.png" alt="NPC Principiante" class="npc-avatar-img" style="border-radius:0; object-fit:contain;">
-                        </div>
-                        <div class="npc-info-box">
-                            <h3 class="npc-name">NPC Principiante</h3>
-                            <div class="npc-title-diff">Novato (Deck Inicial 40 Cartas)</div>
-                        </div>
-                    </div>
-
-                    <div class="npc-reward-badge">
-                        <span class="reward-lbl">Recompensa:</span>
-                        <strong class="reward-val">⭐ 10 / ⚡ 50</strong>
-                    </div>
+            <!-- CONTROLES DE ERA Y NAVEGACIÓN -->
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                <!-- SELECTOR DESPLEGABLE DE ERAS (Era 01, Era 02...) -->
+                <div class="era-dropdown-container">
+                    <select id="era-select-dropdown" class="era-dropdown-select" onchange="window.AdventureMap && window.AdventureMap.selectEra(parseInt(this.value, 10))" title="Seleccionar Era del Anime">
+                        <!-- Generado dinámicamente -->
+                    </select>
                 </div>
 
-                <a href="duel-npc.html?level=1" class="btn-challenge-npc">
-                    <span>⚔️ DESAFIAR (LV. 1)</span>
+                <!-- BOTÓN VITRINA DE MEDALLAS -->
+                <button class="btn-medals-showcase" onclick="window.AdventureView && window.AdventureView.openMedalsModal()" title="Ver Vitrina de Medallas">
+                    <span>MEDALLAS (<span id="stat-medals-count">0 / 193</span>)</span>
+                </button>
+
+                <!-- BOTÓN VOLVER CON ESTILO ESTÁNDAR LOBBY PVP -->
+                <a href="../menu.html" class="btn-shop-back" title="Volver al Menú de Duelos" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    VOLVER
                 </a>
             </div>
-
         </div>
 
-        </div> <!-- Fin de npc-select-scroll-content -->
-    </div> <!-- Fin de npc-select-page-container -->
+        <!-- BARRA DE RESUMEN DE PROGRESO -->
+        <div class="adventure-stats-bar">
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; width:100%;">
+                <div class="stat-item">
+                    <span class="stat-label">DUELISTAS:</span>
+                    <span class="stat-val" id="stat-unlocked-npcs">1 / 193</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">ERAS:</span>
+                    <span class="stat-val" id="stat-unlocked-eras" style="color:#ffd700;">1 / 12</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">EXP:</span>
+                    <span class="stat-val" id="stat-exp-bonus" style="color:#00f0ff;">+0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">STARSHIPS:</span>
+                    <span class="stat-val" id="stat-st-bonus" style="color:#ffd700;">+0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">SUERTE:</span>
+                    <span class="stat-val" id="stat-luck-bonus" style="color:#10b981;">+0%</span>
+                </div>
+            </div>
+        </div>
 
-    <!-- NAVBAR INFERIOR Y AUTENTICACIÓN -->
+        <!-- ================================================================= -->
+        <!-- MAPA DEDICADO DE LA ERA (AJUSTADO 100% A LA PANTALLA) -->
+        <!-- ================================================================= -->
+        <div class="era-screen-map-stage" id="era-screen-map-stage">
+            <!-- CAPA ILUSTRADA DEL MAPA TEMÁTICO DE LA ERA -->
+            <div class="era-map-backdrop" id="era-map-backdrop">
+                <!-- Capa de Nodos y Locaciones de los Duelistas de la Era -->
+                <div class="era-nodes-layer" id="era-nodes-layer"></div>
+            </div>
+
+            <!-- TARJETA FLOTANTE DE DESAFÍO HUD (NO MODAL) -->
+            <div class="npc-floating-card" id="npc-floating-card" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE VITRINA DE MEDALLAS OCG (193 MEDALLAS) -->
+    <div class="modal-overlay-medals" id="medals-showcase-modal" style="display:none;" onclick="if(event.target === this) window.AdventureView.closeMedalsModal();">
+        <div class="medals-modal-content">
+            <div class="medals-modal-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:24px;">🎖️</span>
+                    <div>
+                        <div style="font-family:'Orbitron', sans-serif; font-size:14px; font-weight:900; color:#ffd700; letter-spacing:0.5px;">
+                            VITRINA OFICIAL DE MEDALLAS
+                        </div>
+                        <div style="font-size:9.5px; color:#94a3b8;">
+                            Colección de 193 medallas de campaña con potenciadores individuales acumulativos
+                        </div>
+                    </div>
+                </div>
+
+                <button class="fc-close-btn" onclick="window.AdventureView.closeMedalsModal()" title="Cerrar">✕</button>
+            </div>
+
+            <!-- FILTROS POR TIPO DE POTENCIADOR -->
+            <div class="medals-filter-bar">
+                <button class="medal-filter-btn active" data-type="all" onclick="window.AdventureView.filterMedals('all')">Todas (193)</button>
+                <button class="medal-filter-btn" data-type="exp" onclick="window.AdventureView.filterMedals('exp')">⚡ Potenciadores EXP</button>
+                <button class="medal-filter-btn" data-type="starships" onclick="window.AdventureView.filterMedals('starships')">⭐ Potenciadores StarShips</button>
+                <button class="medal-filter-btn" data-type="luck" onclick="window.AdventureView.filterMedals('luck')">🍀 Potenciadores Suerte</button>
+            </div>
+
+            <!-- GRID DE MEDALLAS -->
+            <div class="medals-showcase-grid" id="medals-showcase-grid"></div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR Y SCRIPTS OFICIALES DEL MODO AVENTURA -->
     <div id="navbar-container"></div>
-    <script src="../../../js/core/session.js"></script>
-    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/core/session.js?v=5.2"></script>
+    <script src="../../../js/core/sound-manager.js?v=5.2"></script>
+    <script src="../../../js/core/navbar.js?v=5.2"></script>
+    <script src="../../../js/data/npcs-adventure-data.js?v=6.0"></script>
+    <script src="../../../js/views/adventure-map.js?v=6.0"></script>
+    <script src="../../../js/views/adventure.js?v=6.0"></script>
     <script>
-        async function enforceLandscapeOrientation() {
-            try {
-                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
-                    await window.Capacitor.Plugins.ScreenOrientation.lock({ orientation: 'landscape' });
-                } else if (screen.orientation && typeof screen.orientation.lock === 'function') {
-                    await screen.orientation.lock('landscape');
-                }
-            } catch (e) {}
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            enforceLandscapeOrientation();
-            if (window.Session && !window.Session.isLoggedIn()) {
-                window.Session.saveUser({ id: 999, username: 'Admin', role: 'admin' });
-            }
-            const user = window.Session ? window.Session.getUser() : null;
-            if (user && user.username) {
-                const nameEl = document.getElementById('select-npc-username');
-                if (nameEl) nameEl.textContent = user.username;
-            }
-            if (window.AppNavbar) {
-                window.AppNavbar.init('duels');
+            if (window.AppNavbar) window.AppNavbar.init('duelos');
+            if (window.SoundManager && typeof window.SoundManager.playBGM === 'function') {
+                window.SoundManager.playBGM('adventure', true);
             }
         });
     </script>

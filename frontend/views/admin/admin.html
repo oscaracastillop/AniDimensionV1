@@ -8,16 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/global.css">
-    <link rel="stylesheet" href="../../css/admin.css">
-    <link rel="stylesheet" href="../../css/navbar.css">
+    <link rel="stylesheet" href="../../css/global.css?v=4.0">
+    <link rel="stylesheet" href="../../css/admin.css?v=4.0">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.0">
 </head>
-<body style="margin:0; padding:0; background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%) !important; color:#0f172a; font-family:'Outfit', sans-serif;">
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="admin-page-container">
         <!-- HEADER -->
         <div class="admin-header">
-            <div class="admin-title-box">
+            <div class="admin-title-box" style="display:flex; align-items:center; gap:14px;">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
                 <div>
                     <h1 class="admin-title">CONSOLA DE ADMINISTRACIÓN</h1>
                     <div class="admin-subtitle">PANEL DE CONTROL CENTRAL - SELECCIÓN DE MÓDULOS DEL SISTEMA</div>
@@ -63,7 +64,7 @@
                 <div class="admin-module-card">
                     <div>
                         <div class="admin-module-header">
-                            <span class="admin-module-badge upcoming">Próximamente</span>
+                            <span class="admin-module-badge active">Activo</span>
                         </div>
 
                         <div class="admin-card-artwork">
@@ -73,11 +74,14 @@
 
                         <div class="admin-module-title">Eventos & Torneos</div>
                         <div class="admin-module-desc">
-                            Configuración de copas oficiales OCG, salas especiales con multiplicador de experiencia, gestión de premios en StarShips y anuncios del Lobby.
+                            Configuración de eventos de Rompecabezas, copas oficiales, algoritmo de fichas, gestión de premios en StarShips y recompensas por posición.
                         </div>
                     </div>
 
-                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                    <a href="/views/admin/eventos/eventos.html" class="btn-module-access">
+                        <span>Gestionar Eventos</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
                 </div>
 
                 <!-- MÓDULO 3: CARTAS Y SOBRES OCG -->
@@ -88,11 +92,11 @@
                         </div>
 
                         <div class="admin-card-artwork">
-                            <img src="../../assets/images/admin/cards.png" alt="Base de Cartas OCG" class="admin-card-img">
+                            <img src="../../assets/images/admin/cards.png" alt="Base de Cartas" class="admin-card-img">
                             <div class="admin-card-glow-overlay"></div>
                         </div>
 
-                        <div class="admin-module-title">Base de Cartas y Sobres OCG</div>
+                        <div class="admin-module-title">Base de Cartas y Sobres</div>
                         <div class="admin-module-desc">
                             Gerencia de sobres y expansiones: ajuste de precios, activado/inactivado de sobres, texto de oferta en amarillo, control de cartas con bugs (bloqueo en mazo) y drops de NPCs.
                         </div>
@@ -149,32 +153,35 @@
                     </a>
                 </div>
 
-                <!-- MÓDULO 6: POTENCIADORES (NUEVO) -->
+                <!-- MÓDULO 6: POTENCIADORES DE AVATAR -->
                 <div class="admin-module-card">
                     <div>
                         <div class="admin-module-header">
-                            <span class="admin-module-badge upcoming">Próximamente</span>
+                            <span class="admin-module-badge active">Activo</span>
                         </div>
 
                         <div class="admin-card-artwork">
-                            <img src="../../assets/images/admin/potenciadores.png" alt="Potenciadores y Drops" class="admin-card-img">
+                            <img src="../../assets/images/admin/potenciadores.png" alt="Potenciadores de Avatar" class="admin-card-img">
                             <div class="admin-card-glow-overlay"></div>
                         </div>
 
-                        <div class="admin-module-title">Potenciadores & Drops</div>
+                        <div class="admin-module-title">Potenciadores de Avatar</div>
                         <div class="admin-module-desc">
-                            Configuración de orbes de experiencia OCG, multiplicadores de recompensas StarShips, ratios de drops de sobres y dados 3D cósmicos.
+                            Configuración de orbes de EXP, multiplicadores de StarShips y orbes de Suerte cósmicos para aplicar a los avatares activos del duelista.
                         </div>
                     </div>
 
-                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                    <a href="potenciadores/potenciadores.html" class="btn-module-access">
+                        <span>Gestionar Potenciadores</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
                 </div>
 
                 <!-- MÓDULO 7: VIP (NUEVO) -->
                 <div class="admin-module-card">
                     <div>
                         <div class="admin-module-header">
-                            <span class="admin-module-badge vip">VIP AD</span>
+                            <span class="admin-module-badge active">Activo</span>
                         </div>
 
                         <div class="admin-card-artwork">
@@ -188,7 +195,154 @@
                         </div>
                     </div>
 
-                    <button class="btn-module-disabled" disabled>Próximamente</button>
+                    <a href="vip/vip.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(168,85,247,0.35), rgba(124,58,237,0.7)); border-color:#c084fc; color:#fff;">
+                        <span>Gestionar Pases VIP</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 8: ENVÍOS & REGALOS A USUARIOS (NUEVO) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active" style="background:rgba(234, 179, 8, 0.2); border-color:#ffd700; color:#ffd700;">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/events.png" alt="Envíos y Regalos a Usuarios" class="admin-card-img" style="filter:hue-rotate(45deg);">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Envíos & Regalos a Usuarios</div>
+                        <div class="admin-module-desc">
+                            Envío directo de StarShips, Cartas, Potenciadores y Avatares a un usuario o a todos los duelistas de forma global con mensajes personalizados para su buzón.
+                        </div>
+                    </div>
+
+                    <a href="regalos/regalos.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(234, 179, 8, 0.35), rgba(245, 158, 11, 0.7)); border-color:#ffd700; color:#fff;">
+                        <span>Enviar Regalos</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 9: TAPETES DE DUELO (PLAYMATS) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active" style="background:rgba(0, 240, 255, 0.2); border-color:#00f0ff; color:#00f0ff;">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/tapetes.png" alt="Tapetes de Duelo" class="admin-card-img" onerror="this.onerror=null; this.src='../../assets/images/playmats/MAT-001.jpg';">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Tapetes de Duelo</div>
+                        <div class="admin-module-desc">
+                            Gestión de superficies cósmicas reglamentarias para el tablero de juego. Creación, edición dedicada, precios en StarShips/USD y activación por duelista.
+                        </div>
+                    </div>
+
+                    <a href="tapetes/tapetes.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(0,240,255,0.35), rgba(14,165,233,0.7)); border-color:#00f0ff; color:#fff;">
+                        <span>Gestionar Tapetes</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 10: FUNDAS Y REVERSOS DE CARTAS (SLEEVES) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active" style="background:rgba(168, 85, 247, 0.2); border-color:#a855f7; color:#c084fc;">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/fundas.png" alt="Fundas y Reversos de Cartas" class="admin-card-img" onerror="this.onerror=null; this.src='../../assets/images/sleeves/SLV-001.png';">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Fundas y Reversos de Cartas</div>
+                        <div class="admin-module-desc">
+                            Administración de fundas protectoras místicas y reversos para baraja principal, extra deck y cartas colocadas boca abajo en el campo de batalla.
+                        </div>
+                    </div>
+
+                    <a href="fundas/fundas.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(168,85,247,0.35), rgba(124,58,237,0.7)); border-color:#c084fc; color:#fff;">
+                        <span>Gestionar Fundas</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 11: RECARGA DE STARSHIPS (USD) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active" style="background:rgba(234, 179, 8, 0.2); border-color:#ffd700; color:#ffd700;">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/events.png" alt="Paquetes de StarShips USD" class="admin-card-img" style="filter:sepia(1) hue-rotate(5deg) saturate(2);">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Recarga de StarShips ($ USD)</div>
+                        <div class="admin-module-desc">
+                            Configuración de paquetes de StarShips por dólares (USD): bolsas, cofres, bóvedas galácticas, bonificaciones de estrellas extra y etiquetas de oferta.
+                        </div>
+                    </div>
+
+                    <a href="estrellas/estrellas.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(234, 179, 8, 0.35), rgba(245, 158, 11, 0.7)); border-color:#ffd700; color:#fff;">
+                        <span>Gestionar StarShips</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 12: CARTAS SINGLES Y BUNDLES (USD) -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active" style="background:rgba(0, 240, 255, 0.2); border-color:#00f0ff; color:#00f0ff;">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/cards.png" alt="Cartas Singles y Bundles USD" class="admin-card-img" style="filter:hue-rotate(180deg);">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Cartas Singles & Bundles ($ USD)</div>
+                        <div class="admin-module-desc">
+                            Venta directa de cartas legendarias individuales (Blue-Eyes, Red-Eyes, Dark Magician) y paquetes temáticos (Exodia Set, Staple Traps) en $ USD.
+                        </div>
+                    </div>
+
+                    <a href="cartas-tienda/cartas-tienda.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(0, 240, 255, 0.35), rgba(14, 165, 233, 0.7)); border-color:#00f0ff; color:#fff;">
+                        <span>Gestionar Cartas</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- MÓDULO 13: ESTUDIO DE AUDIO Y SONIDOS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active" style="background:rgba(236, 72, 153, 0.2); border-color:#ec4899; color:#ec4899;">Nuevo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="../../assets/images/admin/events.png" alt="Estudio de Audio" class="admin-card-img" style="filter:hue-rotate(290deg) saturate(2);">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Estudio de Audio y Sonidos</div>
+                        <div class="admin-module-desc">
+                            Reproductor, probador y visualizador de ondas de pistas de duelo (BGM en bucle), temas de clímax/victoria/derrota y efectos sonoros de invocaciones y ataques.
+                        </div>
+                    </div>
+
+                    <a href="/views/audio-preview.html" class="btn-module-access" style="background:linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(168, 85, 247, 0.7)); border-color:#ec4899; color:#fff;">
+                        <span>Abrir Estudio de Audio</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
                 </div>
 
             </div> <!-- Fin admin-modules-grid -->
@@ -198,6 +352,7 @@
     </div>
 
     <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
     <script src="../../js/core/navbar.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {

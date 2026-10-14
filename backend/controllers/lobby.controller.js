@@ -50,61 +50,141 @@ async function getLobbyContent(req, res) {
             }));
         }
 
-        const clanRankings = [
-            { Rank: 1, Name: "Ani Dimension Elite", Tag: "AD", Leader: "DuelMaster", Members: 48, MaxMembers: 50, Trophies: 12500, Shield: "⚡" },
-            { Rank: 2, Name: "Ilusionistas Milenio", Tag: "EYE", Leader: "PegasusJ", Members: 45, MaxMembers: 50, Trophies: 11200, Shield: "👁️" },
-            { Rank: 3, Name: "Fuerza del Dragón", Tag: "DRG", Leader: "Admin", Members: 42, MaxMembers: 50, Trophies: 9800, Shield: "🐉" },
-            { Rank: 4, Name: "Magos del Tiempo", Tag: "WIZ", Leader: "JoeyWheeler", Members: 38, MaxMembers: 50, Trophies: 8650, Shield: "⌛" },
-            { Rank: 5, Name: "Héroes del Destino", Tag: "D-H", Leader: "AsterP", Members: 35, MaxMembers: 50, Trophies: 7900, Shield: "⚔️" },
-            { Rank: 6, Name: "Sombras Oscuras", Tag: "SHD", Leader: "MarikIshtar", Members: 30, MaxMembers: 50, Trophies: 6800, Shield: "🌑" }
-        ];
+        let clanRankings = [];
+        try {
+            const pool = await getPool();
+            const clansRes = await pool.request().query(`
+                SELECT TOP 10 
+                    c.Id, c.Name, c.Tag, c.EmblemUrl, c.Level, c.Exp, c.Trophies,
+                    ISNULL(u.Username, 'Líder') as Leader,
+                    (SELECT COUNT(1) FROM dbo.ClanMembers cm WHERE cm.ClanId = c.Id) as Members,
+                    c.MaxMembers
+                FROM dbo.Clans c
+                LEFT JOIN dbo.Usuarios u ON c.LeaderUserId = u.Id
+                WHERE c.IsActive = 1
+                ORDER BY c.Level DESC, c.Exp DESC, c.Id ASC
+            `);
+            clanRankings = clansRes.recordset.map((c, idx) => ({
+                Rank: idx + 1,
+                Name: c.Name,
+                Tag: c.Tag,
+                Leader: c.Leader,
+                Members: c.Members || 1,
+                MaxMembers: c.MaxMembers || 30,
+                Level: c.Level || 1,
+                Trophies: c.Trophies || 0,
+                Shield: "🛡️"
+            }));
+        } catch (cErr) {
+            console.warn('[LOBBY CLAN DB WARNING]', cErr.message);
+        }
 
         const activeEvents = [
             {
-                id: "EVT_AD_CUP",
-                title: "🏆 Gran Copa Ani Dimension 2026",
-                badge: "TORNEO ESPECIAL",
+                id: "EVT_TORNEOS_OCG",
+                title: "⚔️ Torneos Oficiales OCG (Próximamente)",
+                badge: "PRÓXIMAMENTE",
                 badgeColor: "#ffd700",
-                description: "Compite en duelos reglamentarios OCG contra duelistas y NPCs élite para ganar gemas Starships, fundas y títulos exclusivos.",
-                reward: "⭐ 2,500 Starships + Funda Dragón Blanco",
-                endDate: "30 Septiembre 2026",
+                description: "Gran sistema oficial de torneos competitivos con emparejamiento automático por llaves (brackets), salas de espectadores en vivo y clasificaciones mundiales.",
+                reward: "Próximamente",
+                endDate: "Próximamente",
                 icon: "🏆"
             },
             {
-                id: "EVT_NPC_CHALLENGE",
-                title: "⚔️ Duelo de Maestros: NPC Yugi Muto",
-                badge: "DESTACADO",
+                id: "EVT_PUZZLE_MILLENNIUM",
+                title: "🧩 Evento del Rompecabezas Milenario",
+                badge: "ACTIVO",
                 badgeColor: "#00f0ff",
-                description: "Pon a prueba tu mazo reglamentario de 40 cartas contra el mazo oficial de Yugi Muto con reglas estrictas de tirada de dados y turno 1 sin ataque.",
-                reward: "⭐ 500 Starships por victoria",
+                description: "Consigue las piezas místicas del Rompecabezas en victorias de duelos PvP y NPCs. Completa el artefacto legendario para forjar el poder definitivo.",
+                reward: "Colección Mística",
                 endDate: "Permanente",
-                icon: "🔮"
+                icon: "🧩"
+            },
+            {
+                id: "EVT_ADVENTURE_CAMPAIGN",
+                title: "🗺️ Modo Aventura: Campaña Legendaria de 12 Eras",
+                badge: "DISPONIBLE",
+                badgeColor: "#10b981",
+                description: "Enfréntate a más de 200 duelistas legendarios en 12 Eras maestras de Yu-Gi-Oh! Desbloquea Medallas de honor con bonificaciones automáticas y permanentes de EXP, Starships y Suerte.",
+                reward: "Medallas & Bonificadores",
+                endDate: "Permanente",
+                icon: "🗺️"
+            },
+            {
+                id: "EVT_COSMETICS_SHOWCASE",
+                title: "🎴 Sistema de Cosméticos & Personalización",
+                badge: "DISPONIBLE",
+                badgeColor: "#c084fc",
+                description: "Equipa Tapetes de Duelo para personalizar tu mitad del campo y Fundas místicas para el reverso de tus cartas en combate.",
+                reward: "Tapetes & Fundas",
+                endDate: "Permanente",
+                icon: "🎴"
+            },
+            {
+                id: "EVT_PVP_ARENA",
+                title: "🌐 Arena de Duelos PvP en Tiempo Real",
+                badge: "DISPONIBLE",
+                badgeColor: "#38bdf8",
+                description: "Salas multijugador públicas y privadas con límite de 2 minutos por turno, temporizador sincronizado y clasificación oficial.",
+                reward: "Ranking & Puntos de Liga",
+                endDate: "Permanente",
+                icon: "⚔️"
             }
         ];
 
         const updatesList = [
             {
-                version: "v2.0.0",
-                date: "24 Septiembre 2026",
-                title: "Arquitectura Modular, Separación de Vistas y Soporte APK Móvil",
+                version: "v1.6.0",
+                date: "10 Octubre 2026",
+                title: "Cosméticos de Duelo, Buzón de Recompensas & Banda Sonora",
                 highlights: [
-                    "Arquitectura modularizada y lista para compilación APK nativa (Android) y Web.",
-                    "Desacoplamiento total: Vistas, Estilos CSS y Controladores JS dedicados.",
-                    "Motor OCG optimizado con resolución de cadenas LIFO y hand-traps.",
-                    "Flujo de tirada de dados 3D y selección de primer turno.",
-                    "Tablero reglamentario Konami Master Duel con Zonas EMZ integradas."
+                    "Personalización de combate con Tapetes de Duelo para tu campo y Fundas exclusivas para el reverso de tus cartas.",
+                    "Buzón Satelital & Baúl de Recompensas: recibe premios de administración y aplica potenciadores directamente a tu Avatar activo.",
+                    "Banda sonora inmersiva con música de fondo en bucle dedicada por módulo y temas de batalla dinámicos por Era.",
+                    "Optimización de interfaz de alta resolución adaptada para dispositivos móviles y tablets."
+                ]
+            },
+            {
+                version: "v1.5.0",
+                date: "08 Octubre 2026",
+                title: "Gran Expansión Modo Aventura: 12 Eras Legendarias & 200+ Duelistas",
+                highlights: [
+                    "Campaña expandida a 12 Eras históricas de Yu-Gi-Oh! (Duel Monsters, Reino, Batallas, Dartz, Egipto, GX, 5D's y Jefes Finales).",
+                    "Colección de Medallas de honor con bonificaciones permanentes de EXP, Starships y Suerte que se activan de forma automática.",
+                    "Inteligencia de combate avanzada en cada adversario con barajas y estrategias representativas de su época.",
+                    "Duelos de clímax épicos con música orquestal reactiva según la diferencia de Life Points."
                 ]
             },
             {
                 version: "v1.4.0",
-                date: "23 Septiembre 2026",
-                title: "Reglas Oficiales Konami, Tirada de Dados & Campo Limpio",
+                date: "05 Octubre 2026",
+                title: "Tienda Dimensional, Sobres por Eras & Sistema de Clanes",
                 highlights: [
-                    "Mecánica pre-duelo de tirada de dados: el ganador del dado mayor elige el orden de inicio.",
-                    "Campo reglamentario limpio: inicio con 0 cartas en campo y 5 cartas en mano.",
-                    "Regla OCG oficial Turno 1: el primer jugador no puede entrar a Battle Phase ni atacar.",
-                    "Ajuste de nick de usuario: máximo 15 caracteres y estricto a 1 sola palabra sin espacios.",
-                    "Lobby de bienvenida con ranking de jugadores, clanes y menú central de duelos."
+                    "Catálogo completo de sobres de cartas organizados por Eras oficiales (DM, GX, 5D's y Ediciones Especiales).",
+                    "Mercado de cartas individuales, potenciadores de avatar, avatares libres y membresías VIP.",
+                    "Creación y gestión de Clanes oficiales con rangos, donaciones de Starships y bonificaciones grupales."
+                ]
+            },
+            {
+                version: "v1.3.0",
+                date: "04 Octubre 2026",
+                title: "Arena de Duelos Multijugador & Temporizador de Turno",
+                highlights: [
+                    "Salas de duelo públicas y privadas para retar a duelistas de todo el mundo en tiempo real.",
+                    "Temporizador reglamentario de 120 segundos por turno para duelos dinámicos y competitivos.",
+                    "Sistema de reconexión rápida para regresar al duelo en caso de pérdida momentánea de señal.",
+                    "Chat en vivo con dinámicas interactivas de comunidad."
+                ]
+            },
+            {
+                version: "v1.2.0",
+                date: "02 Octubre 2026",
+                title: "Evento del Rompecabezas Milenario & Gran Colección de Cartas",
+                highlights: [
+                    "Evento Místico del Rompecabezas: reúne piezas exclusivas al ganar combates y completa el artefacto legendario.",
+                    "Tablero interactivo de colección con guardado automático de piezas descubiertas.",
+                    "Catálogo masivo con miles de cartas clásicas y legendarias listas para el combate.",
+                    "Tienda de sobres por temporadas con lanzamientos programados de expansiones."
                 ]
             }
         ];

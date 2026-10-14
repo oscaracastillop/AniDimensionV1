@@ -53,6 +53,7 @@
 </head>
 <body>
 
+    <img src="assets/images/logo.png" alt="Ani-Dimension" style="width:120px; height:auto; margin-bottom:16px; filter:drop-shadow(0 0 20px rgba(0,240,255,0.75));">
     <div class="splash-loader"></div>
     <div class="splash-title">ANI-DIMENSION</div>
     <div class="splash-subtitle">Iniciando el portal dimensional...</div>
@@ -60,13 +61,34 @@
     <script src="js/core/session.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
+            // Detección estricta de entorno nativo Android APK / Capacitor / WebView
+            const urlParams = new URLSearchParams(window.location.search);
+            const isApkSource = urlParams.get('source') === 'apk' || urlParams.get('platform') === 'android';
+            const isCapacitor = typeof window.Capacitor !== 'undefined' || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+            const isCordova = typeof window.cordova !== 'undefined';
+            const isAndroidWebView = /Android.*(wv|Version\/[0-9.]+\s+Chrome|Capacitor|AniDimension)/i.test(navigator.userAgent);
+
+            const isApp = isApkSource || isCapacitor || isCordova || isAndroidWebView;
+
+            if (isApp) {
+                // EL APK NUNCA VE LA LANDING PAGE: Va directo a Login o Lobby
                 if (window.Session && window.Session.isLoggedIn()) {
                     window.location.replace('views/lobby/lobby.html');
                 } else {
                     window.location.replace('views/login/login.html');
                 }
-            }, 300);
+            } else {
+                // NAVEGADORES WEB (anidimension.online desde PC / Celular): Muestra Landing Page oficial
+                if (urlParams.get('play') === '1' || urlParams.get('direct') === '1') {
+                    if (window.Session && window.Session.isLoggedIn()) {
+                        window.location.replace('views/lobby/lobby.html');
+                    } else {
+                        window.location.replace('views/login/login.html');
+                    }
+                } else {
+                    window.location.replace('landing.html');
+                }
+            }
         });
     </script>
 </body>

@@ -19,9 +19,6 @@
 
             <!-- CONTENEDOR CENTRAL: REGISTRO -->
             <div class="login-center-container">
-                <h1 class="login-main-title">ANI-DIMENSION</h1>
-                <div class="login-subtitle">REGISTRO DE NUEVO DUELISTA OCG</div>
-
                 <div class="login-card">
                     <div class="auth-tabs">
                         <span class="auth-tab-btn" style="color:var(--accent-gold); text-shadow:0 0 12px rgba(245,158,11,0.5);">NUEVO REGISTRO</span>
@@ -57,6 +54,66 @@
                         <div class="auth-toggle-wrapper">
                             <a href="../login/login.html" class="auth-toggle-link" style="color:var(--accent-gold);">¿Ya tienes cuenta? Iniciar Sesión aquí</a>
                         </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: CRÉDITOS OFICIALES (DESARROLLADO POR OSCAR CASTILLO) -->
+            <div id="credits-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:999; justify-content:center; align-items:center;" onclick="if(event.target===this) closeCreditsModal()">
+                <div class="credits-modal-card">
+                    <div class="credits-modal-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:16px;">📜</span>
+                            <span class="credits-modal-title">CRÉDITOS OFICIALES</span>
+                        </div>
+                        <button type="button" onclick="closeCreditsModal()" class="credits-btn-close">✕</button>
+                    </div>
+
+                    <div class="credits-modal-body">
+                        <div class="credits-logo-wrap">
+                            <div style="font-family:'Orbitron', sans-serif; font-size:15px; font-weight:900; color:#00f0ff; letter-spacing:1px; text-shadow:0 0 12px rgba(0,240,255,0.6);">
+                                ANI DIMENSION ONLINE
+                            </div>
+                            <div style="font-size:9.5px; color:#94a3b8; font-family:'Outfit', sans-serif; margin-top:2px;">
+                                El Metaverso de Duelos Anime en Tiempo Real
+                            </div>
+                        </div>
+
+                        <div class="credits-role-card" style="border:1.2px solid rgba(255, 215, 0, 0.45); background:linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(0, 0, 0, 0.5));">
+                            <div style="font-size:9px; font-family:'Orbitron', sans-serif; color:#ffd700; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;">
+                                👑 CREADOR & DESARROLLADOR PRINCIPAL
+                            </div>
+                            <div style="font-size:17px; font-family:'Orbitron', sans-serif; color:#ffffff; font-weight:900; margin-top:4px; text-shadow:0 0 14px rgba(255,215,0,0.6);">
+                                Oscar Castillo
+                            </div>
+                            <div style="font-size:9.5px; color:#cbd5e1; margin-top:3px; font-family:'Outfit', sans-serif;">
+                                Arquitectura de Software, Full-Stack Development & Motor de Duelos
+                            </div>
+                        </div>
+
+                        <div class="credits-info-grid">
+                            <div class="credits-info-item">
+                                <span class="credits-info-lbl">⚡ MOTOR DE DUELOS</span>
+                                <span class="credits-info-val">Core Dimension Engine (100% Nativo)</span>
+                            </div>
+                            <div class="credits-info-item">
+                                <span class="credits-info-lbl">🎴 MODO AVENTURA</span>
+                                <span class="credits-info-val">12 Eras • 193 Duelistas Canónicos</span>
+                            </div>
+                            <div class="credits-info-item">
+                                <span class="credits-info-lbl">🌐 DESARROLLADO POR</span>
+                                <span class="credits-info-val" style="color:#00f0ff; font-weight:700;">Ani Dimension</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:10px; margin-bottom:12px; font-size:8.5px; color:#64748b; font-family:'Outfit', sans-serif; text-align:center;">
+                            © 2026 Ani Dimension • Todos los derechos reservados.
+                        </div>
+
+                        <button type="button" class="btn-credits-close-action" onclick="closeCreditsModal()">
+                            ENTENDIDO
+                        </button>
                     </div>
                 </div>
             </div>
@@ -69,7 +126,17 @@
         </div>
     </div>
 
+    <!-- BOTÓN FLOTANTE OFICIAL EN LA PARTE INFERIOR IZQUIERDA: CRÉDITOS -->
+    <div class="credits-float-wrapper" id="bottom-left-credits-action">
+        <button type="button" id="btn-open-credits-modal" class="btn-credits-float" onclick="openCreditsModal()" title="Ver créditos oficiales y desarrollador de Ani-Dimension">
+            <span class="credits-float-icon">📜</span>
+            <span class="credits-float-text">CRÉDITOS</span>
+        </button>
+    </div>
+
     <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/sound-manager.js"></script>
     <script src="../../js/views/register.js"></script>
 </body>
 </html>

@@ -57,7 +57,8 @@ function renderAdminAvatarFormPanel() {
 
     const isActive = currentAdminAvatar.active !== false;
     const bannerText = currentAdminAvatar.offer_text || 'NUEVO';
-    const price = currentAdminAvatar.price !== undefined ? currentAdminAvatar.price : 1500;
+    const currency = currentAdminAvatar.currency || 'STARSHIPS';
+    const price = (currentAdminAvatar.price !== undefined && currentAdminAvatar.price !== null) ? currentAdminAvatar.price : (currency === 'USD' ? 4.99 : 50000);
     const expBoost = parseFloat(currentAdminAvatar.exp_boost !== undefined ? currentAdminAvatar.exp_boost : 3.0).toFixed(1);
     const starBoost = parseFloat(currentAdminAvatar.starships_boost !== undefined ? currentAdminAvatar.starships_boost : 2.0).toFixed(1);
     const luckBoost = parseFloat(currentAdminAvatar.luck_boost !== undefined ? currentAdminAvatar.luck_boost : 1.0).toFixed(1);
@@ -99,35 +100,44 @@ function renderAdminAvatarFormPanel() {
             </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
             
-            <!-- TEXTO DEL BANNER -->
+            <!-- TIPO DE MONEDA -->
             <div>
-                <label style="display:block; font-size:9.5px; font-weight:800; color:#cbd5e1; font-family:'Orbitron', sans-serif; margin-bottom:3px;">Texto Banner (Máx 12 Caracteres):</label>
-                <input type="text" id="edit-avatar-banner" value="${bannerText}" maxlength="12" placeholder="NUEVO" oninput="updateLivePreview()" style="width:100%; padding:6px 10px; font-size:11px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #ffd700; border-radius:4px; color:#ffd700; outline:none; box-sizing:border-box;">
+                <label style="display:block; font-size:9.5px; font-weight:800; color:#cbd5e1; font-family:'Orbitron', sans-serif; margin-bottom:3px;">Moneda:</label>
+                <select id="edit-avatar-currency" onchange="onDetailCurrencyChange()" style="width:100%; padding:6px 8px; font-size:10.5px; font-family:'Orbitron', sans-serif; font-weight:700; background:rgba(0,0,0,0.6); border:1px solid #ffd700; border-radius:4px; color:#ffd700; outline:none; box-sizing:border-box;">
+                    <option value="STARSHIPS" ${currency === 'STARSHIPS' ? 'selected' : ''}>⭐ STARSHIPS</option>
+                    <option value="USD" ${currency === 'USD' ? 'selected' : ''}>💵 $ USD</option>
+                </select>
             </div>
 
-            <!-- PRECIO EN STARSHIPS -->
+            <!-- PRECIO -->
             <div>
-                <label style="display:block; font-size:9.5px; font-weight:800; color:#cbd5e1; font-family:'Orbitron', sans-serif; margin-bottom:3px;">Precio (StarShips ⭐):</label>
-                <input type="number" id="edit-avatar-price" value="${price}" min="0" placeholder="1500" oninput="updateLivePreview()" style="width:100%; padding:6px 10px; font-size:11px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #ffd700; border-radius:4px; color:#ffd700; outline:none; box-sizing:border-box;">
+                <label id="edit-avatar-price-label" style="display:block; font-size:9.5px; font-weight:800; color:#cbd5e1; font-family:'Orbitron', sans-serif; margin-bottom:3px;">Precio (${currency === 'USD' ? '$ USD' : '⭐'}):</label>
+                <input type="number" id="edit-avatar-price" value="${price}" min="0" step="${currency === 'USD' ? '0.01' : '1'}" placeholder="0" oninput="updateLivePreview()" style="width:100%; padding:6px 10px; font-size:11px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #ffd700; border-radius:4px; color:#ffd700; outline:none; box-sizing:border-box;">
+            </div>
+
+            <!-- TEXTO DEL BANNER -->
+            <div>
+                <label style="display:block; font-size:9.5px; font-weight:800; color:#cbd5e1; font-family:'Orbitron', sans-serif; margin-bottom:3px;">Texto Banner:</label>
+                <input type="text" id="edit-avatar-banner" value="${bannerText}" maxlength="12" placeholder="NUEVO" oninput="updateLivePreview()" style="width:100%; padding:6px 10px; font-size:11px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #ffd700; border-radius:4px; color:#ffd700; outline:none; box-sizing:border-box;">
             </div>
 
         </div>
 
         <!-- SECCIÓN DE POTENCIADORES DECIMALES -->
         <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(255,255,255,0.1); padding:10px; border-radius:6px; margin-bottom:14px;">
-            <div style="font-size:9.5px; font-weight:800; color:#94a3b8; font-family:'Orbitron', sans-serif; margin-bottom:8px;">🚀 POTENCIADORES BOOSTER (% DECIMALES):</div>
+            <div style="font-size:9.5px; font-weight:800; color:#94a3b8; font-family:'Orbitron', sans-serif; margin-bottom:8px;">🚀 POTENCIADORES BOOSTER (MÁX: EXP 300%, ⭐ 300%, 🍀 100%):</div>
             
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
                 <div>
                     <label style="display:block; font-size:8.5px; font-weight:800; color:#10b981; font-family:'Orbitron', sans-serif; margin-bottom:2px;">EXP Boost (%):</label>
-                    <input type="number" id="edit-avatar-exp" value="${expBoost}" step="0.1" min="0" max="100" oninput="updateLivePreview()" style="width:100%; padding:5px 6px; font-size:10.5px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #10b981; color:#10b981; border-radius:4px; outline:none; text-align:center; box-sizing:border-box;">
+                    <input type="number" id="edit-avatar-exp" value="${expBoost}" step="0.1" min="0" max="300" oninput="updateLivePreview()" style="width:100%; padding:5px 6px; font-size:10.5px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #10b981; color:#10b981; border-radius:4px; outline:none; text-align:center; box-sizing:border-box;">
                 </div>
 
                 <div>
                     <label style="display:block; font-size:8.5px; font-weight:800; color:#ffd700; font-family:'Orbitron', sans-serif; margin-bottom:2px;">Starships (%):</label>
-                    <input type="number" id="edit-avatar-star" value="${starBoost}" step="0.1" min="0" max="100" oninput="updateLivePreview()" style="width:100%; padding:5px 6px; font-size:10.5px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #ffd700; color:#ffd700; border-radius:4px; outline:none; text-align:center; box-sizing:border-box;">
+                    <input type="number" id="edit-avatar-star" value="${starBoost}" step="0.1" min="0" max="300" oninput="updateLivePreview()" style="width:100%; padding:5px 6px; font-size:10.5px; font-family:'Orbitron', sans-serif; font-weight:900; background:rgba(0,0,0,0.6); border:1px solid #ffd700; color:#ffd700; border-radius:4px; outline:none; text-align:center; box-sizing:border-box;">
                 </div>
 
                 <div>
@@ -240,10 +250,26 @@ function renderAdminAvatarPreviewCard() {
             </div>
         </div>
 
-        <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:#ffd700;">
-            ⭐ ${price.toLocaleString()} StarShips
+        <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:${(document.getElementById('edit-avatar-currency')?.value === 'USD') ? '#22c55e' : '#ffd700'};">
+            ${(document.getElementById('edit-avatar-currency')?.value === 'USD') ? '$ ' + parseFloat(price).toFixed(2) + ' USD' : '⭐ ' + parseInt(price, 10).toLocaleString() + ' StarShips'}
         </div>
     `;
+}
+
+function onDetailCurrencyChange() {
+    const curSelect = document.getElementById('edit-avatar-currency');
+    const priceLbl = document.getElementById('edit-avatar-price-label');
+    const priceInput = document.getElementById('edit-avatar-price');
+
+    if (!curSelect || !priceInput) return;
+    const isUsd = (curSelect.value === 'USD');
+
+    if (priceLbl) {
+        priceLbl.textContent = `Precio (${isUsd ? '$ USD' : '⭐'}):`;
+    }
+    priceInput.step = isUsd ? '0.01' : '1';
+
+    updateLivePreview();
 }
 
 function updateLivePreview() {
@@ -261,6 +287,7 @@ function saveAdminAvatarChanges() {
     const nameInput = document.getElementById('edit-avatar-name');
     const pathInput = document.getElementById('edit-avatar-image-path');
     const bannerInput = document.getElementById('edit-avatar-banner');
+    const currencyInput = document.getElementById('edit-avatar-currency');
     const priceInput = document.getElementById('edit-avatar-price');
     const expInput = document.getElementById('edit-avatar-exp');
     const starInput = document.getElementById('edit-avatar-star');
@@ -271,10 +298,11 @@ function saveAdminAvatarChanges() {
     const code = codeInput ? codeInput.value.trim().toUpperCase() : currentAdminAvatar.code;
     const name = nameInput ? nameInput.value.trim() : currentAdminAvatar.name;
     const offerText = bannerInput ? bannerInput.value.trim().toUpperCase() : 'NUEVO';
-    const price = priceInput ? Math.max(0, parseInt(priceInput.value) || 0) : 1500;
-    const expBoost = expInput ? Math.max(0, parseFloat(expInput.value) || 0) : 3.0;
-    const starBoost = starInput ? Math.max(0, parseFloat(starInput.value) || 0) : 2.0;
-    const luckBoost = luckInput ? Math.max(0, parseFloat(luckInput.value) || 0) : 1.0;
+    const currency = currencyInput ? currencyInput.value : (currentAdminAvatar.currency || 'STARSHIPS');
+    const price = priceInput ? (currency === 'USD' ? Math.max(0, parseFloat(priceInput.value) || 0) : Math.max(0, parseInt(priceInput.value, 10) || 0)) : (currentAdminAvatar.price || 0);
+    const expBoost = expInput ? Math.min(300.0, Math.max(0.0, parseFloat(expInput.value) || 0)) : 3.0;
+    const starBoost = starInput ? Math.min(300.0, Math.max(0.0, parseFloat(starInput.value) || 0)) : 2.0;
+    const luckBoost = luckInput ? Math.min(100.0, Math.max(0.0, parseFloat(luckInput.value) || 0)) : 1.0;
     const active = activeInput ? activeInput.checked : true;
 
     let image = uploadedImageDataUrl;
@@ -293,6 +321,7 @@ function saveAdminAvatarChanges() {
         existingAvatar.name = name;
         existingAvatar.image = image;
         existingAvatar.offer_text = offerText;
+        existingAvatar.currency = currency;
         existingAvatar.price = price;
         existingAvatar.exp_boost = expBoost;
         existingAvatar.starships_boost = starBoost;
@@ -304,6 +333,7 @@ function saveAdminAvatarChanges() {
             code: code,
             name: name,
             image: image,
+            currency: currency,
             exp_boost: expBoost,
             starships_boost: starBoost,
             luck_boost: luckBoost,
@@ -326,3 +356,6 @@ function saveAdminAvatarChanges() {
         location.href = 'avatars.html';
     }, 1200);
 }
+
+window.onDetailCurrencyChange = onDetailCurrencyChange;
+

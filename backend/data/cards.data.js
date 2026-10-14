@@ -662,7 +662,7 @@ const LOCAL_CARDS = {
     46130346: { id: 46130346, name: "Hinotama", type: "Spell Card", race: "Normal", attribute: "SPELL", level: 0, atk: null, def: null, desc: "Inflicts 500 points of damage to your opponent's Life Points.", image_url: "https://images.ygoprodeck.com/images/cards/46130346.jpg" },
     63102017: { id: 63102017, name: "Stop Defense", type: "Spell Card", race: "Normal", attribute: "SPELL", level: 0, atk: null, def: null, desc: "Changes an opponent's monster to Attack Position.", image_url: "https://images.ygoprodeck.com/images/cards/63102017.jpg" },
     95638658: { id: 95638658, name: "Remove Trap", type: "Spell Card", race: "Normal", attribute: "SPELL", level: 0, atk: null, def: null, desc: "Destroys a face-up trap card.", image_url: "https://images.ygoprodeck.com/images/cards/95638658.jpg" },
-    50045229: { id: 50045229, name: "Dragon Capture Jar", type: "Trap Card", race: "Continuous", attribute: "TRAP", level: 0, atk: null, def: null, desc: "Changes all Dragon-Type monsters to Defense Position.", image_url: "https://images.ygoprodeck.com/images/cards/50045229.jpg" }
+    50045299: { id: 50045299, name: "Dragon Capture Jar", type: "Trap Card", race: "Continuous", attribute: "TRAP", level: 0, atk: null, def: null, desc: "Changes all Dragon-Type monsters to Defense Position.", image_url: "https://images.ygoprodeck.com/images/cards/50045299.jpg" }
 };
 
 // Cargar cartas locales en caché garantizando estandarización total de id, card_id e imagen local

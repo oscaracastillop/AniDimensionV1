@@ -10,15 +10,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initShop() {
-    const user = window.Session ? window.Session.getUser() : null;
-    if (user) {
-        const coinsEl = document.getElementById('shop-user-coins');
-        if (coinsEl) {
-            coinsEl.textContent = `⭐ ${user.starships || user.coins || 500}`;
-        }
+    const coinsEl = document.getElementById('shop-user-coins');
+    if (coinsEl) {
+        const starships = (window.Session && typeof window.Session.getStarships === 'function')
+            ? window.Session.getStarships()
+            : 5000;
+        coinsEl.textContent = `⭐ ${starships.toLocaleString()}`;
     }
 }
 
 function buyShopItem(itemName, price) {
-    alert(`⚡ [TIENDA] Has seleccionado comprar '${itemName}' por ${price} Starships. ¡Módulo de catálogo en desarrollo!`);
+    console.log(`[TIENDA] Selección de '${itemName}' por ${price} Starships.`);
 }

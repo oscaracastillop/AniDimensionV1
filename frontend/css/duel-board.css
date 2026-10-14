@@ -1,18 +1,17 @@
 /* ANI-DIMENSION: TABLERO OFICIAL KONAMI */
 
 /* ==========================================================================
-   TEMA MAESTRO: FONDO BLANCO RADIAL Y BORDES RECTOS CYBER (SIN REDONDEAR)
+   TEMA MAESTRO: SIN FONDO / SIN CUADRÍCULAS (FONDO LIMPIO)
    ========================================================================== */
 html,
 body,
 #game-container {
     background-color: #020408 !important;
-    background-image: 
-        linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%) !important;
-    background-size: 80px 80px, 80px 80px, 100% 100% !important;
-    background-position: 0 0, 0 0, center center !important;
+    background-image: linear-gradient(rgba(2, 4, 8, 0.45), rgba(2, 4, 8, 0.45)), url('../assets/duel.jpg?v=3.0'), url('/assets/duel.jpg?v=3.0'), url('../../assets/duel.jpg?v=3.0'), url('../../../assets/duel.jpg?v=3.0') !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
     font-family: 'Outfit', sans-serif !important;
 }
 
@@ -25,6 +24,162 @@ body,
     box-shadow: none !important;
     backdrop-filter: none !important;
     padding: 0 !important;
+}
+
+/* ==========================================================================
+   VENTANA FLOTANTE HORIZONTAL: INFO CARTA (CYBER DESIGN)
+   ========================================================================== */
+.card-info-floating-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    backdrop-filter: blur(4px);
+}
+
+.card-info-floating-card {
+    background: linear-gradient(145deg, #091122 0%, #040810 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.7) !important;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.35), 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+    border-radius: 0 !important;
+    width: 620px;
+    max-width: 92vw;
+    height: 320px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    padding: 14px;
+    gap: 16px;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    box-sizing: border-box;
+}
+
+.card-info-close-btn {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #00f0ff;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    z-index: 10;
+    padding: 4px 8px;
+}
+
+.card-info-close-btn:hover {
+    color: #ff4757;
+    transform: scale(1.15);
+}
+
+.card-info-left-col {
+    width: 170px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-info-img {
+    width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.6);
+}
+
+.card-info-right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.card-info-title {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+    margin-right: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-info-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.card-info-badge {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 8.5px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    background: rgba(0, 240, 255, 0.12);
+    color: #00f0ff;
+    text-transform: uppercase;
+}
+
+.card-info-stats {
+    display: flex;
+    gap: 16px;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 11.5px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.card-stat-atk {
+    color: #f59e0b;
+}
+
+.card-stat-def {
+    color: #00f0ff;
+}
+
+.card-info-desc-box {
+    flex: 1;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 240, 255, 0.5) transparent;
+}
+
+.card-info-desc-text {
+    font-size: 11px;
+    line-height: 1.45;
+    color: #cbd5e1;
+}
+
+@media (max-width: 600px) {
+    .card-info-floating-card {
+        flex-direction: column;
+        height: auto;
+        max-height: 85vh;
+        width: 95vw;
+    }
+
+    .card-info-left-col {
+        width: 100%;
+        height: 120px;
+    }
 }
 
 /* BLOQUES INTERNOS FLOTANTES INDIVIDUALES (MISMO COLOR QUE EL TABLERO DE DUELO) */
@@ -87,7 +242,8 @@ body,
 #rule-alert-banner,
 #trap-chain-banner,
 .tribute-floating-banner {
-    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    border-radius: 0 !important;
+    /* TOTALMENTE RECTO */
 }
 
 /* 2. BOTONES TOTALMENTE RECTOS ("SIN BORDES REDONDEADOS") */
@@ -100,7 +256,8 @@ button,
 .btn-tribute-cancel,
 .btn-act-vertical,
 .modal-close-btn {
-    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    border-radius: 0 !important;
+    /* TOTALMENTE RECTO */
 }
 
 /* 3. UNIFICACIÓN DE FUENTES (ORBITRON PARA TÍTULOS/ESTADÍSTICAS/FASES/BOTONES, OUTFIT PARA TEXTO) */
@@ -151,26 +308,1244 @@ button,
    ========================================================================== */
 #duel-app {
     display: flex;
-    width: 100%;
+    width: 100vw;
     max-width: 100vw;
-    height: 100%;
-    gap: 6px;
-    padding: 4px 5px 0 5px !important;
-    padding-left: max(env(safe-area-inset-left, 0px), 5px) !important;
-    padding-right: max(env(safe-area-inset-right, 0px), 5px) !important;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    gap: 0;
+    padding: 0 !important;
+    margin: 0 !important;
     box-sizing: border-box;
-    justify-content: space-between;
-    align-items: stretch;
-    flex: 1;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
+    position: relative;
 }
 
 /* ==========================================================================
-   PANEL 1: INSPECTOR LATERAL IZQUIERDO DETALLADO ("DETALLE COMPLETO DE CARTA")
+   CAMPO CENTRAL DE DUELO - FORMATO ORIGINAL COMPACTO Y EQUILIBRADO (16:9 RATIO)
    ========================================================================== */
-#inspector-panel {
-    flex: 0 0 clamp(160px, 17.5vw, 230px);
-    width: clamp(160px, 17.5vw, 230px);
+#duel-field-panel {
+    height: calc(100% - 10px);
+    max-height: calc(100vh - 10px);
+    max-height: calc(100dvh - 10px);
+    width: auto;
+    max-width: 100vw;
+    aspect-ratio: 16 / 9.2;
+    margin: 5px auto !important;
+    background: transparent !important;
+    border: 1.5px solid var(--panel-border, rgba(0, 240, 255, 0.4));
+    border-radius: 0 !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 0 35px rgba(0, 240, 255, 0.03);
+    padding: clamp(2px, 0.5vh, 6px) clamp(3px, 0.6vw, 8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   CAJAS FLOTANTES DE LP (FORMATO HORIZONTAL ELEGANTE Y PROPORCIONAL)
+   ========================================================================== */
+.board-lp-box {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(6, 11, 20, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 0 !important;
+    padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1vw, 14px);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 25;
+    width: clamp(120px, 14vw, 175px);
+    min-width: 0;
+    max-width: 200px;
+    height: clamp(32px, 6.5vh, 46px);
+    box-sizing: border-box;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    gap: 8px;
+    user-select: none;
+}
+
+.rival-lp-box {
+    left: clamp(4px, 0.7vw, 10px);
+    border: 1.5px solid rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.3), 0 4px 14px rgba(0, 0, 0, 0.75);
+}
+
+.rival-lp-box:hover {
+    transform: translateY(-50%) scale(1.04);
+    border-color: #ff4757;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.6), 0 6px 18px rgba(0, 0, 0, 0.9);
+}
+
+.player-lp-box {
+    right: clamp(4px, 0.7vw, 10px);
+    border: 1.5px solid rgba(0, 240, 255, 0.7);
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.3), 0 4px 14px rgba(0, 0, 0, 0.75);
+}
+
+.player-lp-box:hover {
+    transform: translateY(-50%) scale(1.04);
+    border-color: #00f0ff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), 0 6px 18px rgba(0, 0, 0, 0.9);
+}
+
+.board-lp-info-col,
+.board-lp-badge-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    max-width: 62%;
+    overflow: hidden;
+}
+
+.board-role-badge {
+    display: none !important;
+}
+
+.board-user-name {
+    display: block !important;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(8.5px, 1.3vh, 11px);
+    font-weight: 700;
+    color: #e2e8f0;
+    max-width: 95px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.3px;
+    line-height: 1.1;
+    margin-top: 1px;
+}
+
+.board-lp-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 2.5vh, 18px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.8px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.board-lp-val.rival-lp-color {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.85);
+}
+
+.board-lp-val.player-lp-color {
+    color: #00f0ff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.85);
+}
+
+@keyframes lpDamageAnim {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(255, 0, 85, 0.9);
+    }
+
+    35% {
+        transform: scale(1.22);
+        text-shadow: 0 0 25px rgba(255, 0, 85, 1);
+        color: #ff0055 !important;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes lpHealAnim {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.9);
+    }
+
+    35% {
+        transform: scale(1.22);
+        text-shadow: 0 0 25px rgba(0, 255, 136, 1);
+        color: #00ff88 !important;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.lp-damage-pulse {
+    animation: lpDamageAnim 0.65s ease-out !important;
+}
+
+.lp-heal-pulse {
+    animation: lpHealAnim 0.65s ease-out !important;
+}
+
+/* ==========================================================================
+   CÁPSULAS VERTICALES DE CONTROL DE FASES (MÁS AIRE VERTICAL Y BOTONES MÁS GRANDES)
+   ========================================================================== */
+.board-phase-capsule {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    border-radius: 0 !important;
+    padding: 0;
+    z-index: 25;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.player-phase-capsule {
+    left: 8px;
+    bottom: 8px;
+}
+
+.rival-phase-capsule {
+    right: 8px;
+    top: 8px;
+}
+
+.phase-capsule-title {
+    display: none !important;
+}
+
+.phase-capsule-btn {
+    width: 52px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12.5px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    border-radius: 0 !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45);
+    background: #08101e;
+    color: #e2e8f0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.9);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    cursor: default;
+    line-height: 1;
+}
+
+.player-phase-capsule .phase-capsule-btn.active-phase {
+    background: #004b6b !important;
+    border-color: #00f0ff !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.9), inset 0 0 10px rgba(0, 240, 255, 0.4) !important;
+    transform: scale(1.05);
+}
+
+.player-phase-capsule .phase-capsule-btn.phase-available {
+    border-color: #00f0ff;
+    color: #38bdf8;
+    background: #0c1a32;
+    cursor: pointer;
+}
+
+.player-phase-capsule .phase-capsule-btn.phase-available:hover {
+    background: #102548;
+    color: #00f0ff;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+    transform: scale(1.06);
+}
+
+.player-phase-capsule .phase-capsule-btn.phase-disabled {
+    background: #050a14;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #64748b;
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.rival-phase-capsule .phase-capsule-btn.active-phase {
+    background: #6b1111 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.9), inset 0 0 10px rgba(239, 68, 68, 0.4) !important;
+    transform: scale(1.05);
+}
+
+.rival-phase-capsule .phase-capsule-btn.phase-disabled {
+    background: #050a14;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #64748b;
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.board-phase-capsule.tracker-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    filter: grayscale(40%);
+}
+
+/* ==========================================================================
+   GRUPO UNIFICADO DE BOTONES DE ACCIÓN VERTICAL (LOG ARRIBA, RENDIRSE ABAJO)
+   ========================================================================== */
+.board-action-buttons-group {
+    position: absolute;
+    right: clamp(4px, 0.7vw, 10px);
+    bottom: clamp(4px, 0.8vh, 10px);
+    background: rgba(6, 11, 20, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    border-radius: 0 !important;
+    padding: clamp(2px, 0.4vh, 3px) clamp(2px, 0.3vw, 3px);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2px, 0.3vh, 3px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 240, 255, 0.15);
+    z-index: 25;
+}
+
+.board-action-buttons-divider {
+    width: clamp(12px, 1.8vw, 18px);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 1px 0;
+}
+
+.neon-icon-action-btn,
+.neon-square-btn {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: clamp(2px, 0.3vh, 3px) !important;
+    width: clamp(19px, 2.3vw, 24px);
+    height: clamp(16px, 3vh, 22px);
+    border-radius: 0 !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    user-select: none;
+}
+
+.neon-icon-action-btn .neon-btn-svg,
+.neon-square-btn .neon-btn-svg {
+    width: clamp(12px, 2vh, 16px);
+    height: clamp(12px, 2vh, 16px);
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: all 0.2s ease;
+}
+
+.neon-icon-action-btn.btn-log,
+.neon-square-btn.btn-log {
+    color: #00f0ff;
+}
+
+.neon-icon-action-btn.btn-log .neon-btn-svg,
+.neon-square-btn.btn-log .neon-btn-svg {
+    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.85));
+}
+
+.neon-icon-action-btn.btn-log:hover,
+.neon-square-btn.btn-log:hover {
+    background: rgba(0, 240, 255, 0.2) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+    transform: translateY(-1px);
+}
+
+.neon-icon-action-btn.btn-log:hover .neon-btn-svg,
+.neon-square-btn.btn-log:hover .neon-btn-svg {
+    filter: drop-shadow(0 0 8px #00f0ff) drop-shadow(0 0 14px rgba(0, 240, 255, 0.95));
+}
+
+.neon-icon-action-btn.btn-surrender,
+.neon-square-btn.btn-surrender {
+    color: #ef4444;
+}
+
+.neon-icon-action-btn.btn-surrender .neon-btn-svg,
+.neon-square-btn.btn-surrender .neon-btn-svg {
+    filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.85));
+}
+
+.neon-icon-action-btn.btn-surrender:hover,
+.neon-square-btn.btn-surrender:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+    transform: translateY(-1px);
+}
+
+.neon-icon-action-btn.btn-surrender:hover .neon-btn-svg,
+.neon-square-btn.btn-surrender:hover .neon-btn-svg {
+    filter: drop-shadow(0 0 8px #ef4444) drop-shadow(0 0 14px rgba(239, 68, 68, 0.95));
+}
+
+/* ==========================================================================
+   VENTANA FLOTANTE DEL REGISTRO DE EVENTOS (NO MODAL / ARRASTRABLE - PUNTAS RECTAS)
+   ========================================================================== */
+.floating-log-window,
+.duel-event-log-drawer {
+    position: fixed !important;
+    right: 40px;
+    bottom: 60px;
+    width: 340px;
+    max-width: 90vw;
+    height: 280px;
+    max-height: 50vh;
+    background: radial-gradient(circle at 30% 30%, #0d1a30 0%, #060d1a 65%, #02050b 100%);
+    border: 1.5px solid #00f0ff;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.35), 0 12px 30px rgba(0, 0, 0, 0.9);
+    border-radius: 0 !important;
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: popInLog 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popInLog {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.floating-log-header,
+.log-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.25) 0%, rgba(9, 17, 34, 0.95) 100%);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+    padding: 6px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: #00f0ff;
+    cursor: move;
+    user-select: none;
+    border-radius: 0 !important;
+}
+
+.floating-log-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: #00f0ff;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+}
+
+.floating-log-close,
+.log-drawer-close {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 0 !important;
+    transition: all 0.15s ease;
+}
+
+.floating-log-close:hover,
+.log-drawer-close:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.floating-log-entries,
+.log-entries {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(4, 7, 14, 0.7);
+    border-radius: 0 !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 240, 255, 0.5) transparent;
+}
+
+.floating-log-entries::-webkit-scrollbar {
+    width: 5px;
+}
+
+.floating-log-entries::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.4);
+    border-radius: 3px;
+}
+
+/* ==========================================================================
+   VENTANA FLOTANTE DE PERFIL DEL DUELISTA (NO MODAL / NO BLOQUEANTE)
+   ========================================================================== */
+.duelist-profile-drawer {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 380px;
+    max-width: 92vw;
+    max-height: 88vh;
+    background: radial-gradient(circle at 30% 30%, #0d1a30 0%, #060d1a 65%, #02050b 100%);
+    border: 1.5px solid #00f0ff;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.35), 0 16px 40px rgba(0, 0, 0, 0.95);
+    border-radius: 0 !important;
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: popInDrawer 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    pointer-events: auto;
+}
+
+.duelist-profile-drawer.theme-rival {
+    border-color: #ef4444;
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.35), 0 16px 40px rgba(0, 0, 0, 0.95);
+}
+
+.duelist-profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.25) 0%, rgba(9, 17, 34, 0.95) 100%);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+    padding: 8px 12px;
+    font-family: 'Orbitron', sans-serif;
+    user-select: none;
+}
+
+.duelist-profile-drawer.theme-rival .duelist-profile-header {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.25) 0%, rgba(9, 17, 34, 0.95) 100%);
+    border-bottom-color: rgba(239, 68, 68, 0.4);
+}
+
+.duelist-profile-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #00f0ff;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.duelist-profile-drawer.theme-rival .duelist-profile-title {
+    color: #ef4444;
+}
+
+.duelist-profile-close {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    padding: 2px 6px;
+    transition: all 0.15s ease;
+    border-radius: 0 !important;
+}
+
+.duelist-profile-close:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.duelist-profile-body {
+    padding: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #e2e8f0;
+    font-family: 'Outfit', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 240, 255, 0.4) transparent;
+}
+
+.duelist-profile-drawer.theme-rival .duelist-profile-body {
+    scrollbar-color: rgba(239, 68, 68, 0.4) transparent;
+}
+
+.dp-hero-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(4, 8, 16, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 10px;
+}
+
+.dp-avatar-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 0;
+    border: 1.5px solid #00f0ff;
+    background: #020610;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.duelist-profile-drawer.theme-rival .dp-avatar-box {
+    border-color: #ef4444;
+}
+
+.dp-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dp-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.dp-username {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12.5px;
+    font-weight: 900;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dp-tags-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.dp-level-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.15);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    padding: 1px 5px;
+}
+
+.dp-country-tag {
+    font-size: 9px;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.dp-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.dp-boosts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.dp-boost-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dp-boost-lbl {
+    font-size: 7.5px;
+    color: #94a3b8;
+}
+
+.dp-boost-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10.5px;
+    font-weight: 900;
+    color: #00ff88;
+}
+
+.dp-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.dp-stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dp-stat-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    color: #38bdf8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 3px;
+}
+
+.dp-stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5px;
+    color: #cbd5e1;
+}
+
+.dp-stat-val-highlight {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    color: #ffd700;
+}
+
+.dp-npc-desc {
+    font-size: 9px;
+    color: #94a3b8;
+    line-height: 1.4;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    padding: 8px;
+}
+
+.matrix-centered-container {
+    width: 96%;
+    height: 86%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: clamp(2px, 0.6vh, 5px);
+    margin: auto;
+    position: relative;
+}
+
+/* ==========================================================================
+           DIVISIÓN DEL TABLERO EN DOS MITADES (MITAD Y MITAD DE TODO EL CONTENEDOR)
+           ========================================================================== */
+.field-half-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+    z-index: 0;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    box-sizing: border-box;
+}
+
+.rival-half {
+    top: 0;
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.player-half {
+    top: 50%;
+}
+
+.field-row-9 {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    column-gap: clamp(3px, 0.8vw, 8px);
+    row-gap: 2px;
+    width: 100%;
+    height: 19%;
+    align-items: center;
+    justify-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.emz-row-9 {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    column-gap: clamp(3px, 0.8vw, 8px);
+    row-gap: 2px;
+    width: 100%;
+    height: 19%;
+    align-items: center;
+    justify-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==========================================================================
+           DIFERENCIACIÓN CROMÁTICA OFICIAL DE LAS ZONAS DEL CAMPO (ZONAS MÁS GRANDES)
+           ========================================================================== */
+.field-slot {
+    aspect-ratio: 1 / 1.45;
+    height: 94%;
+    max-height: 94%;
+    max-width: clamp(38px, 6.2vw, 76px);
+    background: var(--slot-bg);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    overflow: visible;
+    margin: 0 auto;
+}
+
+/* Ranuras espaciadoras sin bordes ni fondos internos */
+.field-slot.spacer-slot {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+/* 1. Zonas de Monstruos Principales y Magias/Trampas: Azul Cian Neón */
+.field-slot.zone-cyan {
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.12);
+}
+
+/* 2. Zonas de Monstruos Extra (EMZ): Azul Eléctrico brillante */
+.field-slot.zone-emz {
+    border: 1px solid rgba(0, 150, 255, 0.75);
+    background: rgba(9, 13, 22, 0.98);
+    box-shadow: inset 0 0 12px rgba(0, 150, 255, 0.25), 0 0 8px rgba(0, 150, 255, 0.3);
+    z-index: 2;
+}
+
+/* 3. Zonas de Extra Deck y Péndulo: Violeta / Púrpura */
+.field-slot.zone-purple {
+    border: 1px solid rgba(157, 78, 221, 0.5);
+    background: rgba(157, 78, 221, 0.06);
+    box-shadow: inset 0 0 8px rgba(157, 78, 221, 0.18);
+}
+
+/* 4. Zonas de Carta de Campo (CAMPO): Verde Esmeralda sutil */
+.field-slot.zone-emerald {
+    border: 1px solid rgba(46, 213, 115, 0.5);
+    background: rgba(46, 213, 115, 0.06);
+    box-shadow: inset 0 0 8px rgba(46, 213, 115, 0.18);
+}
+
+/* 5. Zonas de Cementerio (GY): Rojo Rubí */
+.field-slot.zone-ruby {
+    border: 1px solid rgba(255, 71, 87, 0.55);
+    background: rgba(255, 71, 87, 0.06);
+    box-shadow: inset 0 0 8px rgba(255, 71, 87, 0.18);
+}
+
+/* 6. Zonas de Destierro (BANISHED): Naranja Quemado */
+.field-slot.zone-orange {
+    border: 1px solid rgba(255, 107, 26, 0.55);
+    background: rgba(255, 107, 26, 0.06);
+    box-shadow: inset 0 0 8px rgba(255, 107, 26, 0.18);
+}
+
+/* Zonas de Destierro alineadas con la cuadrícula oficial */
+#r-banished,
+#p-banished {
+    transform: none;
+}
+
+/* ICONOS NEÓN ESTILIZADOS PARA RANURAS DE CARTAS */
+.slot-zone-icon {
+    width: 22px;
+    height: 22px;
+    pointer-events: none;
+    opacity: 0.85;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.icon-banished {
+    color: #ff6b1a;
+    filter: drop-shadow(0 0 5px rgba(255, 107, 26, 0.75));
+}
+
+.icon-skull {
+    color: #ff4757;
+    filter: drop-shadow(0 0 5px rgba(255, 71, 87, 0.75));
+}
+
+.icon-cards {
+    color: #b052ff;
+    filter: drop-shadow(0 0 5px rgba(176, 82, 255, 0.75));
+}
+
+.icon-star {
+    color: #2ed573;
+    filter: drop-shadow(0 0 5px rgba(46, 213, 115, 0.8));
+}
+
+/* Ocultar iconos de ranuras cuando hay una carta presente */
+.field-slot.has-card .slot-zone-icon,
+.field-slot:has(.card-on-field:not([style*="display: none"]):not([style*="display:none"])) .slot-zone-icon {
+    display: none !important;
+}
+
+.field-slot.empty-stack .card-sleeve,
+.field-slot.empty-stack .card-on-field,
+.field-slot.empty-stack .deck-counter-badge {
+    display: none !important;
+}
+
+/* Ocultar definitivamente los textos antiguos de tooltip */
+.slot-tooltip {
+    display: none !important;
+}
+
+.field-slot.spacer-slot {
+    border: 1px dashed rgba(255, 255, 255, 0.04);
+    background: transparent;
+    cursor: default;
+}
+
+/* CASILLA OBJETIVO SELECCIONADA CON RESPLANDOR DORADO ESTÁTICO (SIN RESPIRACIÓN NI ESCALADO) */
+.field-slot.slot-targeted {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 14px #ffd700, inset 0 0 10px rgba(255, 215, 0, 0.4) !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* CASILLA LIBRE DESTINO DISPONIBLE CUANDO HAY CARTA EN MANO SELECCIONADA */
+.field-slot.slot-droppable {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.7), inset 0 0 6px rgba(255, 215, 0, 0.3) !important;
+    cursor: pointer;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* OBJETIVO ELEGIBLE PARA TIFÓN DEL ESPACIO MÍSTICO (VERDE ESMERALDA NEÓN) */
+.field-slot.mst-target-candidate {
+    border-color: #00ff88 !important;
+    box-shadow: 0 0 14px #00ff88, inset 0 0 10px rgba(0, 255, 136, 0.4) !important;
+    cursor: pointer !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* OBJETIVO ELEGIBLE PARA CÍRCULO ATADOR DE HECHIZOS (ROSA NEÓN) */
+.field-slot.trap-target-candidate {
+    border-color: #ff0055 !important;
+    box-shadow: 0 0 14px #ff0055, inset 0 0 10px rgba(255, 0, 85, 0.4) !important;
+    cursor: pointer !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* OBJETIVO DE ATAQUE RIVAL ELEGIBLE (ROJO NEÓN PULSANTE) */
+.field-slot.slot-attack-target {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.9), inset 0 0 10px rgba(239, 68, 68, 0.5) !important;
+    cursor: crosshair !important;
+    animation: attackPulse 1.2s infinite alternate ease-in-out !important;
+}
+
+@keyframes attackPulse {
+    0% {
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.6), inset 0 0 6px rgba(239, 68, 68, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 22px rgba(239, 68, 68, 1), inset 0 0 14px rgba(239, 68, 68, 0.7);
+    }
+}
+
+/* MONSTRUO QUE YA ATACÓ (OPACADO / DESATURADO VISUALMENTE) */
+.card-on-field.monster-attacked {
+    filter: grayscale(0.65) brightness(0.55) !important;
+    opacity: 0.65 !important;
+    border-color: #64748b !important;
+}
+
+.monster-stat-badge.stat-attacked {
+    background: rgba(30, 41, 59, 0.92) !important;
+    color: #94a3b8 !important;
+    border: 1px solid #475569 !important;
+    font-size: 6.5px !important;
+    letter-spacing: 0.5px !important;
+}
+
+.field-slot:not(.spacer-slot):hover {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 240, 255, 0.15);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.slot-tooltip {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 7px;
+    color: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+/* ==========================================================================
+           SIMULACIÓN DE PILA DE DECK / EXTRA DECK (CAPAS 3D Y CONTADOR)
+           ========================================================================== */
+.deck-stack {
+    box-shadow: 2px -2px 0 rgba(10, 15, 25, 0.95), 4px -4px 0 rgba(5, 8, 14, 0.98), 0 0 8px rgba(0, 240, 255, 0.25);
+    position: relative;
+}
+
+.extra-stack {
+    box-shadow: 2px -2px 0 rgba(20, 10, 30, 0.95), 4px -4px 0 rgba(10, 5, 20, 0.98), 0 0 8px rgba(157, 78, 221, 0.25);
+    position: relative;
+}
+
+.deck-counter-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 8px;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+    padding: 1px 4px;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ==========================================================================
+           RENDERIZADO DE CARTAS EN EL CAMPO & POSICIÓN DEFENSA (1:1 ESCALA REAL)
+           ========================================================================== */
+.card-on-field {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    border: 1px solid var(--accent-gold);
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transform-origin: center center;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.field-half-panel.has-mat {
+    opacity: 0.95;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+.card-sleeve {
+    background-image: var(--player-sleeve-img, url('/assets/card_back.jpg')) !important;
+    border: 1px solid rgba(255, 215, 0, 0.45) !important;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #0b1120 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Reversos específicos del rival (top) */
+#rival-hand .rival-hand-card,
+#r-deck .card-sleeve,
+#r-extra .card-sleeve,
+.rival-card-sleeve,
+.rival-half .card-sleeve,
+[id^="r-m"] .card-sleeve,
+[id^="r-s"] .card-sleeve {
+    background-image: var(--rival-sleeve-img, url('/assets/card_back.jpg')) !important;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #0b1120 !important;
+}
+
+/* Reversos específicos del jugador (bottom) */
+#player-hand .player-hand-card.face-down,
+#p-deck .card-sleeve,
+#p-extra .card-sleeve,
+.player-card-sleeve,
+.player-half .card-sleeve,
+[id^="p-m"] .card-sleeve,
+[id^="p-s"] .card-sleeve {
+    background-image: var(--player-sleeve-img, url('/assets/card_back.jpg')) !important;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #0b1120 !important;
+}
+
+/* CORRECCIÓN ESTRICTA DE ROTACIÓN EN DEFENSA (Escala Real 1:1 Invariable - Sin reductor) */
+.card-on-field.def-pos {
+    transform-origin: center center;
+    transform: rotate(90deg);
+    z-index: 15;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* ==========================================================================
+           MANOS (JUGADOR Y RIVAL) - FLOTANTES SOBRE EL CAMPO (TAMAÑO ORIGINAL 88PX)
+           ========================================================================== */
+.rival-hand-floating {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    pointer-events: none;
+}
+
+.rival-hand-card {
+    height: 88px !important;
+    /* Cartas de mano tamaño original */
+    aspect-ratio: 1 / 1.45 !important;
+    background-image: var(--rival-sleeve-img, url('/assets/card_back.jpg')) !important;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-color: #0b1120 !important;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.9);
+    margin-left: 0;
+}
+
+.player-hand-floating {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    pointer-events: none;
+}
+
+.hand-cards-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 10px;
+    background: transparent !important;
+    pointer-events: auto;
+}
+
+.hand-card {
+    height: 88px !important;
+    /* Cartas de mano tamaño original */
+    aspect-ratio: 1 / 1.45 !important;
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 0;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
+}
+
+.hand-card.selected-hand {
+    border-color: #ffd700;
+    transform: translateY(-14px) scale(1.12);
+    box-shadow: 0 0 18px #ffd700;
+    z-index: 65;
+}
+
+.hand-card:hover {
+    transform: translateY(-14px) scale(1.10);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 16px var(--accent-cyan);
+    z-index: 60;
+}
+
+/* ==========================================================================
+           PANEL 3: BOTONERA Y CONTROL DE DUELO LATERAL DERECHO
+           ========================================================================== */
+#right-action-panel {
+    flex: 0 0 clamp(165px, 18vw, 230px);
+    width: clamp(165px, 18vw, 230px);
     max-width: 230px;
     height: 100%;
     background: transparent !important;
@@ -181,790 +1556,370 @@ button,
     flex-direction: column;
     padding: 0;
     gap: 8px;
-    overflow-y: auto;
+    overflow: hidden;
+    /* Cero scroll en el panel lateral */
     backdrop-filter: none !important;
     box-sizing: border-box;
 }
 
-        #inspector-panel h3 {
-            font-size: 10px; font-weight: 700; color: var(--accent-cyan);
-            letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px;
-        }
+#right-action-panel h3 {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 4px;
+}
 
-        /* CONTENEDOR DE CARTA COMPLETA (AMPLIO Y NÍTIDO) */
-        .card-img-container {
-            width: 100%;
-            height: auto;
-            max-height: 240px;
-            background: rgba(0, 0, 0, 0.65);
-            border-radius: 0;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            margin: 0 auto;
-        }
-
-        .card-img-container img {
-            max-width: 100%;
-            max-height: 230px;
-            object-fit: contain;
-            border-radius: 0;
-        }
-
-        .card-meta { display: flex; flex-direction: column; gap: 4px; }
-        
-        .card-title {
-            font-size: 10.5px; font-weight: 800; color: var(--accent-gold);
-            line-height: 1.25; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
-
-        .card-attr-stars {
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(0,0,0,0.5); padding: 3px 6px; border-radius: 0;
-            border: 1px solid rgba(255,255,255,0.06); font-size: 8px;
-        }
-
-        .card-attr-badge {
-            background: rgba(255, 215, 0, 0.15); color: var(--accent-gold);
-            padding: 2px 5px; border-radius: 0; font-weight: 800; font-size: 7.5px;
-            border: 1px solid rgba(255, 215, 0, 0.4);
-        }
-
-        .card-stars-span {
-            color: var(--accent-gold); font-size: 8px; letter-spacing: 0.5px; font-weight: 700;
-        }
-
-        .card-type-box {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 8px; color: var(--accent-cyan); font-weight: 600;
-        }
-
-        .card-archetype-tag {
-            font-size: 7.5px; color: var(--accent-purple); font-weight: 700;
-            background: rgba(157, 78, 221, 0.15); padding: 1px 5px; border-radius: 0;
-            border: 1px solid rgba(157, 78, 221, 0.35);
-        }
-
-        /* CAJAS NUMÉRICAS LIMPIAS Y COMPACTAS DE ATK / DEF */
-        .card-stats-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 2px;
-        }
-
-        .stat-box {
-            background: rgba(0, 0, 0, 0.55); border-radius: 0; padding: 4px;
-            text-align: center; border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .stat-box.stat-atk { border-color: rgba(0, 240, 255, 0.35); background: rgba(0, 240, 255, 0.06); }
-        .stat-box.stat-def { border-color: rgba(255, 215, 0, 0.35); background: rgba(255, 215, 0, 0.06); }
-
-        .stat-label { font-size: 7px; font-weight: 700; color: var(--text-muted); display: block; }
-        .stat-val { font-size: 11.5px; font-weight: 900; }
-        .stat-atk .stat-val { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
-        .stat-def .stat-val { color: var(--accent-gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
-
-        .card-desc {
-            font-size: 8.5px;
-            color: #cbd5e1;
-            line-height: 1.35;
-            background: rgba(0,0,0,0.55);
-            padding: 6px;
-            border-radius: 0;
-            border: 1px solid rgba(255,255,255,0.08);
-            max-height: 140px;
-            overflow-y: auto;
-        }
-
-        /* ==========================================================================
-           PANEL 2: CAMPO CENTRAL DE DUELO - FORMATO COMPACTO Y EQUILIBRADO
-           ========================================================================== */
-        #duel-field-panel {
-            flex: 1 1 auto;
-            width: auto;
-            max-width: 1000px;
-            min-width: 520px;
-            height: 100%;
-            margin: 0 auto;
-            background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99));
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 240, 255, 0.05);
-            padding: 4px 6px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .matrix-centered-container {
-            width: 98%;
-            height: 88%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            row-gap: 4px;
-            margin: auto;
-            position: relative;
-        }
-
-        /* ==========================================================================
-           DIVISIÓN DEL TABLERO EN DOS MITADES (MITAD Y MITAD DE TODO EL CONTENEDOR)
-           ========================================================================== */
-        .field-half-panel {
-            position: absolute;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 50%;
-            pointer-events: none;
-            z-index: 0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            box-sizing: border-box;
-        }
-
-        .rival-half {
-            top: 0;
-            border-bottom: 1px solid var(--panel-border);
-        }
-
-        .player-half {
-            top: 50%;
-        }
-
-        .field-row-9 {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            column-gap: 18px; /* Mantiene la holgura y aire exacto de la referencia */
-            row-gap: 3px;
-            width: 100%;
-            height: 19%;
-            align-items: center;
-            justify-items: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .emz-row-9 {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            column-gap: 18px; /* Mantiene la holgura y aire exacto de la referencia */
-            row-gap: 3px;
-            width: 100%;
-            height: 19%;
-            align-items: center;
-            justify-items: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ==========================================================================
-           DIFERENCIACIÓN CROMÁTICA OFICIAL DE LAS ZONAS DEL CAMPO (ZONAS MÁS GRANDES)
-           ========================================================================== */
-        .field-slot {
-            aspect-ratio: 1 / 1.45;
-            height: 86%;
-            max-height: 86%;
-            max-width: 72px; /* Zonas más grandes y legibles manteniendo el aire */
-            background: var(--slot-bg);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s ease;
-            overflow: visible;
-            margin: 0 auto;
-        }
-
-        /* Ranuras espaciadoras sin bordes ni fondos internos */
-        .field-slot.spacer-slot {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            cursor: default !important;
-            pointer-events: none !important;
-        }
-
-        /* 1. Zonas de Monstruos Principales y Magias/Trampas: Azul Cian Neón */
-        .field-slot.zone-cyan {
-            border: 1px solid rgba(0, 240, 255, 0.4);
-            box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.12);
-        }
-
-        /* 2. Zonas de Monstruos Extra (EMZ): Azul Eléctrico brillante */
-        .field-slot.zone-emz {
-            border: 1px solid rgba(0, 150, 255, 0.75);
-            background: rgba(9, 13, 22, 0.98);
-            box-shadow: inset 0 0 12px rgba(0, 150, 255, 0.25), 0 0 8px rgba(0, 150, 255, 0.3);
-            z-index: 2;
-        }
-
-        /* 3. Zonas de Extra Deck y Péndulo: Violeta / Púrpura */
-        .field-slot.zone-purple {
-            border: 1px solid rgba(157, 78, 221, 0.5);
-            background: rgba(157, 78, 221, 0.06);
-            box-shadow: inset 0 0 8px rgba(157, 78, 221, 0.18);
-        }
-
-        /* 4. Zonas de Carta de Campo (CAMPO): Verde Esmeralda sutil */
-        .field-slot.zone-emerald {
-            border: 1px solid rgba(46, 213, 115, 0.5);
-            background: rgba(46, 213, 115, 0.06);
-            box-shadow: inset 0 0 8px rgba(46, 213, 115, 0.18);
-        }
-
-        /* 5. Zonas de Cementerio (GY): Rojo Rubí */
-        .field-slot.zone-ruby {
-            border: 1px solid rgba(255, 71, 87, 0.55);
-            background: rgba(255, 71, 87, 0.06);
-            box-shadow: inset 0 0 8px rgba(255, 71, 87, 0.18);
-        }
-
-        /* 6. Zonas de Destierro (BANISHED): Naranja Quemado */
-        .field-slot.zone-orange {
-            border: 1px solid rgba(255, 107, 26, 0.55);
-            background: rgba(255, 107, 26, 0.06);
-            box-shadow: inset 0 0 8px rgba(255, 107, 26, 0.18);
-        }
-
-        /* Zonas de Destierro pegadas a la zona de Cementerio (GY) */
-        #r-banished {
-            transform: translateX(14px);
-        }
-
-        #p-banished {
-            transform: translateX(-14px);
-        }
-
-        .field-slot.spacer-slot {
-            border: 1px dashed rgba(255, 255, 255, 0.04);
-            background: transparent;
-            cursor: default;
-        }
-
-        /* CASILLA OBJETIVO SELECCIONADA CON PULSO DORADO */
-        .field-slot.slot-targeted {
-            border-color: #ffd700 !important;
-            box-shadow: 0 0 14px #ffd700, inset 0 0 10px rgba(255, 215, 0, 0.4) !important;
-            animation: targetPulse 1.2s infinite alternate ease-in-out;
-        }
-
-        /* CASILLA LIBRE DESTINO DISPONIBLE CUANDO HAY CARTA EN MANO SELECCIONADA */
-        .field-slot.slot-droppable {
-            border-color: #ffd700 !important;
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6), inset 0 0 6px rgba(255, 215, 0, 0.25) !important;
-            cursor: pointer;
-            animation: droppableGlow 1.5s infinite alternate ease-in-out;
-        }
-
-        /* OBJETIVO ELEGIBLE PARA TIFÓN DEL ESPACIO MÍSTICO (VERDE ESMERALDA NEÓN) */
-        .field-slot.mst-target-candidate {
-            border-color: #00ff88 !important;
-            box-shadow: 0 0 14px #00ff88, inset 0 0 10px rgba(0, 255, 136, 0.4) !important;
-            cursor: pointer !important;
-            animation: targetPulse 1.2s infinite alternate ease-in-out;
-        }
-
-        /* OBJETIVO ELEGIBLE PARA CÍRCULO ATADOR DE HECHIZOS (ROSA NEÓN) */
-        .field-slot.trap-target-candidate {
-            border-color: #ff0055 !important;
-            box-shadow: 0 0 14px #ff0055, inset 0 0 10px rgba(255, 0, 85, 0.4) !important;
-            cursor: pointer !important;
-            animation: targetPulse 1.2s infinite alternate ease-in-out;
-        }
-
-        @keyframes droppableGlow {
-            0% { border-color: rgba(255, 215, 0, 0.5); box-shadow: 0 0 6px rgba(255, 215, 0, 0.3); }
-            100% { border-color: #ffd700; box-shadow: 0 0 14px rgba(255, 215, 0, 0.8), inset 0 0 8px rgba(255, 215, 0, 0.4); }
-        }
-
-        @keyframes targetPulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
-        }
-
-        .field-slot:not(.spacer-slot):hover {
-            border-color: var(--accent-cyan);
-            background: rgba(0, 240, 255, 0.15);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-        }
-
-        .slot-tooltip {
-            position: absolute; bottom: 2px; right: 2px; font-size: 7px;
-            color: rgba(255,255,255,0.45); pointer-events: none; text-transform: uppercase; font-weight: 800;
-        }
-
-        /* ==========================================================================
-           SIMULACIÓN DE PILA DE DECK / EXTRA DECK (CAPAS 3D Y CONTADOR)
-           ========================================================================== */
-        .deck-stack {
-            box-shadow: 2px -2px 0 rgba(10, 15, 25, 0.95), 4px -4px 0 rgba(5, 8, 14, 0.98), 0 0 8px rgba(0, 240, 255, 0.25);
-            position: relative;
-        }
-
-        .extra-stack {
-            box-shadow: 2px -2px 0 rgba(20, 10, 30, 0.95), 4px -4px 0 rgba(10, 5, 20, 0.98), 0 0 8px rgba(157, 78, 221, 0.25);
-            position: relative;
-        }
-
-        .deck-counter-badge {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            font-size: 8px;
-            font-weight: 800;
-            color: #fff;
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 3px;
-            padding: 1px 4px;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        /* ==========================================================================
-           RENDERIZADO DE CARTAS EN EL CAMPO & POSICIÓN DEFENSA (1:1 ESCALA REAL)
-           ========================================================================== */
-        .card-on-field {
-            width: 100%; height: 100%;
-            border-radius: 3px; border: 1px solid var(--accent-gold);
-            background-size: cover; background-position: center;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            transform-origin: center center;
-            box-sizing: border-box;
-        }
-
-        .card-sleeve {
-            background-image: url('/assets/card_back.jpg'), url('https://images.ygoprodeck.com/images/assets/CardBack.jpg') !important;
-            border: 1px solid rgba(255, 215, 0, 0.45) !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
-        }
-
-        /* CORRECCIÓN ESTRICTA DE ROTACIÓN EN DEFENSA (Escala Real 1:1 Invariable - Sin reductor) */
-        .card-on-field.def-pos {
-            transform-origin: center center;
-            transform: rotate(90deg);
-            z-index: 15;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        /* ==========================================================================
-           MANOS (JUGADOR Y RIVAL) - FLOTANTES SOBRE EL CAMPO (SIN OCULTAR NI DESPLAZAR)
-           ========================================================================== */
-        .rival-hand-floating {
-            position: absolute;
-            top: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 4px;
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0;
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-            pointer-events: none;
-        }
-
-        .rival-hand-card {
-            height: 88px; /* Cartas de la mano rival más grandes */
-            aspect-ratio: 1 / 1.45;
-            background-image: url('/assets/card_back.jpg'), url('https://images.ygoprodeck.com/images/assets/CardBack.jpg') !important;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.9);
-            margin-left: 0;
-        }
-
-        .player-hand-floating {
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0;
-            box-shadow: none !important;
-            backdrop-filter: none !important;
-        }
-
-        .hand-cards-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            gap: 10px;
-            background: transparent !important;
-        }
-
-        .hand-card {
-            height: 88px; /* Cartas de la mano del jugador más grandes */
-            aspect-ratio: 1 / 1.45;
-            background-size: cover;
-            background-position: center;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.35);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-left: 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-            pointer-events: auto;
-        }
-
-        .hand-card.selected-hand {
-            border-color: #ffd700;
-            transform: translateY(-14px) scale(1.12);
-            box-shadow: 0 0 18px #ffd700;
-            z-index: 65;
-        }
-
-        .hand-card:hover {
-            transform: translateY(-14px) scale(1.10);
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 16px var(--accent-cyan);
-            z-index: 60;
-        }
-
-        /* ==========================================================================
-           PANEL 3: BOTONERA Y CONTROL DE DUELO LATERAL DERECHO
-           ========================================================================== */
-        #right-action-panel {
-            flex: 0 0 clamp(165px, 18vw, 230px);
-            width: clamp(165px, 18vw, 230px);
-            max-width: 230px;
-    height: 100%;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+.user-status-box {
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    padding: 4px 6px;
     display: flex;
     flex-direction: column;
-    padding: 0;
-    gap: 8px;
-    overflow: hidden; /* Cero scroll en el panel lateral */
-    backdrop-filter: none !important;
+    gap: 2px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.user-status-box.duel-lp-single-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 0;
+    gap: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.lp-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.lp-col.rival-col {
+    text-align: left;
+}
+
+.lp-col.player-col {
+    text-align: right;
+}
+
+.lp-col.player-col .lp-label {
+    justify-content: flex-end;
+}
+
+.lp-divider-v {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.lp-label {
+    font-size: 7.5px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lp-value {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--accent-emerald);
+    text-shadow: 0 0 6px var(--accent-emerald);
+}
+
+.lp-rival-val {
+    color: var(--accent-ruby);
+    text-shadow: 0 0 6px rgba(255, 71, 87, 0.5);
+}
+
+.lp-player-val {
+    color: var(--accent-emerald);
+    text-shadow: 0 0 6px rgba(46, 213, 115, 0.5);
+}
+
+/* ==========================================================================
+           CONTROLES Y TRACKER DE FASES OFICIALES (KONAMI OCG/TCG)
+           ========================================================================== */
+.phase-tracker-box {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    border-radius: 6px;
+    padding: 8px 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
 }
 
-        #right-action-panel h3 {
-            flex-shrink: 0;
-            font-size: 10px; font-weight: 700; color: var(--accent-gold);
-            letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px;
-        }
+.phase-turn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        .user-status-box {
-            flex-shrink: 0;
-            background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 0; padding: 4px 6px; display: flex; flex-direction: column; gap: 2px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-        }
+.turn-player-tag {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
 
-        .user-status-box.duel-lp-single-row {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.55);
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            border-radius: 0;
-            gap: 6px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        }
+.turn-player-tag.my-turn {
+    background: rgba(46, 213, 115, 0.2);
+    color: var(--accent-emerald);
+    border: 1px solid var(--accent-emerald);
+}
 
-        .lp-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
+.turn-player-tag.rival-turn {
+    background: rgba(255, 71, 87, 0.2);
+    color: var(--accent-ruby);
+    border: 1px solid var(--accent-ruby);
+}
 
-        .lp-col.rival-col {
-            text-align: left;
-        }
+.phases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 3px;
+}
 
-        .lp-col.player-col {
-            text-align: right;
-        }
+.phase-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
 
-        .lp-col.player-col .lp-label {
-            justify-content: flex-end;
-        }
+.phase-item:hover {
+    background: rgba(0, 240, 255, 0.08);
+    border-color: rgba(0, 240, 255, 0.35);
+}
 
-        .lp-divider-v {
-            width: 1px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.12);
-        }
+.phase-badge {
+    width: 24px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    font-size: 8.5px;
+    font-weight: 900;
+    color: var(--text-muted);
+}
 
-        .lp-label { font-size: 7.5px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
-        .lp-value { font-size: 11.5px; font-weight: 800; color: var(--accent-emerald); text-shadow: 0 0 6px var(--accent-emerald); }
-        .lp-rival-val { color: var(--accent-ruby); text-shadow: 0 0 6px rgba(255, 71, 87, 0.5); }
-        .lp-player-val { color: var(--accent-emerald); text-shadow: 0 0 6px rgba(46, 213, 115, 0.5); }
+.phase-meta {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
 
-        /* ==========================================================================
-           CONTROLES Y TRACKER DE FASES OFICIALES (KONAMI OCG/TCG)
-           ========================================================================== */
-        .phase-tracker-box {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.55);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 6px;
-            padding: 8px 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-            box-sizing: border-box;
-        }
+.phase-name {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+}
 
-        .phase-turn-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 9.5px;
-            font-weight: 800;
-            padding-bottom: 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+.phase-hint {
+    display: block !important;
+    font-size: 8px;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    margin-top: 1px;
+}
 
-        .turn-player-tag {
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-        .turn-player-tag.my-turn {
-            background: rgba(46, 213, 115, 0.2);
-            color: var(--accent-emerald);
-            border: 1px solid var(--accent-emerald);
-        }
-        .turn-player-tag.rival-turn {
-            background: rgba(255, 71, 87, 0.2);
-            color: var(--accent-ruby);
-            border: 1px solid var(--accent-ruby);
-        }
+/* FASE ACTIVA RESALTADA */
+.phase-item.active-phase {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.22), rgba(0, 240, 255, 0.12));
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
+}
 
-        .phases-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-top: 3px;
-        }
+.phase-item.active-phase .phase-badge {
+    background: var(--accent-gold);
+    color: #000;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
 
-        .phase-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 6px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            position: relative;
-        }
+.phase-item.active-phase .phase-name {
+    color: var(--accent-gold);
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
 
-        .phase-item:hover {
-            background: rgba(0, 240, 255, 0.08);
-            border-color: rgba(0, 240, 255, 0.35);
-        }
+.phase-item.active-phase .phase-hint {
+    color: #fef08a;
+    font-weight: 600;
+}
 
-        .phase-badge {
-            width: 24px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 3px;
-            font-size: 8.5px;
-            font-weight: 900;
-            color: var(--text-muted);
-        }
+/* BOTONES DE TRANSICIÓN DE FASE */
+.phase-nav-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 4px;
+}
 
-        .phase-meta {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow: hidden;
-        }
+.btn-phase-nav {
+    width: 100%;
+    padding: 7px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+}
 
-        .phase-name {
-            font-size: 9.5px;
-            font-weight: 800;
-            color: #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-        }
+.btn-phase-nav.btn-primary {
+    background: rgba(0, 240, 255, 0.15);
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+}
 
-        .phase-hint {
-            display: block !important;
-            font-size: 8px;
-            color: #94a3b8;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.2;
-            margin-top: 1px;
-        }
+.btn-phase-nav.btn-primary:hover {
+    background: var(--accent-cyan);
+    color: #000;
+    box-shadow: 0 0 12px var(--accent-cyan);
+    transform: scale(1.02);
+}
 
-        /* FASE ACTIVA RESALTADA */
-        .phase-item.active-phase {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.22), rgba(0, 240, 255, 0.12));
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.45);
-        }
+.btn-phase-nav.btn-end {
+    background: rgba(255, 71, 87, 0.18);
+    border: 1px solid var(--accent-ruby);
+    color: #ff6b81;
+}
 
-        .phase-item.active-phase .phase-badge {
-            background: var(--accent-gold);
-            color: #000;
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-        }
+.btn-phase-nav.btn-end:hover {
+    background: var(--accent-ruby);
+    color: #fff;
+    box-shadow: 0 0 12px var(--accent-ruby);
+    transform: scale(1.02);
+}
 
-        .phase-item.active-phase .phase-name {
-            color: var(--accent-gold);
-            text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
-        }
+.btn-phase-nav.btn-pass-turn {
+    background: rgba(157, 78, 221, 0.2);
+    border: 1px solid var(--accent-purple);
+    color: #d8b4fe;
+}
 
-        .phase-item.active-phase .phase-hint {
-            color: #fef08a;
-            font-weight: 600;
-        }
+.btn-phase-nav.btn-pass-turn:hover {
+    background: var(--accent-purple);
+    color: #fff;
+    box-shadow: 0 0 12px var(--accent-purple);
+    transform: scale(1.02);
+}
 
-        /* BOTONES DE TRANSICIÓN DE FASE */
-        .phase-nav-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-top: 4px;
-        }
+/* GUÍA DE REGLAS DE LA FASE */
+.phase-rules-card {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 5px;
+    font-size: 8px;
+    line-height: 1.35;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
-        .btn-phase-nav {
-            width: 100%;
-            padding: 7px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            border: none;
-        }
+.phase-rules-card b {
+    color: var(--accent-cyan);
+}
 
-        .btn-phase-nav.btn-primary {
-            background: rgba(0, 240, 255, 0.15);
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-        .btn-phase-nav.btn-primary:hover {
-            background: var(--accent-cyan);
-            color: #000;
-            box-shadow: 0 0 12px var(--accent-cyan);
-            transform: scale(1.02);
-        }
+.deck-info-box {
+    margin-top: auto;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 9.5px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
 
-        .btn-phase-nav.btn-end {
-            background: rgba(255, 71, 87, 0.18);
-            border: 1px solid var(--accent-ruby);
-            color: #ff6b81;
-        }
-        .btn-phase-nav.btn-end:hover {
-            background: var(--accent-ruby);
-            color: #fff;
-            box-shadow: 0 0 12px var(--accent-ruby);
-            transform: scale(1.02);
-        }
+/* BANNERS DE EVENTOS Y ALERTAS */
+#rule-alert-banner {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 150;
+    padding: 6px 16px;
+    background: rgba(255, 71, 87, 0.95);
+    border: 1px solid var(--accent-ruby);
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 11px;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.6);
+    display: none;
+    text-align: center;
+}
 
-        .btn-phase-nav.btn-pass-turn {
-            background: rgba(157, 78, 221, 0.2);
-            border: 1px solid var(--accent-purple);
-            color: #d8b4fe;
-        }
-        .btn-phase-nav.btn-pass-turn:hover {
-            background: var(--accent-purple);
-            color: #fff;
-            box-shadow: 0 0 12px var(--accent-purple);
-            transform: scale(1.02);
-        }
-
-        /* GUÍA DE REGLAS DE LA FASE */
-        .phase-rules-card {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 4px;
-            padding: 5px;
-            font-size: 8px;
-            line-height: 1.35;
-            color: #cbd5e1;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .phase-rules-card b {
-            color: var(--accent-cyan);
-        }
-
-        .deck-info-box {
-            margin-top: auto; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 4px; padding: 6px; font-size: 9.5px; color: var(--text-muted); display: flex; flex-direction: column; gap: 3px;
-        }
-
-        /* BANNERS DE EVENTOS Y ALERTAS */
-        #rule-alert-banner {
-            position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
-            z-index: 150; padding: 6px 16px; background: rgba(255, 71, 87, 0.95);
-            border: 1px solid var(--accent-ruby); border-radius: 6px; color: #fff;
-            font-weight: 700; font-size: 11px; box-shadow: 0 0 20px rgba(255, 71, 87, 0.6);
-            display: none; text-align: center;
-        }
-
-        #trap-chain-banner {
-            position: absolute; top: 16%; left: 50%; transform: translateX(-50%);
-            z-index: 150; padding: 8px 20px; background: rgba(157, 78, 221, 0.95);
-            border: 2px solid var(--accent-gold); border-radius: 8px; color: #fff;
-            font-weight: 800; font-size: 12px; box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-            display: none; text-align: center;
-        }
+#trap-chain-banner {
+    position: absolute;
+    top: 16%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 150;
+    padding: 8px 20px;
+    background: rgba(157, 78, 221, 0.95);
+    border: 2px solid var(--accent-gold);
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 800;
+    font-size: 12px;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    display: none;
+    text-align: center;
+}
 
 /* ==========================================================================
    RESPONSIVE DESIGN (TODAS LAS @MEDIA: 5px MÁRGENES Y BORDES RECTOS)
    ========================================================================== */
 
-/* DISPOSITIVOS MÓVILES EN MODO HORIZONTAL (LANDSCAPE) */
-@media (max-width: 1080px) and (orientation: landscape), (max-height: 550px) and (orientation: landscape) {
+/* DISPOSITIVOS MÓVILES EN MODO HORIZONTAL (LANDSCAPE & PANTALLAS PEQUEÑAS) */
+@media (max-width: 1080px) and (orientation: landscape),
+(max-height: 520px) and (orientation: landscape) {
+
     html,
     body,
     #game-container {
@@ -977,17 +1932,18 @@ button,
         margin: 0 !important;
         padding: 0 !important;
         overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         background-color: #020408 !important;
-        background-image: 
-            linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-            radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%) !important;
-        background-size: 80px 80px, 80px 80px, 100% 100% !important;
-        background-position: 0 0, 0 0, center center !important;
+        background-image: linear-gradient(rgba(2, 4, 8, 0.45), rgba(2, 4, 8, 0.45)), url('../assets/duel.jpg?v=3.0'), url('/assets/duel.jpg?v=3.0'), url('../../assets/duel.jpg?v=3.0'), url('../../../assets/duel.jpg?v=3.0') !important;
+        background-size: cover !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
         box-sizing: border-box !important;
     }
 
-    /* CONTENEDOR PRINCIPAL: CERO SCROLL, SOPORTE NOTCH CAMARA FRONTAL Y 5px MÁRGENES */
     #duel-app {
         display: flex !important;
         flex-direction: row !important;
@@ -997,312 +1953,312 @@ button,
         height: 100dvh !important;
         max-height: 100vh !important;
         max-height: 100dvh !important;
-        gap: 5px !important;
-        padding-top: max(env(safe-area-inset-top, 0px), 2px) !important;
-        padding-bottom: max(env(safe-area-inset-bottom, 0px), 2px) !important;
-        padding-left: 4px !important;
-        padding-right: 4px !important;
+        gap: 0 !important;
+        padding: 0 !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
-        justify-content: space-between !important;
-        align-items: stretch !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
-    /* 1. PANEL LATERAL IZQUIERDO: SIN CONTENEDOR EXTERNO - ITEMS FLOTANTES INDIVIDUALES */
-    #inspector-panel {
-        flex: 0 0 clamp(135px, 16.5vw, 165px) !important;
-        width: clamp(135px, 16.5vw, 165px) !important;
-        max-width: clamp(135px, 16.5vw, 165px) !important;
-        height: 100% !important;
-        max-height: 100% !important;
+    #duel-field-panel {
+        height: calc(100% - 10px) !important;
+        max-height: calc(100vh - 10px) !important;
+        max-height: calc(100dvh - 10px) !important;
+        width: auto !important;
+        max-width: 100vw !important;
+        aspect-ratio: 16 / 9.2 !important;
+        margin: 5px auto !important;
+        background: transparent !important;
+        padding: 2px 4px !important;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(0, 240, 255, 0.03) !important;
+    }
+
+    .matrix-centered-container {
+        width: 97% !important;
+        height: 86% !important;
+        row-gap: 2px !important;
+    }
+
+    .field-row-9,
+    .emz-row-9 {
+        column-gap: clamp(2px, 0.6vw, 6px) !important;
+        row-gap: 1px !important;
+    }
+
+    .field-slot {
+        height: 94% !important;
+        max-height: 94% !important;
+        max-width: clamp(35px, 5.8vw, 64px) !important;
+    }
+
+    .slot-tooltip {
+        font-size: 5.5px !important;
+        bottom: 1px !important;
+        right: 1px !important;
+    }
+
+    .deck-counter-badge {
+        font-size: 6.5px !important;
+        padding: 0.5px 2.5px !important;
+        bottom: 1px !important;
+        right: 1px !important;
+    }
+
+    /* CAJAS DE LP FLOTANTES (LATERALES) - MÁS ANCHAS, SIN BORDE EN TEXTO Y FUENTE PEQUEÑA */
+    .board-lp-box {
+        width: clamp(120px, 16vw, 165px) !important;
+        height: clamp(28px, 6.2vh, 38px) !important;
+        padding: 3px 8px !important;
+        gap: 8px !important;
+    }
+
+    .rival-lp-box {
+        left: clamp(3px, 0.6vw, 8px) !important;
+    }
+
+    .player-lp-box {
+        right: clamp(3px, 0.6vw, 8px) !important;
+    }
+
+    .board-lp-info-col {
+        gap: 0 !important;
+        max-width: none !important;
+        flex: 1 !important;
+    }
+
+    .board-role-badge {
+        font-size: 5.5px !important;
+        padding: 0 !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 !important;
         box-shadow: none !important;
-        padding: 0 !important;
-        gap: 4px !important;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-        box-sizing: border-box !important;
-    }
-
-    #inspector-panel::-webkit-scrollbar {
-        display: none !important;
-    }
-
-    #inspector-panel h3 {
-        font-size: 6.8px !important;
-        padding: 2px 4px !important;
-        margin: 0 !important;
-        border-radius: 0 !important;
-        flex-shrink: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .card-img-container {
-        width: 100% !important;
-        max-height: clamp(60px, 18vh, 85px) !important;
-        padding: 2px !important;
-        border-radius: 0 !important;
-        margin: 0 auto !important;
-        flex-shrink: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .card-img-container img {
-        max-height: clamp(55px, 16vh, 80px) !important;
-        object-fit: contain !important;
-        border-radius: 0 !important;
-    }
-
-    .card-meta {
-        gap: 2px !important;
-        flex: 1 1 0% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        min-height: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-        padding: 4px !important;
-        border-radius: 0 !important;
-        overflow: hidden !important;
-    }
-
-    .card-title {
-        font-size: 7.5px !important;
-        line-height: 1.15 !important;
+        line-height: 1 !important;
+        letter-spacing: 0.8px !important;
         white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        color: var(--accent-gold) !important;
-        text-shadow: 0 0 6px rgba(255, 215, 0, 0.4) !important;
     }
 
-    .card-attr-stars {
-        padding: 1px 3px !important;
-        font-size: 5.2px !important;
-        border-radius: 0 !important;
+    .board-user-name {
+        display: block !important;
+        font-size: 8px !important;
+        max-width: 80px !important;
     }
 
-    .card-attr-badge {
-        font-size: 4.8px !important;
-        padding: 1px 3px !important;
-        border-radius: 0 !important;
+    .board-lp-val {
+        font-size: clamp(12px, 2.6vh, 16px) !important;
+        letter-spacing: 0.8px !important;
     }
 
-    .card-stars-span {
-        font-size: 4.8px !important;
-    }
-
-    .card-type-box {
-        font-size: 5.2px !important;
-    }
-
-    .card-archetype-tag {
-        font-size: 4.8px !important;
-        padding: 1px 3px !important;
-        border-radius: 0 !important;
-    }
-
-    .card-stats-grid {
-        gap: 2px !important;
-        margin-top: 1px !important;
-    }
-
-    .stat-box {
-        padding: 2px 3px !important;
-        border-radius: 0 !important;
-    }
-
-    .stat-label {
-        font-size: 4.8px !important;
-    }
-
-    .stat-val {
-        font-size: 7.5px !important;
-    }
-
-    .card-desc {
-        font-size: 5.5px !important;
-        line-height: 1.25 !important;
-        padding: 2px 4px !important;
-        flex: 1 1 0% !important;
-        width: 100% !important;
-        min-height: 0 !important;
-        box-sizing: border-box !important;
-        word-break: break-word !important;
-        border-radius: 0 !important;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-    }
-
-    .card-desc::-webkit-scrollbar {
-        display: none !important;
-    }
-
-    /* 2. PANEL LATERAL DERECHO: SIN CONTENEDOR EXTERNO - ITEMS FLOTANTES INDIVIDUALES */
-    #right-action-panel {
-        flex: 0 0 clamp(140px, 17.5vw, 175px) !important;
-        width: clamp(140px, 17.5vw, 175px) !important;
-        max-width: clamp(140px, 17.5vw, 175px) !important;
-        height: 100% !important;
-        max-height: 100% !important;
+    /* CÁPSULAS DE CONTROL DE FASES (MÁS GRANDES Y MÁS SEPARADAS ENTRE SÍ) */
+    .board-phase-capsule {
+        padding: 0 !important;
+        gap: clamp(8px, 2.2vh, 14px) !important;
         background: transparent !important;
         border: none !important;
-        border-radius: 0 !important;
         box-shadow: none !important;
-        padding: 0 !important;
-        margin-right: 4px !important;
-        gap: 4px !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
-    }
-
-    #right-action-panel h3 {
-        font-size: 6.8px !important;
-        padding: 2px 4px !important;
-        margin: 0 !important;
-        border-radius: 0 !important;
-        flex-shrink: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .user-status-box.duel-lp-single-row {
-        padding: 2px 5px !important;
-        gap: 3px !important;
-        border-radius: 0 !important;
-        flex-shrink: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .lp-col .lp-label {
-        font-size: 4.8px !important;
-    }
-
-    .lp-value {
-        font-size: 7.5px !important;
-    }
-
-    .lp-divider-v {
-        height: 16px !important;
-    }
-
-    .phase-tracker-box {
-        padding: 2px 4px !important;
-        gap: 2px !important;
-        border-radius: 0 !important;
-        flex-shrink: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .phase-turn-header {
-        font-size: 5.5px !important;
-        padding-bottom: 1px !important;
-    }
-
-    .turn-player-tag {
-        font-size: 4.8px !important;
-        padding: 1px 3px !important;
+        backdrop-filter: none !important;
         border-radius: 0 !important;
     }
 
-    .phases-list {
-        gap: 2px !important;
-        margin-top: 1px !important;
+    .player-phase-capsule {
+        left: clamp(4px, 0.9vw, 10px) !important;
+        bottom: clamp(4px, 1vh, 10px) !important;
     }
 
-    .phase-item {
-        padding: 1px 3px !important;
-        gap: 2px !important;
-        border-radius: 0 !important;
+    .rival-phase-capsule {
+        right: clamp(4px, 0.9vw, 10px) !important;
+        top: clamp(4px, 1vh, 10px) !important;
     }
 
-    .phase-badge {
-        width: 16px !important;
-        height: 12px !important;
-        font-size: 4.8px !important;
-        border-radius: 0 !important;
-    }
-
-    .phase-name {
-        font-size: 5.5px !important;
-    }
-
-    .phase-hint {
-        display: none !important; /* Optimización clave de espacio vertical */
-    }
-
-    .duel-event-log-box {
-        padding: 2px 4px !important;
-        font-size: 5px !important;
-        min-height: 0 !important;
-        flex: 1 1 0 !important;
-        border-radius: 0 !important;
-        overflow-y: auto !important;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .duel-event-log-box::-webkit-scrollbar {
+    .phase-capsule-title {
         display: none !important;
     }
 
-    .log-title {
-        font-size: 5px !important;
-        margin-bottom: 1px !important;
+    .phase-capsule-btn {
+        width: clamp(28px, 4.2vw, 40px) !important;
+        height: clamp(18px, 4.6vh, 24px) !important;
+        font-size: clamp(8.5px, 1.8vh, 10.5px) !important;
+        font-weight: 900 !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        background: #08101e !important;
+        border: 1.2px solid rgba(0, 240, 255, 0.55) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.9) !important;
+        color: #e2e8f0 !important;
+    }
+
+    /* VENTANA FLOTANTE DE PERFIL DEL DUELISTA (RESPONSIVE EN MÓVIL) */
+    .duelist-profile-drawer {
+        width: clamp(280px, 44vw, 360px) !important;
+        max-height: 94vh !important;
+        padding: 0 !important;
+    }
+
+    .duelist-profile-header {
+        padding: 4px 8px !important;
+    }
+
+    .duelist-profile-title {
+        font-size: 8.5px !important;
+    }
+
+    .duelist-profile-close {
+        font-size: 11px !important;
+        padding: 1px 4px !important;
+    }
+
+    .duelist-profile-body {
+        padding: 6px 8px !important;
+        gap: 6px !important;
+    }
+
+    .dp-hero-row {
+        padding: 6px !important;
+        gap: 8px !important;
+    }
+
+    .dp-avatar-box {
+        width: 38px !important;
+        height: 38px !important;
+    }
+
+    .dp-username {
+        font-size: 10px !important;
+    }
+
+    .dp-level-tag,
+    .dp-country-tag {
+        font-size: 7.5px !important;
+    }
+
+    .dp-section-title {
+        font-size: 7.5px !important;
+    }
+
+    .dp-boost-card {
+        padding: 3px 2px !important;
+    }
+
+    .dp-boost-lbl {
+        font-size: 6.5px !important;
+    }
+
+    .dp-boost-val {
+        font-size: 8.5px !important;
+    }
+
+    .dp-stat-box {
+        padding: 5px 6px !important;
+        gap: 2px !important;
+    }
+
+    .dp-stat-header {
+        font-size: 7.5px !important;
+        padding-bottom: 2px !important;
+    }
+
+    .dp-stat-row {
+        font-size: 7px !important;
+    }
+
+    .dp-npc-desc {
+        font-size: 7.5px !important;
+        padding: 5px !important;
+    }
+
+    /* BADGES ATK # Y DEF # DE MONSTRUOS EN CAMPO (MÁS PEQUEÑOS Y ELEGANTES) */
+    .monster-stat-badge {
+        font-size: 6.5px !important;
+        padding: 0.5px 3px !important;
+        bottom: 1px !important;
+        letter-spacing: 0.2px !important;
+        line-height: 1 !important;
+    }
+
+    /* VENTANA FLOTANTE DEL REGISTRO DE DUELO (LOG COMPACTO Y FUENTE REDUCIDA) */
+    .floating-log-window,
+    .duel-event-log-drawer {
+        width: clamp(230px, 34vw, 300px) !important;
+        height: auto !important;
+        max-height: 48vh !important;
+        right: 8px !important;
+        bottom: 25px !important;
+        border-width: 1px !important;
+    }
+
+    .floating-log-header,
+    .log-drawer-header {
+        padding: 3px 6px !important;
+        font-size: 7.5px !important;
+    }
+
+    .floating-log-title {
+        font-size: 7.5px !important;
+    }
+
+    .floating-log-close,
+    .log-drawer-close {
+        font-size: 10px !important;
+        padding: 0 4px !important;
+    }
+
+    .floating-log-entries,
+    .log-entries {
+        padding: 3px 6px !important;
+        gap: 2px !important;
     }
 
     .log-item {
-        font-size: 4.8px !important;
-        line-height: 1.15 !important;
+        font-size: 7px !important;
+        line-height: 1.25 !important;
+        padding: 1.5px 3.5px !important;
+        border-left-width: 1.5px !important;
     }
 
-    .btn-surrender,
-    #btn-surrender {
-        padding: 2px 4px !important;
+    /* GRUPO DE ACCIONES (LOG / RENDIRSE) */
+    .board-action-buttons-group {
+        right: clamp(4px, 0.8vw, 8px) !important;
+        bottom: clamp(4px, 0.8vh, 8px) !important;
+        padding: 3px 2px !important;
+        gap: 3px !important;
+    }
+
+    .neon-icon-action-btn {
+        width: 20px !important;
         height: 18px !important;
-        font-size: 5.5px !important;
-        border-radius: 0 !important;
-        margin-top: auto !important;
-        flex-shrink: 0 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+        padding: 1px !important;
     }
 
-    /* CARTAS DE MANO ORIGINALES EN WEB / PC (88px) */
-    .hand-card,
+    .neon-icon-action-btn .neon-btn-svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    /* MANOS DE CARTAS FLOTANTES (INCREMENTO DE TAMAÑO EN MÓVIL) */
+    .rival-hand-floating {
+        top: 2px !important;
+        gap: clamp(3px, 0.8vw, 6px) !important;
+    }
+
     .rival-hand-card {
-        height: 88px !important;
+        height: clamp(44px, 12vh, 58px) !important;
         aspect-ratio: 1 / 1.45 !important;
     }
 
-    /* AJUSTE EXCLUSIVO PARA DISPOSITIVOS MÓVILES (PANTALLAS MÓVILES PEQUEÑAS) */
-    @media (max-height: 500px) and (max-width: 960px) {
-        .hand-card,
-        .rival-hand-card {
-            height: clamp(52px, 10vh, 62px) !important;
-            aspect-ratio: 1 / 1.45 !important;
-        }
+    .player-hand-floating {
+        bottom: 2px !important;
     }
 
-    /* VENTANAS MODALES, BANNER Y OVERLAYS: DADOS CON NÚMEROS GRANDES (SIN AGRANDAR DADOS) */
+    .hand-cards-container {
+        gap: clamp(3px, 0.8vw, 6px) !important;
+    }
+
+    .hand-card {
+        height: clamp(54px, 14.5vh, 72px) !important;
+        aspect-ratio: 1 / 1.45 !important;
+    }
+
+    /* VENTANAS MODALES, BANNER Y OVERLAYS: DADOS Y TRIBUTOS */
     .dice-modal-card {
         padding: 8px 12px !important;
         max-width: 90vw !important;
@@ -1316,25 +2272,26 @@ button,
     }
 
     .die-cube {
-        width: 55px !important;
-        height: 55px !important;
-        font-size: 34px !important; /* NÚMERO GRANDE Y LEGIBLE */
+        width: 68px !important;
+        height: 68px !important;
+        font-size: 52px !important;
         font-weight: 900 !important;
+        line-height: 1 !important;
         border-radius: 0 !important;
     }
 
     .btn-arena-launch {
-        padding: 5px 12px !important;
-        font-size: 9.5px !important;
+        padding: 4px 10px !important;
+        font-size: 9px !important;
         border-radius: 0 !important;
     }
 
     .dice-modal-title {
-        font-size: 10.5px !important;
+        font-size: 10px !important;
     }
 
     .dice-modal-desc {
-        font-size: 8px !important;
+        font-size: 7.5px !important;
     }
 
     .game-over-card {
@@ -1345,21 +2302,22 @@ button,
     }
 
     .tribute-floating-banner {
-        padding: 4px 10px !important;
-        font-size: 8.5px !important;
+        padding: 3px 8px !important;
+        font-size: 8px !important;
         border-radius: 0 !important;
     }
 
     #rule-alert-banner,
     #trap-chain-banner {
-        padding: 4px 12px !important;
-        font-size: 9.5px !important;
+        padding: 4px 10px !important;
+        font-size: 9px !important;
         border-radius: 0 !important;
     }
 }
 
-/* PANTALLAS PANORÁMICAS / TABLETS EN MODO HORIZONTAL */
-@media (min-width: 1081px) and (orientation: landscape) {
+/* PANTALLAS PANORÁMICAS / TABLETS Y COMPUTADORAS EN MODO HORIZONTAL */
+@media (min-width: 1081px) and (min-height: 521px) and (orientation: landscape) {
+
     html,
     body,
     #game-container {
@@ -1372,13 +2330,15 @@ button,
         margin: 0 !important;
         padding: 0 !important;
         overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         background-color: #020408 !important;
-        background-image: 
-            linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-            radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%) !important;
-        background-size: 80px 80px, 80px 80px, 100% 100% !important;
-        background-position: 0 0, 0 0, center center !important;
+        background-image: linear-gradient(rgba(2, 4, 8, 0.45), rgba(2, 4, 8, 0.45)), url('../assets/duel.jpg?v=3.0'), url('/assets/duel.jpg?v=3.0'), url('../../assets/duel.jpg?v=3.0'), url('../../../assets/duel.jpg?v=3.0') !important;
+        background-size: cover !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
         box-sizing: border-box !important;
     }
 
@@ -1389,197 +2349,371 @@ button,
         height: 100dvh !important;
         max-height: 100vh !important;
         max-height: 100dvh !important;
-        gap: 6px !important;
-        padding-top: max(env(safe-area-inset-top, 0px), 3px) !important;
-        padding-bottom: max(env(safe-area-inset-bottom, 0px), 3px) !important;
-        padding-left: 5px !important;
-        padding-right: 5px !important;
+        gap: 0 !important;
+        padding: 0 !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
-    #inspector-panel {
-        flex: 0 0 clamp(165px, 17.5vw, 220px) !important;
-        width: clamp(165px, 17.5vw, 220px) !important;
-        max-width: clamp(165px, 17.5vw, 220px) !important;
-        padding: 0 !important;
-        gap: 6px !important;
-        border: none !important;
+    #duel-field-panel {
+        height: calc(100% - 10px) !important;
+        max-height: calc(100vh - 10px) !important;
+        max-height: calc(100dvh - 10px) !important;
+        width: auto !important;
+        max-width: 100vw !important;
+        aspect-ratio: 16 / 9.2 !important;
+        margin: 5px auto !important;
         background: transparent !important;
-        box-shadow: none !important;
+        padding: 4px 6px !important;
     }
 
-    #inspector-panel h3 {
-        font-size: 11px !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+    .matrix-centered-container {
+        width: 96% !important;
+        height: 86% !important;
+        row-gap: 4px !important;
     }
 
-    .card-img-container {
-        max-height: clamp(90px, 24vh, 140px) !important;
-        border-radius: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+    .field-row-9,
+    .emz-row-9 {
+        column-gap: clamp(4px, 0.8vw, 10px) !important;
+        row-gap: 2px !important;
     }
 
-    .card-img-container img {
-        max-height: clamp(85px, 22vh, 130px) !important;
-        object-fit: contain !important;
-        border-radius: 0 !important;
+    .field-slot {
+        height: 94% !important;
+        max-height: 94% !important;
+        max-width: clamp(52px, 6.8vw, 78px) !important;
     }
 
-    .card-meta {
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-        padding: 6px !important;
-        border-radius: 0 !important;
-        flex: 1 1 0% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        min-height: 0 !important;
-        overflow: hidden !important;
+    .slot-tooltip {
+        font-size: 7px !important;
     }
 
-    .card-title {
-        font-size: 12px !important;
-    }
-
-    .card-attr-stars {
-        font-size: 9px !important;
-    }
-
-    .card-attr-badge,
-    .card-stars-span,
-    .card-type-box,
-    .card-archetype-tag {
-        font-size: 9px !important;
-    }
-
-    .stat-label {
-        font-size: 8.5px !important;
-    }
-
-    .stat-val {
-        font-size: 12px !important;
-    }
-
-    .card-desc {
-        font-size: 10.5px !important;
-        line-height: 1.35 !important;
-        flex: 1 1 0% !important;
-        width: 100% !important;
-        min-height: 0 !important;
-        box-sizing: border-box !important;
-        word-break: break-word !important;
-        border-radius: 0 !important;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-    }
-
-    .card-desc::-webkit-scrollbar {
-        display: none !important;
-    }
-
-    #right-action-panel {
-        flex: 0 0 clamp(170px, 18vw, 225px) !important;
-        width: clamp(170px, 18vw, 225px) !important;
-        max-width: clamp(170px, 18vw, 225px) !important;
-        padding: 0 !important;
-        margin-right: 5px !important;
-        gap: 6px !important;
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-
-    #right-action-panel h3 {
-        font-size: 11px !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .lp-col .lp-label {
-        font-size: 8.5px !important;
-    }
-
-    .phase-hint {
-        display: block !important;
+    .deck-counter-badge {
         font-size: 8px !important;
     }
 
-    .phase-item {
-        padding: 2px 4px !important;
-        border-radius: 0 !important;
+    .board-lp-box {
+        width: clamp(130px, 14vw, 175px) !important;
+        height: clamp(34px, 6.8vh, 46px) !important;
+        padding: 4px 12px !important;
+        gap: 8px !important;
     }
 
-    .user-status-box.duel-lp-single-row {
-        padding: 4px 8px !important;
-        border-radius: 0 !important;
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+    .board-lp-info-col {
+        gap: 0 !important;
+        max-width: 50% !important;
     }
 
-    .lp-value {
-        font-size: 13px !important;
-    }
-
-    .phase-turn-header {
-        font-size: 9.5px !important;
-    }
-
-    .turn-player-tag {
+    .board-role-badge {
         font-size: 8.5px !important;
+        padding: 2px 7px !important;
+        line-height: 1 !important;
     }
 
-    .phase-badge {
-        font-size: 9px !important;
-    }
-
-    .phase-name {
-        font-size: 10.5px !important;
-    }
-
-    .phase-tracker-box {
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .duel-event-log-box {
-        background: radial-gradient(circle at 50% 50%, rgba(9, 13, 22, 0.98), rgba(2, 4, 8, 0.99)) !important;
-        border: 1.2px solid rgba(0, 240, 255, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
-    }
-
-    .log-title {
-        font-size: 9.5px !important;
-    }
-
-    .log-item {
+    .board-user-name {
+        display: block !important;
         font-size: 8.5px !important;
+        max-width: 85px !important;
     }
 
-    .btn-surrender,
-    #btn-surrender {
-        font-size: 10px !important;
-        height: 25px !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+    .board-lp-val {
+        font-size: clamp(14px, 2.6vh, 18px) !important;
     }
 
-    /* CARTAS DE MANO ORIGINALES EN WEB / PC (88px) */
-    .hand-card,
+    .board-phase-capsule {
+        padding: 0 !important;
+        gap: clamp(10px, 1.8vh, 16px) !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+
+    .phase-capsule-title {
+        display: none !important;
+    }
+
+    .phase-capsule-btn {
+        width: 50px !important;
+        height: 31px !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+    }
+
+    .board-action-buttons-group {
+        padding: 3px 2px !important;
+        gap: 3px !important;
+    }
+
+    .neon-icon-action-btn {
+        width: 24px !important;
+        height: 22px !important;
+    }
+
+    .neon-icon-action-btn .neon-btn-svg {
+        width: 15px !important;
+        height: 15px !important;
+    }
+
+    .rival-hand-floating {
+        top: 6px !important;
+        gap: 10px !important;
+    }
+
     .rival-hand-card {
+        height: 88px !important;
+        aspect-ratio: 1 / 1.45 !important;
+    }
+
+    .player-hand-floating {
+        bottom: 6px !important;
+    }
+
+    .hand-cards-container {
+        gap: 10px !important;
+    }
+
+    .hand-card {
         height: 88px !important;
         aspect-ratio: 1 / 1.45 !important;
     }
 }
 
+/* ==========================================================================
+   VENTANA FLOTANTE HORIZONTAL: INFO CARTA (NO MODAL / ARRASTRABLE E INDEPENDIENTE)
+   ========================================================================== */
+#card-info-floating-window {
+    position: fixed;
+    width: clamp(480px, 52vw, 680px);
+    max-height: 82vh;
+    background: radial-gradient(circle at 30% 30%, #0d1a30 0%, #060d1a 65%, #02050b 100%);
+    border: 1.5px solid #00f0ff;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.35), 0 16px 40px rgba(0, 0, 0, 0.95);
+    border-radius: 0px !important;
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+    user-select: none;
+    animation: popInFloating 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
+@keyframes popInFloating {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
 
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.floating-window-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.25) 0%, rgba(9, 17, 34, 0.95) 100%);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+    padding: 6px 12px;
+    cursor: grab;
+    border-radius: 0px !important;
+}
+
+.floating-window-header:active {
+    cursor: grabbing;
+}
+
+.floating-window-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #00f0ff;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.floating-window-close {
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 71, 87, 0.2);
+    border: 1px solid #ff4757;
+    color: #ff4757;
+    font-size: 12px;
+    font-weight: 900;
+    border-radius: 0px !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.floating-window-close:hover {
+    background: #ff4757;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(255, 71, 87, 0.8);
+}
+
+.floating-window-body {
+    display: flex;
+    flex-direction: row;
+    padding: 12px 14px;
+    gap: 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.floating-card-left {
+    flex: 0 0 150px;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.floating-card-img {
+    width: 100%;
+    aspect-ratio: 1 / 1.45;
+    object-fit: contain;
+    border-radius: 0px !important;
+    border: 1.2px solid rgba(0, 240, 255, 0.45);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.floating-card-passcode {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    color: #94a3b8;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 0px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.floating-card-right {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.floating-card-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-gold, #ffd700);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    line-height: 1.2;
+}
+
+.floating-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
+.floating-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 0px !important;
+    text-transform: uppercase;
+}
+
+.floating-stats-row {
+    display: flex;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 3px 8px;
+    border-radius: 0px !important;
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    width: fit-content;
+}
+
+.floating-stat-atk {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #00f0ff;
+}
+
+.floating-stat-def {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffd700;
+}
+
+.floating-desc-box {
+    flex: 1 1 0;
+    min-height: 80px;
+    max-height: 160px;
+    background: rgba(2, 6, 14, 0.9);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    border-radius: 0px !important;
+    padding: 6px 8px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Firefox - scrollbar invisible */
+    -ms-overflow-style: none;
+    /* IE y Edge - scrollbar invisible */
+}
+
+.floating-desc-box::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari y Opera - scrollbar invisible */
+    width: 0px;
+    height: 0px;
+}
+
+.floating-desc-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9.5px;
+    line-height: 1.35;
+    color: #e2e8f0;
+    white-space: pre-line;
+    user-select: text;
+}
+
+.floating-desc-divider {
+    margin: 8px 0;
+    border-top: 1px dashed rgba(0, 240, 255, 0.25);
+    height: 1px;
+    width: 100%;
+}
+
+@media (max-width: 650px) {
+    #card-info-floating-window {
+        width: 95vw;
+        max-height: 90vh;
+    }
+
+    .floating-window-body {
+        padding: 8px;
+        gap: 10px;
+    }
+
+    .floating-card-left {
+        flex: 0 0 100px;
+        width: 100px;
+    }
+
+    .floating-card-name {
+        font-size: 12px;
+    }
+
+    .floating-desc-text {
+        font-size: 10px;
+    }
+}

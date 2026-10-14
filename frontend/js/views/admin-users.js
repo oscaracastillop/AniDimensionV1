@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initUsersAdminView() {
+    const searchInput = document.getElementById('admin-user-search');
+    if (searchInput) searchInput.value = '';
     await loadCountriesCatalog();
     await loadUsersList();
 }
@@ -60,6 +62,8 @@ async function loadUsersList() {
 
         if (data.success && data.users) {
             allUsersData = data.users;
+            const searchInput = document.getElementById('admin-user-search');
+            if (searchInput) searchInput.value = '';
             filteredUsersData = [...allUsersData];
             renderAdminUsersTable();
         }
@@ -133,7 +137,7 @@ function renderAdminUsersTable() {
         } else if (u.FlagEmoji && !u.FlagEmoji.includes('?')) {
             flagDisplay = u.FlagEmoji;
         } else {
-            flagDisplay = `<span style="font-family:'Orbitron', sans-serif; font-size:8px; color:var(--accent-cyan); font-weight:700;">${u.CountryIsoCode || '🌐'}</span>`;
+            flagDisplay = `<span style="font-family:'Orbitron', sans-serif; font-size:8px; color:var(--accent-cyan); font-weight:400;">${u.CountryIsoCode || '🌐'}</span>`;
         }
         let countryDisplay = u.CountryName || u.CountryIsoCode || 'Desconocido';
         if (u.CountryIsoCode === 'MX' || (countryDisplay && countryDisplay.toLowerCase().includes('xico'))) {
@@ -161,15 +165,12 @@ function renderAdminUsersTable() {
                 <td class="col-ban-reason" title="${banReasonStr}">${banReasonStr}</td>
                 <td class="col-actions">
                     <div class="actions-group">
-                        <button type="button" class="btn-act-sm btn-act-edit" onclick="openEditUserModal(${u.Id})" title="Editar usuario">
+                        <a href="users-detalle.html?id=${u.Id}" class="btn-act-sm btn-act-edit" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Editar usuario en vista dedicada">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px; height:11px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                             <span>Editar</span>
-                        </button>
+                        </a>
                         <button type="button" class="btn-act-sm ${isActive ? 'btn-act-inactivate' : 'btn-act-activate'}" onclick="toggleUserActiveStatus(${u.Id})" title="${isActive ? 'Inactivar usuario' : 'Activar usuario'}">
                             <span>${isActive ? 'Inactivar' : 'Activar'}</span>
-                        </button>
-                        <button type="button" class="btn-act-sm btn-act-ban" onclick="openBanUserModal(${u.Id})" title="Gestionar baneo">
-                            <span>Baneo</span>
                         </button>
                     </div>
                 </td>
@@ -186,7 +187,7 @@ function renderAdminPaginationControls(container, page, totalPages, totalItems) 
     if (totalPages <= 1) {
         container.innerHTML = `
             <div class="rankings-pagination">
-                <div class="rankings-page-info">Mostrando ${totalItems} usuarios</div>
+                <div class="rankings-page-info" style="font-size:11px !important; color:#94a3b8 !important; font-weight:400 !important;">Mostrando ${totalItems} usuarios</div>
             </div>
         `;
         return;
@@ -203,8 +204,8 @@ function renderAdminPaginationControls(container, page, totalPages, totalItems) 
 
     container.innerHTML = `
         <div class="rankings-pagination">
-            <div class="rankings-page-info">
-                Página <b>${page}</b> de <b>${totalPages}</b> (${totalItems} usuarios registrados)
+            <div class="rankings-page-info" style="font-size:11px !important; color:#94a3b8 !important; font-weight:400 !important;">
+                Página <span style="color:#00f0ff;">${page}</span> de <span style="color:#00f0ff;">${totalPages}</span> (${totalItems} usuarios registrados)
             </div>
             <div class="rankings-page-controls">
                 <button type="button" class="btn-page-nav" ${page === 1 ? 'disabled' : ''} onclick="changeAdminUserPage(${page - 1})">
@@ -275,9 +276,18 @@ async function saveAdminUserCreate() {
     }
 
     try {
+        const user = window.Session ? window.Session.getUser() : null;
+        const uid = user ? (user.id || user.user_id || user.Id) : null;
+        const token = window.Session ? window.Session.getSessionToken() : '';
+
         const res = await fetch('/api/admin/users', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-user-id': String(uid || ''),
+                'x-admin-username': (user && user.username) || 'Admin',
+                'x-session-token': token || ''
+            },
             body: JSON.stringify({
                 username,
                 email,
@@ -285,7 +295,8 @@ async function saveAdminUserCreate() {
                 countryIsoCode,
                 nivel,
                 starships,
-                isAdmin
+                isAdmin,
+                adminUserId: uid
             })
         });
 
@@ -337,190 +348,30 @@ function openEditUserModal(userId) {
     modal.style.display = 'flex';
 }
 
-function closeEditUserModal() {
-    const modal = document.getElementById('admin-edit-user-modal');
-    if (modal) modal.style.display = 'none';
-    currentEditingUser = null;
-}
-
-async function saveAdminUserEdit() {
-    if (!currentEditingUser) return;
-
-    const userId = currentEditingUser.Id;
-    const username = document.getElementById('edit-user-username').value.trim();
-    const email = document.getElementById('edit-user-email').value.trim();
-    const password = document.getElementById('edit-user-password').value;
-    const countryIsoCode = document.getElementById('edit-user-country').value;
-    const nivel = parseInt(document.getElementById('edit-user-nivel').value, 10);
-    const starships = parseInt(document.getElementById('edit-user-starships').value, 10);
-    const isAdmin = document.getElementById('edit-user-isadmin').value === '1';
-    const isActive = document.getElementById('edit-user-isactive').value === '1';
-
-    const alertBox = document.getElementById('edit-user-alert');
-    if (!alertBox) return;
-
-    try {
-        const res = await fetch(`/api/admin/users/${userId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username,
-                email,
-                password: password || undefined,
-                countryIsoCode,
-                nivel,
-                starships,
-                isAdmin,
-                isActive
-            })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Error al actualizar usuario');
-
-        alertBox.style.display = 'block';
-        alertBox.style.background = 'rgba(16,185,129,0.15)';
-        alertBox.style.color = '#10b981';
-        alertBox.style.border = '1px solid rgba(16,185,129,0.4)';
-        alertBox.textContent = '✅ Usuario actualizado correctamente.';
-
-        await loadUsersList();
-        setTimeout(() => closeEditUserModal(), 1200);
-    } catch (err) {
-        alertBox.style.display = 'block';
-        alertBox.style.background = 'rgba(239,68,68,0.15)';
-        alertBox.style.color = '#ef4444';
-        alertBox.style.border = '1px solid rgba(239,68,68,0.4)';
-        alertBox.textContent = `❌ ${err.message}`;
-    }
-}
-
 // --------------------------------------------------------------------------
 // ALTERNAR ESTADO ACTIVO / INACTIVO
 // --------------------------------------------------------------------------
 async function toggleUserActiveStatus(userId) {
     try {
-        const res = await fetch(`/api/admin/users/${userId}/toggle-active`, { method: 'PUT' });
+        const user = window.Session ? window.Session.getUser() : null;
+        const uid = user ? (user.id || user.user_id || user.Id) : null;
+        const token = window.Session ? window.Session.getSessionToken() : '';
+
+        const res = await fetch(`/api/admin/users/${userId}/toggle-active`, { 
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-user-id': String(uid || ''),
+                'x-admin-username': (user && user.username) || 'Admin',
+                'x-session-token': token || ''
+            },
+            body: JSON.stringify({ adminUserId: uid })
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Error al cambiar estado');
 
         await loadUsersList();
     } catch (err) {
         alert(`❌ ${err.message}`);
-    }
-}
-
-// --------------------------------------------------------------------------
-// MODAL DE BANEO (CON FECHA Y MOTIVO)
-// --------------------------------------------------------------------------
-function openBanUserModal(userId) {
-    const user = allUsersData.find(u => u.Id === userId);
-    if (!user) return;
-    currentBanningUser = user;
-
-    const modal = document.getElementById('admin-ban-user-modal');
-    if (!modal) return;
-
-    document.getElementById('ban-user-name').textContent = user.Username;
-
-    const dateInput = document.getElementById('ban-user-exp');
-    const reasonInput = document.getElementById('ban-user-reason');
-
-    if (user.BannedUntil) {
-        const dateObj = new Date(user.BannedUntil);
-        const isoStr = dateObj.toISOString().slice(0, 16);
-        dateInput.value = isoStr;
-    } else {
-        const defaultDate = new Date();
-        defaultDate.setDate(defaultDate.getDate() + 7);
-        dateInput.value = defaultDate.toISOString().slice(0, 16);
-    }
-
-    reasonInput.value = user.BanReason || 'Violación de términos de conducta y duelos OCG';
-
-    const alertBox = document.getElementById('ban-user-alert');
-    if (alertBox) alertBox.style.display = 'none';
-
-    modal.style.display = 'flex';
-}
-
-function closeBanUserModal() {
-    const modal = document.getElementById('admin-ban-user-modal');
-    if (modal) modal.style.display = 'none';
-    currentBanningUser = null;
-}
-
-async function applyUserBan() {
-    if (!currentBanningUser) return;
-
-    const userId = currentBanningUser.Id;
-    const bannedUntil = document.getElementById('ban-user-exp').value;
-    const banReason = document.getElementById('ban-user-reason').value.trim();
-
-    const alertBox = document.getElementById('ban-user-alert');
-
-    try {
-        const res = await fetch(`/api/admin/users/${userId}/ban`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                bannedUntil: bannedUntil ? new Date(bannedUntil).toISOString() : null,
-                banReason
-            })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Error al aplicar baneo');
-
-        alertBox.style.display = 'block';
-        alertBox.style.background = 'rgba(16,185,129,0.15)';
-        alertBox.style.color = '#10b981';
-        alertBox.style.border = '1px solid rgba(16,185,129,0.4)';
-        alertBox.textContent = '✅ Operación de baneo ejecutada correctamente.';
-
-        await loadUsersList();
-        setTimeout(() => closeBanUserModal(), 1200);
-    } catch (err) {
-        alertBox.style.display = 'block';
-        alertBox.style.background = 'rgba(239,68,68,0.15)';
-        alertBox.style.color = '#ef4444';
-        alertBox.style.border = '1px solid rgba(239,68,68,0.4)';
-        alertBox.textContent = `❌ ${err.message}`;
-    }
-}
-
-async function liftUserBan() {
-    if (!currentBanningUser) return;
-
-    const userId = currentBanningUser.Id;
-    const alertBox = document.getElementById('ban-user-alert');
-
-    try {
-        const res = await fetch(`/api/admin/users/${userId}/ban`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                bannedUntil: null,
-                banReason: null
-            })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Error al remover baneo');
-
-        alertBox.style.display = 'block';
-        alertBox.style.background = 'rgba(16,185,129,0.15)';
-        alertBox.style.color = '#10b981';
-        alertBox.style.border = '1px solid rgba(16,185,129,0.4)';
-        alertBox.textContent = '✅ Baneo removido. Usuario habilitado.';
-
-        await loadUsersList();
-        setTimeout(() => closeBanUserModal(), 1200);
-    } catch (err) {
-        alertBox.style.display = 'block';
-        alertBox.style.background = 'rgba(239,68,68,0.15)';
-        alertBox.style.color = '#ef4444';
-        alertBox.style.border = '1px solid rgba(239,68,68,0.4)';
-        alertBox.textContent = `❌ ${err.message}`;
     }
 }

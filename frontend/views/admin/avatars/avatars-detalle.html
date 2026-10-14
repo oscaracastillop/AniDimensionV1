@@ -8,35 +8,33 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../css/global.css">
-    <link rel="stylesheet" href="../../../css/shop.css?v=2.5">
-    <link rel="stylesheet" href="../../../css/admin.css">
-    <link rel="stylesheet" href="../cards/cards-detalle.css?v=2.5">
-    <link rel="stylesheet" href="../../../css/navbar.css">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.0">
+    <link rel="stylesheet" href="../../../css/shop.css?v=4.0">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.0">
+    <link rel="stylesheet" href="../cards/cards.css?v=4.0">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.0">
 </head>
-<body style="margin:0; padding:0; background: radial-gradient(circle at 50% 25%, #0d1f42 0%, #050b18 60%, #020408 100%) !important; color:#fff; font-family:'Outfit', sans-serif;">
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
 
     <div class="admin-page-container" style="display:flex; flex-direction:column; width:100vw; height:100vh; overflow:hidden;">
         
-        <!-- HEADER FIJO CON BOTÓN VOLVER -->
-        <div class="shop-header" style="display:flex; justify-content:space-between; align-items:center; padding:6px 16px; border-bottom:1px solid rgba(0, 240, 255, 0.25);">
-            <div class="shop-title-box" style="display:flex; align-items:center; gap:10px;">
-                <a href="avatars.html" class="btn-shop-back" title="Volver al Catálogo de Avatares Admin">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:16px; height:16px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </a>
+        <!-- HEADER FIJO CON BOTÓN VOLVER A LA DERECHA -->
+        <div class="shop-header">
+            <div class="shop-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
                 <div>
-                    <h1 id="admin-avatar-detail-title" class="shop-title" style="font-family:'Orbitron', sans-serif; font-size:15px; font-weight:900; color:#fff; margin:0; text-shadow:0 0 10px rgba(0,240,255,0.5);">FORMULARIO DE EDICIÓN Y CREACIÓN DE AVATAR</h1>
-                    <div class="shop-subtitle" style="font-size:9.5px; color:#94a3b8; margin-top:1px;">PANEL LATERAL DEDICADO DE PERSONALIZACIÓN DE AVATAR, POTENCIADORES Y ESTADO</div>
+                    <h1 id="admin-avatar-detail-title" class="shop-title">FORMULARIO DE EDICIÓN Y CREACIÓN DE AVATAR</h1>
+                    <div class="shop-subtitle">PANEL LATERAL DEDICADO DE PERSONALIZACIÓN DE AVATAR, POTENCIADORES Y ESTADO</div>
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button onclick="switchToNewAvatarForm()" style="padding:5px 12px; font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:900; color:#020617; background:linear-gradient(135deg, #00f0ff, #0072ff); border:none; border-radius:4px; cursor:pointer; box-shadow:0 0 10px rgba(0,240,255,0.4);">
-                    ➕ NUEVO AVATAR
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" onclick="switchToNewAvatarForm()" class="btn-act-sm btn-act-activate" style="height:28px; padding:0 14px; font-size:9.5px;">
+                    NUEVO AVATAR
                 </button>
-                <div class="shop-balance-pill" style="background:rgba(15,23,42,0.85); border:1px solid #ffd700; color:#ffd700; font-family:'Orbitron', sans-serif; font-size:10.5px; font-weight:800; padding:4px 12px; border-radius:20px;">
-                    ⚡ PANEL ADMIN AVATAR
-                </div>
+                <a href="avatars.html" class="btn-shop-back" title="Volver al Catálogo de Avatares Admin">
+                    VOLVER
+                </a>
             </div>
         </div>
 

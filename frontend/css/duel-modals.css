@@ -7,7 +7,7 @@
             position: fixed; inset: 0;
             background: rgba(2, 6, 12, 0.88);
             backdrop-filter: blur(8px);
-            z-index: 500;
+            z-index: 999999 !important;
             display: flex; align-items: center; justify-content: center;
             animation: fadeInModal 0.2s ease;
         }
@@ -103,6 +103,12 @@
             transition: 0.2s;
         }
 
+        #surrender-modal .chain-btn {
+            font-weight: 500 !important;
+            font-family: 'Outfit', sans-serif !important;
+            letter-spacing: 0.3px !important;
+        }
+
         .chain-pass-btn {
             background: rgba(255, 71, 87, 0.25);
             border: 1px solid var(--accent-ruby);
@@ -167,19 +173,20 @@
 
         .gy-drawer-card {
             pointer-events: auto; /* Permite clics e interacción completa dentro */
-            width: 620px;
-            max-width: 90%;
+            width: 650px;
+            max-width: 92vw;
             height: auto;
             max-height: 85%;
-            background: rgba(8, 12, 20, 0.96);
-            border-radius: 12px;
-            padding: 16px;
+            background: rgba(8, 12, 20, 0.98);
+            border-radius: 0 !important;
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             backdrop-filter: blur(16px);
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: none !important;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: border-color 0.25s ease;
             box-sizing: border-box;
         }
 
@@ -192,18 +199,13 @@
         }
 
         .gy-drawer-hint {
-            font-size: 10px;
-            color: #94a3b8;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px 8px;
-            border-radius: 4px;
-            border-left: 2px solid var(--accent-cyan);
+            display: none !important;
         }
 
         /* Temas según la zona visualizada */
         .drawer-theme-extra {
-            border: 2px solid #a855f7;
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(168, 85, 247, 0.45);
+            border: 1px solid #a855f7 !important;
+            box-shadow: none !important;
         }
         .drawer-theme-extra .gy-drawer-header {
             border-bottom-color: rgba(168, 85, 247, 0.35);
@@ -213,8 +215,8 @@
         }
 
         .drawer-theme-gy {
-            border: 2px solid var(--accent-ruby);
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 71, 87, 0.45);
+            border: 1px solid var(--accent-ruby) !important;
+            box-shadow: none !important;
         }
         .drawer-theme-gy .gy-drawer-header {
             border-bottom-color: rgba(255, 71, 87, 0.35);
@@ -224,8 +226,8 @@
         }
 
         .drawer-theme-banished {
-            border: 2px solid #f59e0b;
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.45);
+            border: 1px solid #f59e0b !important;
+            box-shadow: none !important;
         }
         .drawer-theme-banished .gy-drawer-header {
             border-bottom-color: rgba(245, 158, 11, 0.35);
@@ -236,55 +238,88 @@
 
         .modal-close-btn {
             background: none; border: none; color: #fff; font-size: 16px; cursor: pointer;
-            padding: 2px 6px; border-radius: 4px; transition: background 0.15s;
+            padding: 2px 6px; border-radius: 0 !important; transition: background 0.15s;
         }
         .modal-close-btn:hover {
             background: rgba(255, 255, 255, 0.15);
         }
 
         .gy-cards-grid {
-            flex: 1; overflow-y: auto; display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 12px; padding: 8px; background: rgba(4, 6, 10, 0.8);
-            border-radius: 6px;
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            padding: 12px 10px;
+            background: rgba(4, 6, 10, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            min-height: 145px;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+            box-sizing: border-box;
+        }
+        .gy-cards-grid::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
         }
 
         .gy-card-item {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            background: rgba(15, 23, 42, 0.7); border: 1.5px solid #334155;
-            border-radius: 6px; padding: 6px; cursor: pointer;
-            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0 !important;
+            padding: 2px;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
             user-select: none;
+            box-shadow: none !important;
         }
         .gy-card-item:hover {
-            border-color: var(--accent-gold);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.25);
+            border-color: var(--accent-cyan) !important;
+            transform: translateY(-4px);
+            box-shadow: none !important;
         }
         .gy-card-item.gy-card-selected {
-            border-color: var(--accent-gold) !important;
-            background: rgba(255, 215, 0, 0.12) !important;
-            box-shadow: 0 0 16px var(--accent-gold) !important;
-            transform: scale(1.04) translateY(-2px);
+            border-color: var(--accent-cyan) !important;
+            background: rgba(0, 229, 255, 0.08) !important;
+            transform: translateY(-4px);
+            box-shadow: none !important;
         }
 
         .gy-card-img {
-            width: 90px; height: 130px; background-size: cover; background-position: center;
-            border-radius: 4px;
+            width: 80px;
+            height: 118px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 0 !important;
+            display: block;
         }
         .gy-card-name {
-            font-size: 9px; font-weight: 700; color: #fff; text-align: center;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
+            display: none;
         }
 
         /* MENÚ CONTEXTUAL DINÁMICO */
         .context-card-menu {
-            position: fixed; z-index: 600;
+            position: fixed;
+            z-index: 999999 !important;
             background: rgba(9, 14, 23, 0.98);
             border: 1px solid var(--accent-cyan);
-            border-radius: 6px; padding: 6px;
+            border-radius: 0 !important;
+            padding: 6px;
             box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
-            display: flex; flex-direction: column; gap: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             animation: fadeInModal 0.15s ease;
         }
 
@@ -435,6 +470,75 @@
             border-color: #c084fc !important;
             box-shadow: 0 0 16px rgba(192, 132, 252, 0.95), inset 0 0 10px rgba(168, 85, 247, 0.6) !important;
             animation: pulse-trapped-glow 1.5s infinite alternate !important;
+        }
+
+        /* EFECTO VISUAL: BLOQUEO DE ATAQUE POR ESPADAS DE LA LUZ REVELADORA */
+        .monster-swords-locked {
+            border-color: #ffd700 !important;
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.85), inset 0 0 8px rgba(255, 234, 167, 0.5) !important;
+            animation: pulse-swords-barrier 1.6s infinite alternate !important;
+        }
+
+        @keyframes pulse-swords-barrier {
+            0% {
+                box-shadow: 0 0 8px rgba(255, 215, 0, 0.6), inset 0 0 4px rgba(255, 234, 167, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 22px rgba(255, 215, 0, 1), inset 0 0 12px rgba(255, 234, 167, 0.7);
+            }
+        }
+
+        .swords-lock-badge {
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(180, 83, 9, 0.95);
+            border: 1px solid #ffd700;
+            color: #fffbeb;
+            font-size: 7px;
+            font-weight: 900;
+            padding: 1px 4px;
+            border-radius: 3px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 30;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+            letter-spacing: 0.4px;
+            animation: pulse-swords-barrier 1.2s infinite alternate;
+        }
+
+        .swords-turn-badge {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(217, 119, 6, 0.95);
+            border: 1px solid #fef08a;
+            color: #fff;
+            font-size: 7px;
+            font-weight: 900;
+            padding: 1px 4px;
+            border-radius: 3px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 30;
+            box-shadow: 0 0 8px rgba(254, 240, 138, 0.9);
+            letter-spacing: 0.3px;
+        }
+
+        .card-swords-active {
+            border-color: #fef08a !important;
+            box-shadow: 0 0 16px rgba(254, 240, 138, 0.9) !important;
+        }
+
+        .jar-locked-badge {
+            animation: pulse-jar-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-jar-glow {
+            from { box-shadow: 0 0 6px rgba(245, 158, 11, 0.6); }
+            to { box-shadow: 0 0 16px rgba(245, 158, 11, 1); }
         }
 
         @keyframes pulse-trapped-glow {
@@ -692,3 +796,81 @@
         }
 
         /* REGLAS RESPONSIVAS MOBILE-FIRST (ANCHO <= 768px) */
+
+        /* =========================================================================
+           ILUMINACIÓN CÓSMICA DEL EXTRA DECK PARA INVOCACIÓN POR SINCRONÍA DISPONIBLE
+           ========================================================================= */
+        .synchro-ready-glow {
+            position: relative;
+            border-color: #00f0ff !important;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.95), 0 0 32px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(0, 240, 255, 0.6) !important;
+            animation: synchroReadyPulse 1.2s infinite alternate !important;
+            cursor: pointer;
+        }
+
+        @keyframes synchroReadyPulse {
+            0% {
+                box-shadow: 0 0 12px rgba(0, 240, 255, 0.8), 0 0 20px rgba(255, 215, 0, 0.6);
+                border-color: #00f0ff;
+            }
+            100% {
+                box-shadow: 0 0 28px rgba(0, 240, 255, 1), 0 0 45px rgba(255, 215, 0, 0.95);
+                border-color: #ffd700;
+            }
+        }
+
+        .synchro-ready-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #0284c7, #eab308);
+            border: 1px solid #fef08a;
+            color: #ffffff;
+            font-size: 7.5px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 999px;
+            white-space: nowrap;
+            z-index: 50;
+            box-shadow: 0 0 12px rgba(234, 179, 8, 0.9);
+            letter-spacing: 0.5px;
+            animation: synchroBadgeBounce 0.9s infinite alternate;
+        }
+
+        @keyframes synchroBadgeBounce {
+            0% { transform: translateX(-50%) translateY(0); }
+            100% { transform: translateX(-50%) translateY(-3px); }
+        }
+
+        /* =========================================================================
+           INDICADORES MEJORADOS DE CARTAS LIGADAS, EQUIPADAS Y ENCADENADAS
+           ========================================================================= */
+        .card-linked-badge {
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(4, 120, 87, 0.95));
+            border: 1px solid #34d399;
+            color: #ecfdf5;
+            font-size: 7px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 35;
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+            letter-spacing: 0.4px;
+            pointer-events: auto;
+            cursor: help;
+        }
+
+        .chain-link-badge {
+            display: none !important;
+        }
+
+        .slot-linked-active {
+            outline: 2px solid #34d399 !important;
+            box-shadow: 0 0 18px rgba(52, 211, 153, 0.95) !important;
+        }

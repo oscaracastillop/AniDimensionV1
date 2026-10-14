@@ -77,7 +77,8 @@
     gap: 8px;
 }
 
-.die-wrapper div {
+#dice-player-label,
+#dice-npc-label {
     font-family: 'Orbitron', sans-serif !important;
     font-size: 10px !important;
     font-weight: 700 !important;
@@ -86,152 +87,171 @@
     text-transform: uppercase;
 }
 
-/* DADOS CYBERPUNK LIMPIOS (SIN BORDES REDONDEADOS NI COLORES CHILLONES) */
+#dice-player-label {
+    color: #00f0ff !important;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+#dice-npc-label {
+    color: #ff4757 !important;
+    text-shadow: 0 0 8px rgba(255, 71, 87, 0.5);
+}
+
+/* DADOS CYBERPUNK LIMPIOS CON FONDO NEÓN Y NÚMEROS GRANDES */
 .die-cube {
-    width: 78px;
-    height: 78px;
+    width: 82px;
+    height: 82px;
     border-radius: 0 !important; /* TOTALMENTE RECTO */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 46px;
-    font-weight: 900;
+    font-size: 62px !important;
+    font-weight: 900 !important;
     font-family: 'Orbitron', sans-serif !important;
-    background: #040711 !important;
-    border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
-    color: #00f0ff !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(0, 240, 255, 0.08) !important;
-    transition: all 0.2s ease;
+    line-height: 1 !important;
+    user-select: none;
+    transition: all 0.25s ease;
 }
 
 .die-player {
-    border-color: rgba(0, 240, 255, 0.65) !important;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.22) 0%, rgba(4, 7, 17, 0.96) 100%) !important;
+    border: 1.8px solid #00f0ff !important;
     color: #00f0ff !important;
-    box-shadow: 0 0 16px rgba(0, 240, 255, 0.3), inset 0 0 12px rgba(0, 240, 255, 0.1) !important;
+    box-shadow: 0 0 22px rgba(0, 240, 255, 0.45), inset 0 0 16px rgba(0, 240, 255, 0.2) !important;
+    text-shadow: 0 0 14px rgba(0, 240, 255, 0.8) !important;
 }
 
 .die-npc {
-    border-color: rgba(148, 163, 184, 0.5) !important;
-    color: #e2e8f0 !important;
-    box-shadow: 0 0 12px rgba(148, 163, 184, 0.2), inset 0 0 10px rgba(148, 163, 184, 0.06) !important;
+    background: radial-gradient(circle, rgba(255, 71, 87, 0.22) 0%, rgba(15, 5, 8, 0.96) 100%) !important;
+    border: 1.8px solid #ff4757 !important;
+    color: #ff4757 !important;
+    box-shadow: 0 0 22px rgba(255, 71, 87, 0.45), inset 0 0 16px rgba(255, 71, 87, 0.2) !important;
+    text-shadow: 0 0 14px rgba(255, 71, 87, 0.8) !important;
 }
 
 .dice-vs-badge {
     font-family: 'Orbitron', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: 800;
+    font-size: 14px !important;
+    font-weight: 900;
     color: #64748b !important;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
 #dice-status-message {
     font-family: 'Outfit', sans-serif;
-    font-size: 11.5px;
-    font-weight: 500;
-    min-height: 22px;
+    font-size: 12px;
+    font-weight: 600;
+    min-height: 18px;
     color: #94a3b8;
-    margin-bottom: 14px;
-    line-height: 1.4;
+    margin-bottom: 12px;
+    line-height: 1.35;
 }
 
 /* BOTÓN DE LANZAMIENTO DE DADOS (CYBER RECTO) */
 .btn-arena-launch {
-    background: rgba(0, 240, 255, 0.12) !important;
+    background: rgba(0, 240, 255, 0.15) !important;
     border: 1.5px solid #00f0ff !important;
     color: #00f0ff !important;
     font-family: 'Orbitron', sans-serif !important;
-    font-size: 10.5px !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.8px !important;
-    padding: 9px 24px !important;
+    font-size: 11.5px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    padding: 10px 28px !important;
     border-radius: 0 !important; /* TOTALMENTE RECTO */
     cursor: pointer;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.2) !important;
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.25) !important;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
     text-transform: uppercase;
 }
 
 .btn-arena-launch:hover {
     background: #00f0ff !important;
     color: #020617 !important;
-    box-shadow: 0 0 18px rgba(0, 240, 255, 0.5) !important;
+    box-shadow: 0 0 22px rgba(0, 240, 255, 0.6) !important;
 }
 
 /* BOTONES DE ELECCIÓN DE ORDEN (CYBER RECTOS) */
 #dice-choice-container .btn-act-vertical {
     border-radius: 0 !important; /* TOTALMENTE RECTO */
     font-family: 'Orbitron', sans-serif !important;
-    font-size: 10px !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.6px !important;
-    padding: 8px 16px !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    padding: 10px 24px !important;
     cursor: pointer;
     transition: all 0.2s ease;
     text-transform: uppercase;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
 }
 
 #dice-choice-container .btn-order-p1 {
-    background: rgba(0, 240, 255, 0.15) !important;
-    border: 1.2px solid #00f0ff !important;
+    background: rgba(0, 240, 255, 0.18) !important;
+    border: 1.5px solid #00f0ff !important;
     color: #00f0ff !important;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.25) !important;
 }
 
 #dice-choice-container .btn-order-p1:hover {
     background: #00f0ff !important;
     color: #020617 !important;
-    box-shadow: 0 0 16px rgba(0, 240, 255, 0.5) !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6) !important;
 }
 
 #dice-choice-container .btn-order-p2 {
-    background: rgba(148, 163, 184, 0.12) !important;
-    border: 1.2px solid rgba(148, 163, 184, 0.45) !important;
-    color: #e2e8f0 !important;
+    background: rgba(255, 71, 87, 0.18) !important;
+    border: 1.5px solid #ff4757 !important;
+    color: #ff4757 !important;
+    box-shadow: 0 0 12px rgba(255, 71, 87, 0.25) !important;
 }
 
 #dice-choice-container .btn-order-p2:hover {
-    background: rgba(148, 163, 184, 0.3) !important;
-    border-color: #cbd5e1 !important;
-    color: #fff !important;
+    background: #ff4757 !important;
+    color: #020617 !important;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.6) !important;
 }
 
 /* ==========================================================================
-   MODAL DE FIN DE DUELO (GAME OVER / SURRENDER) - CYBER RECTO UNIFICADO
+   MODAL DE FIN DE DUELO (GAME OVER / SURRENDER / VICTORIA)
    ========================================================================== */
 #game-over-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 14, 0.92);
-    backdrop-filter: blur(10px);
-    z-index: 1300;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(2, 6, 14, 0.88) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 999999 !important;
     display: none;
-    align-items: center;
-    justify-content: center;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
 }
 
-.game-over-card {
-    width: 440px;
-    max-width: 90vw;
-    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
-    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.2) !important;
-    border-radius: 0 !important; /* TOTALMENTE RECTO */
-    padding: 24px;
-    color: #fff;
-    text-align: center;
-    font-family: 'Outfit', sans-serif;
-    box-sizing: border-box;
+#game-over-modal-content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    max-width: 98vw !important;
 }
 
 .game-over-card button {
-    border-radius: 0 !important; /* TOTALMENTE RECTO */
+    border-radius: 4px !important;
     font-family: 'Orbitron', sans-serif !important;
 }
 
@@ -246,20 +266,26 @@
         margin: 8px 0;
     }
     .die-cube {
-        width: 55px;
-        height: 55px;
-        font-size: 34px !important;
-        line-height: 55px;
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 52px !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
     }
-    .die-wrapper div {
+    #dice-player-label,
+    #dice-npc-label {
         font-size: 9px !important;
     }
     #dice-status-message {
-        margin-bottom: 8px;
-        font-size: 10px;
+        margin-bottom: 6px;
+        font-size: 10.5px;
     }
     .btn-arena-launch {
-        padding: 6px 16px !important;
-        font-size: 9.5px !important;
+        padding: 7px 18px !important;
+        font-size: 10px !important;
+    }
+    #dice-choice-container .btn-act-vertical {
+        padding: 7px 16px !important;
+        font-size: 10.5px !important;
     }
 }
