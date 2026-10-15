@@ -1208,6 +1208,7 @@ async function handleDuelAction(socket, data) {
                 return socket.emit('ACTION_ERROR', { message: '⚠️ Una Invocación por Sincronía requiere al menos 1 Monstruo Cantante (Tuner) y 1 o más Monstruos No-Cantantes en el campo.' });
             }
 
+            const manifest = getRoomManifest(duelState);
             const sMeta = manifest ? manifest.get(synchroCardId) : null;
             const synchroModule = (sMeta && sMeta.module) || getCardEffect(synchroCardId);
 

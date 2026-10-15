@@ -639,6 +639,7 @@
         // Garantizar que la referencia socket exista globalmente antes de cargar los controladores
         window.socket = window.getSocket ? window.getSocket() : (window.socket || (typeof io !== 'undefined' ? io() : null));
         var socket = window.socket;
+    </script>
     <script src="../../../js/data/playmats-data.js?v=6.1"></script>
     <script src="../../../js/data/sleeves-data.js?v=6.1"></script>
     <script src="../../../js/duel/duel-cosmetics.js?v=6.0"></script>
