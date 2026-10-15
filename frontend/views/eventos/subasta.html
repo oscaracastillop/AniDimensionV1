@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Evento de Subasta de Cartas</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/subasta.css?v=3.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="subasta-page-container">
+        <!-- HEADER SUPERIOR CONGELADO / FIJO (ESTRUCTURA DE TIENDA) -->
+        <div class="subasta-header">
+            <div class="subasta-title-box">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo">
+                <div>
+                    <h1 class="subasta-title">EVENTO DE SUBASTA DE CARTAS</h1>
+                    <div class="subasta-subtitle">PUJA EN VIVO POR CARTAS EXCLUSIVAS Y ASEGURA TU EJEMPLAR</div>
+                </div>
+            </div>
+
+            <div class="subasta-header-controls">
+                <div class="subasta-header-badge" id="subasta-user-stars-badge" title="Tus Estrellas Disponibles">
+                    ⭐ <span id="subasta-user-stars-val">---</span>
+                </div>
+
+                <a href="/views/eventos/eventos.html" class="btn-subasta-back" title="Volver al Centro de Eventos">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- SUB-BARRA DE REGLAS Y ESTADO -->
+        <div class="subasta-info-bar">
+            <div>
+                🔒 <b>Mecánica de Depósito:</b> Estrellas retenidas al pujar y reintegradas al instante si superan tu oferta.
+            </div>
+            <div style="color:#00ff88; font-family:'Orbitron',sans-serif; font-size:9.5px;">
+                📫 Entrega directa en Buzón al expirar
+            </div>
+        </div>
+
+        <!-- CONTENIDO CENTRAL DESLIZABLE (MARGENES LIMPIOS) -->
+        <div class="subasta-scroll-content">
+            
+            <!-- SELECTOR DE SUBASTAS EN VIVO (SE MUESTRA CUANDO HAY MULTIPLES ACTIVAS) -->
+            <div id="subasta-active-strip-container" style="display:none;">
+                <div style="font-family:'Orbitron',sans-serif; font-size:9.5px; font-weight:700; color:#00f0ff; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                    <span style="display:inline-block; width:6px; height:6px; background:#00ff88; border-radius:50%;"></span>
+                    SUBASTAS EN VIVO DISPONIBLES (<span id="subasta-active-badge-count">0</span>):
+                </div>
+                <div class="subasta-active-strip" id="subasta-active-strip"></div>
+            </div>
+
+            <div id="subasta-container">
+                <!-- Se inyecta dinámicamente con eventos-subasta.js -->
+                <div class="subasta-empty-state">
+                    Cargando información de las subastas en vivo...
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR FIJO -->
+    <div id="navbar-container"></div>
+
+    <!-- SCRIPTS CORE Y NAVBAR -->
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/eventos-subasta.js?v=3.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('eventos');
+            if (typeof initEventosSubastaView === 'function') initEventosSubastaView();
+        });
+    </script>
+</body>
+</html>

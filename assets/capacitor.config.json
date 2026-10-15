@@ -1,0 +1,11 @@
+{
+  "appId": "com.anidimension.duel",
+  "appName": "Ani Dimension",
+  "webDir": "frontend",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "http://66.92.168.136:3006?source=apk",
+    "cleartext": true,
+    "errorPath": "offline.html"
+  }
+}

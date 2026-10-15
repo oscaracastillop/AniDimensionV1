@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Salas de Duelo PvP Online</title>
+    <!-- Google Fonts: Orbitron & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.0">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.0">
+    <link rel="stylesheet" href="lobby-pvp.css?v=4.0">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.0">
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif; background:#070b14;">
+
+    <div class="pvp-lobby-page-container">
+        <!-- HEADER ARENA FIJO -->
+        <div class="admin-header pvp-header">
+            <div class="admin-title-box" style="display:flex; align-items:center; gap:12px;">
+                <img src="../../../assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
+                <div>
+                    <h1 class="admin-title">ARENA PVP MULTIJUGADOR</h1>
+                    <div class="admin-subtitle">SALAS DE DUELO EN TIEMPO REAL - REGLAMENTO OFICIAL</div>
+                </div>
+            </div>
+
+            <!-- CONTROLES SUPERIORES: USUARIO, NIVEL Y BOTONES -->
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div class="duelist-header-pill">
+                    <span id="player-avatar-badge" style="font-size:16px;">👤</span>
+                    <div>
+                        <div id="player-username-tag" style="font-weight:800; color:#00f0ff; font-size:11.5px; line-height:1;">Duelista</div>
+                        <div id="player-level-tag" style="font-size:9.5px; color:#ffd700; font-weight:700;">Nv. 1</div>
+                    </div>
+                </div>
+
+                <button id="btn-toggle-create-bar" class="btn-create-room-trigger" onclick="toggleFloatingCreateBar()">
+                    <span>➕ CREAR SALA</span>
+                </button>
+
+                <button class="btn-refresh-rooms" onclick="requestRoomList()" title="Actualizar lista de salas">
+                    🔄
+                </button>
+
+                <a href="../menu.html" class="btn-shop-back" title="Volver al Menú de Duelos">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- VENTANA FLOTANTE ELEGANTE PARA CREAR SALA (CARD FLOTANTE COMPACTA) -->
+        <div id="floating-create-bar" class="floating-create-bar" style="display:none;">
+            <div class="create-bar-header">
+                <div class="create-bar-title">
+                    <span class="create-bar-icon">⚔️</span>
+                    <span>NUEVA SALA DE DUELO PVP</span>
+                    <span class="create-bar-badge">REGLAS OFICIALES</span>
+                </div>
+                <button class="btn-close-bar" onclick="toggleFloatingCreateBar(false)" title="Cerrar">✕</button>
+            </div>
+
+            <form id="pvp-create-form" class="create-bar-form-grid" onsubmit="handleCreateRoomSubmit(event)">
+                <!-- 1. NOMBRE DE SALA -->
+                <div class="form-field-full">
+                    <label class="bar-label">NOMBRE DE LA SALA</label>
+                    <input type="text" id="room-name-input" class="bar-input" placeholder="Ej: Torneo de Leyendas" maxlength="30" required>
+                </div>
+
+                <!-- 2. RANGO DE NIVEL PERMITIDO PARA EL RIVAL -->
+                <div class="form-field-row">
+                    <div class="form-field-col">
+                        <label class="bar-label">NV. MÍNIMO RIVAL</label>
+                        <input type="number" id="room-min-lvl-input" class="bar-input" min="1" max="999" value="1" required>
+                    </div>
+                    <div class="form-field-col">
+                        <label class="bar-label">NV. MÁXIMO RIVAL</label>
+                        <input type="number" id="room-max-lvl-input" class="bar-input" min="1" max="999" value="50" required>
+                    </div>
+                </div>
+                <div class="bar-helper-text">
+                    🛡️ Solo duelistas rivales dentro de este rango de nivel podrán acceder a tu sala.
+                </div>
+
+                <!-- 3. CONTRASEÑA OPCIONAL -->
+                <div class="form-field-full">
+                    <label class="bar-label">CONTRASEÑA (OPCIONAL)</label>
+                    <input type="password" id="room-pass-input" class="bar-input" placeholder="Dejar en blanco para sala pública" maxlength="15">
+                </div>
+
+                <!-- 4. BOTONES DE ACCIÓN -->
+                <div class="bar-actions-row">
+                    <button type="submit" class="btn-bar-create">
+                        <span>⚔️ CREAR Y ESPERAR RIVAL</span>
+                    </button>
+                    <button type="button" class="btn-bar-cancel" onclick="toggleFloatingCreateBar(false)">
+                        CANCELAR
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- VENTANA FLOTANTE DE CONTRASEÑA PARA INGRESAR (CARD COMPACTA) -->
+        <div id="floating-password-bar" class="floating-create-bar floating-pass-bar" style="display:none;">
+            <div class="create-bar-header">
+                <div class="create-bar-title">
+                    <span class="create-bar-icon">🔒</span>
+                    <span id="pass-prompt-room-title">SALA PROTEGIDA POR CONTRASEÑA</span>
+                </div>
+                <button class="btn-close-bar" onclick="closePasswordPrompt()" title="Cancelar">✕</button>
+            </div>
+            <form id="pvp-pass-form" class="create-bar-form-grid" onsubmit="handlePasswordSubmit(event)">
+                <input type="hidden" id="pass-target-room-id" value="">
+                <div class="form-field-full">
+                    <label class="bar-label">INGRESA LA CLAVE DE ACCESO</label>
+                    <input type="password" id="room-join-pass-input" class="bar-input" placeholder="Ingresa contraseña..." required>
+                </div>
+                <div class="bar-actions-row">
+                    <button type="submit" class="btn-bar-create">
+                        <span>🔓 ACCEDER</span>
+                    </button>
+                    <button type="button" class="btn-bar-cancel" onclick="closePasswordPrompt()">
+                        CANCELAR
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- VISTA DE TABLA DE SALAS ACTIVAS -->
+        <div id="pvp-lobby-table-view" class="pvp-scroll-content">
+            
+            <!-- BANNER DE EVENTO DE BONIFICACIÓN ACTIVO -->
+            <div id="lobby-active-bonus-banner" class="lobby-active-bonus-banner" style="display:none;"></div>
+
+            <!-- CONTROLES Y FILTROS -->
+            <div class="table-controls-bar">
+                <div class="search-box">
+                    <span style="color:#64748b;">🔍</span>
+                    <input type="text" id="room-search-input" placeholder="Buscar sala por nombre o anfitrión..." oninput="filterRoomsTable()">
+                </div>
+                <div class="rooms-stats-tag" id="rooms-count-tag">
+                    Salas Activas: <b>0</b>
+                </div>
+            </div>
+
+            <!-- CUADRÍCULA DE CARDS DE SALAS DE DUELO PVP (~5 por fila) -->
+            <div class="pvp-rooms-container">
+                <div id="pvp-rooms-grid" class="pvp-rooms-grid">
+                    <!-- Cards de salas generadas dinámicamente -->
+                </div>
+
+                <!-- ESTADO VACÍO CUANDO NO HAY SALAS -->
+                <div id="empty-rooms-state" class="empty-state-box" style="display:none;">
+                    <div class="empty-icon">⚔️</div>
+                    <div class="empty-title">NO HAY SALAS DE COMBATE ABIERTAS</div>
+                    <div class="empty-desc">Sé el primero en fundar una sala de duelo y reta a duelistas de todo el mundo.</div>
+                    <button class="btn-empty-create" onclick="toggleFloatingCreateBar(true)">
+                        <span>➕ CREAR SALA AHORA</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA DE SALA DE ESPERA / MATCHMAKING (ANFITRIÓN E INVITADO) -->
+        <div id="pvp-waiting-room-view" class="pvp-waiting-container" style="display:none;">
+            <div class="waiting-card">
+                
+                <div class="waiting-header">
+                    <div>
+                        <div class="waiting-badge">SALA DE ESPERA</div>
+                        <h2 class="waiting-room-title" id="wait-room-name">Torneo de Duelistas</h2>
+                        <div class="waiting-room-meta" id="wait-room-meta">Rango Nivel: Nv. 1 - Nv. 50 • Pública</div>
+                    </div>
+                    <button class="btn-cancel-waiting" onclick="cancelWaitingRoom()">
+                        ❌ SALIR Y CANCELAR SALA
+                    </button>
+                </div>
+
+                <!-- VERSUS STAGE -->
+                <div class="vs-stage-grid">
+                    
+                    <!-- ANFITRIÓN (HOST) -->
+                    <div class="duelist-slot host-slot">
+                        <div class="slot-role">ANFITRIÓN (JUGADOR 1)</div>
+                        <div class="slot-avatar-wrap">
+                            <img id="wait-host-avatar" src="../../../assets/images/avatars/AVA-001.png" alt="Host" class="slot-avatar-img">
+                            <div class="slot-ready-indicator ready" id="wait-host-ready-tag">LISTO</div>
+                        </div>
+                        <div class="slot-name" id="wait-host-name">Anfitrión</div>
+                        <div class="slot-level" id="wait-host-level">Nivel 1</div>
+                    </div>
+
+                    <!-- VS BADGE CENTRAL -->
+                    <div class="vs-center-col">
+                        <div class="vs-emblem">VS</div>
+                        <div id="waiting-radar-pulse" class="radar-pulse-ring"></div>
+                        <div class="vs-status-text" id="wait-status-text">ESPERANDO OPONENTE...</div>
+                        
+                        <!-- BOTÓN DE CONFIRMACIÓN / LISTO -->
+                        <div id="wait-actions-box" style="margin-top:14px; display:none;">
+                            <button id="btn-accept-pvp" class="btn-accept-duel" onclick="toggleReadyState()">
+                                ✅ ACEPTAR Y LISTO
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- INVITADO (GUEST / RIVAL) -->
+                    <div class="duelist-slot guest-slot" id="guest-slot-container">
+                        <div class="slot-role">RIVAL (JUGADOR 2)</div>
+                        <div class="slot-avatar-wrap">
+                            <img id="wait-guest-avatar" src="../../../assets/images/avatars/AVA-002.png" alt="Guest" class="slot-avatar-img" style="filter:grayscale(0.8);">
+                            <div class="slot-ready-indicator pending" id="wait-guest-ready-tag">ESPERANDO</div>
+                        </div>
+                        <div class="slot-name" id="wait-guest-name" style="color:#94a3b8;">Buscando rival...</div>
+                        <div class="slot-level" id="wait-guest-level">--</div>
+                    </div>
+
+                </div>
+
+                <!-- COUNTDOWN OVERLAY -->
+                <div id="wait-countdown-overlay" class="countdown-overlay" style="display:none;">
+                    <div class="countdown-text">¡DUELO ACEPTADO!</div>
+                    <div class="countdown-number" id="countdown-num">3</div>
+                    <div class="countdown-sub">SINCRONIZANDO CARTAS Y TABLERO...</div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAVBAR INFERIOR Y CONTROLADORES -->
+    <div id="navbar-container"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/core/socket.js"></script>
+    <script>
+        window.socket = window.getSocket ? window.getSocket() : (window.socket || (typeof io !== 'undefined' ? io() : null));
+        var socket = window.socket;
+    </script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/data/deck-manager.js?v=4.0"></script>
+    <script src="../../../js/views/lobby-pvp.js?v=4.0"></script>
+</body>
+</html>

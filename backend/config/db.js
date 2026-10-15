@@ -6,7 +6,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const dbConfig = {
     user: process.env.DB_USER || 'sa',
-    password: process.env.DB_PASSWORD || 'Oscar1982',
+    password: process.env.DB_PASSWORD || 'mscg2022*',
     server: process.env.DB_HOST || '127.0.0.1',
     port: parseInt(process.env.DB_PORT || '1433', 10),
     database: process.env.DB_NAME || 'AniDimensionDB',

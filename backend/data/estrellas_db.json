@@ -1,0 +1,68 @@
+[
+  {
+    "codigo": "PACK-STAR-01",
+    "nombre": "Bolsita de Estrellas",
+    "icono": "⭐",
+    "estrellas_base": 10000,
+    "estrellas_bonus": 0,
+    "precio_usd": 0.99,
+    "banner_tag": "BÁSICO",
+    "descripcion": "Recarga de 10,000 ⭐ StarShips directamente a tu cuenta.",
+    "activo": 1
+  },
+  {
+    "codigo": "PACK-STAR-02",
+    "nombre": "Saco Cósmico de StarShips",
+    "icono": "✨",
+    "estrellas_base": 30000,
+    "estrellas_bonus": 5000,
+    "precio_usd": 2.99,
+    "banner_tag": "+15% EXTRA",
+    "descripcion": "Recarga de 35,000 ⭐ StarShips con un 15% de bonificación.",
+    "activo": 1
+  },
+  {
+    "codigo": "PACK-STAR-03",
+    "nombre": "Cofre Astral de StarShips",
+    "icono": "💎",
+    "estrellas_base": 60000,
+    "estrellas_bonus": 20000,
+    "precio_usd": 5.99,
+    "banner_tag": "MÁS POPULAR",
+    "descripcion": "Recarga de 80,000 ⭐ StarShips con un 33% de bonificación.",
+    "activo": 1
+  },
+  {
+    "codigo": "PACK-STAR-04",
+    "nombre": "Arca del Faraón de StarShips",
+    "icono": "👑",
+    "estrellas_base": 133000,
+    "estrellas_bonus": 67000,
+    "precio_usd": 12.99,
+    "banner_tag": "+50% EXTRA",
+    "descripcion": "Recarga de 200,000 ⭐ StarShips con un 50% de bonificación.",
+    "activo": 1
+  },
+  {
+    "codigo": "PACK-STAR-05",
+    "nombre": "Tesoro de los Dioses de StarShips",
+    "icono": "🌌",
+    "estrellas_base": 250000,
+    "estrellas_bonus": 200000,
+    "precio_usd": 24.99,
+    "banner_tag": "+80% EXTRA",
+    "descripcion": "Recarga de 450,000 ⭐ StarShips con un 80% de bonificación.",
+    "activo": 1
+  },
+  {
+    "codigo": "PACK-STAR-06",
+    "nombre": "Bóveda Cósmica Suprema",
+    "icono": "⚡",
+    "estrellas_base": 500000,
+    "estrellas_bonus": 500000,
+    "precio_usd": 49.99,
+    "banner_tag": "+100% DOBLE",
+    "descripcion": "Recarga de 1,000,000 ⭐ StarShips con 100% de bonificación (Doble valor).",
+    "activo": 1
+  }
+]

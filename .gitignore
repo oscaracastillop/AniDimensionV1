@@ -4,4 +4,9 @@ android/app/build/
 android/.gradle/
 android/build/
 *.apk
+*.bak
 .gemini/
+scratch/
+logs/
+*.log
+release/

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ani-Dimension :: Server Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #060913;
+            --bg-panel: rgba(10, 16, 32, 0.95);
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --border-cyan: #00f0ff;
+            --border-dim: rgba(0, 240, 255, 0.22);
+            --accent-gold: #ffb800;
+            --accent-green: #00ff88;
+            --accent-red: #ff3366;
+            --accent-purple: #9d4edd;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 10%, #0d172e 0%, #050811 100%);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        /* HEADER SUPERVISOR (COMPACTO & ELEGANTE) */
+        .app-header {
+            background: linear-gradient(90deg, #070c1a 0%, #0d162d 50%, #070c1a 100%);
+            border-bottom: 1.5px solid var(--border-cyan);
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15);
+            flex-shrink: 0;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-brand img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.8));
+        }
+
+        .brand-title {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+        }
+
+        .brand-subtitle {
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            letter-spacing: 1.2px;
+            color: var(--accent-gold);
+        }
+
+        /* ACCIONES PRINCIPALES */
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            text-transform: uppercase;
+        }
+
+        .btn-start {
+            background: linear-gradient(180deg, #00ff88 0%, #009944 100%);
+            color: #032010;
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.35);
+        }
+        .btn-start:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .btn-stop {
+            background: linear-gradient(180deg, #ff3366 0%, #a00d30 100%);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(255, 51, 102, 0.35);
+        }
+        .btn-stop:hover {
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .btn-restart {
+            background: linear-gradient(180deg, #ffb800 0%, #b38000 100%);
+            color: #211300;
+            box-shadow: 0 0 12px rgba(255, 184, 0, 0.35);
+        }
+        .btn-restart:hover {
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .btn-backup {
+            background: rgba(157, 78, 221, 0.2);
+            color: #d8b4fe;
+            border-color: #9d4edd;
+        }
+        .btn-backup:hover {
+            background: rgba(157, 78, 221, 0.4);
+            box-shadow: 0 0 12px rgba(157, 78, 221, 0.5);
+        }
+
+        .btn-open {
+            background: rgba(0, 240, 255, 0.15);
+            color: #00f0ff;
+            border-color: #00f0ff;
+        }
+        .btn-open:hover {
+            background: rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+        }
+
+        /* GRID CENTRAL DE METRICAS (COMPACTO) */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px 18px;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 6px;
+            padding: 7px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-cyan), transparent);
+        }
+
+        .metric-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 8.5px;
+            color: var(--text-muted);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-online {
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+        .status-offline {
+            background: var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+        .status-starting {
+            background: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold);
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            to { opacity: 0.3; }
+        }
+
+        /* CONSOLA DE LOGS EN VIVO */
+        .terminal-panel {
+            flex: 1;
+            background: #040711;
+            border: 1.5px solid var(--border-dim);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.08);
+        }
+
+        .terminal-toolbar {
+            background: #090e1e;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 5px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .terminal-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--border-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-filters {
+            display: flex;
+            gap: 5px;
+        }
+
+        .filter-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-pill:hover, .filter-pill.active {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: var(--border-cyan);
+            color: #00f0ff;
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 8px 12px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            font-size: 11px;
+            line-height: 1.45;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            background: #03050b;
+        }
+
+        .terminal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .terminal-body::-webkit-scrollbar-track {
+            background: #03050b;
+        }
+        .terminal-body::-webkit-scrollbar-thumb {
+            background: rgba(0, 240, 255, 0.25);
+            border-radius: 3px;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 8px;
+            word-break: break-word;
+            padding: 1px 0;
+        }
+
+        .log-time {
+            color: #475569;
+            flex-shrink: 0;
+            font-size: 10px;
+        }
+
+        .log-source {
+            font-weight: 700;
+            flex-shrink: 0;
+            font-size: 9.5px;
+            padding: 0 4px;
+            border-radius: 3px;
+            text-align: center;
+            min-width: 65px;
+        }
+
+        .source-GAME { background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
+        .source-SUPERVISOR { background: rgba(0, 240, 255, 0.15); color: #00f0ff; border: 1px solid rgba(0, 240, 255, 0.3); }
+        .source-CADDY { background: rgba(255, 184, 0, 0.15); color: #ffb800; border: 1px solid rgba(255, 184, 0, 0.3); }
+        .source-BACKUP { background: rgba(157, 78, 221, 0.15); color: #d8b4fe; border: 1px solid rgba(157, 78, 221, 0.3); }
+        .source-GAME_ERR { background: rgba(255, 51, 102, 0.15); color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3); }
+        .source-AI_PATCH { background: rgba(236, 72, 153, 0.2); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
+
+        .log-text {
+            color: #cbd5e1;
+            flex: 1;
+        }
+
+        .type-success .log-text { color: #86efac; }
+        .type-warning .log-text { color: #fde047; }
+        .type-error .log-text { color: #fca5a5; font-weight: bold; }
+        .type-duel .log-text { color: #fcd34d; }
+        .type-db .log-text { color: #c4b5fd; }
+
+        /* FOOTER */
+        .app-footer {
+            background: #040711;
+            border-top: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 5px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 8.5px;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 16px;
+        }
+        .footer-left span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* AUTO-FIX FEED ITEMS */
+        .autofix-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(0, 255, 136, 0.35);
+            border-left: 3px solid #00ff88;
+            border-radius: 6px;
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .autofix-card:hover {
+            border-color: #00ff88;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.15);
+        }
+
+        .autofix-badge {
+            font-family: 'Orbitron', monospace;
+            font-size: 8.5px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: rgba(0, 255, 136, 0.15);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA SUPERIOR DE CONTROL -->
+    <header class="app-header">
+        <div class="header-brand">
+            <img src="/assets/images/logo.png" alt="Ani Dimension Logo">
+            <div>
+                <div class="brand-title">ANI-DIMENSION ONLINE</div>
+                <div class="brand-subtitle">DEDICATED SERVER CONTROLLER [ENTERPRISE]</div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="btn-action btn-start" id="btn-start" onclick="sendAction('start')">▶ Iniciar</button>
+            <button class="btn-action btn-restart" id="btn-restart" onclick="sendAction('restart')">🔄 Reiniciar</button>
+            <button class="btn-action btn-stop" id="btn-stop" onclick="sendAction('stop')">⏹ Apagar</button>
+            <button class="btn-action btn-backup" id="btn-backup" onclick="sendAction('backup')">🛡 Backup BD</button>
+            <button class="btn-action btn-open" id="btn-open" onclick="sendAction('launch_browser')">🌐 Probar Juego</button>
+        </div>
+    </header>
+
+    <!-- METRICAS Y LOGS -->
+    <main class="main-content">
+        <!-- 6 TARJETAS DE MONITOREO EN VIVO -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Estado Servidor</span>
+                <span class="metric-value" id="val-game-status">
+                    <span class="status-dot status-offline"></span> OFFLINE
+                </span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Jugadores Sockets</span>
+                <span class="metric-value" id="val-players" style="color: #00f0ff;">0</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Duelos Activos</span>
+                <span class="metric-value" id="val-duels" style="color: #ffb800;">0</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Memoria RAM</span>
+                <span class="metric-value" id="val-ram" style="font-size: 13.5px; color: #a78bfa;">-- MB</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Caddy SSL Proxy</span>
+                <span class="metric-value" id="val-caddy" style="font-size: 13.5px;">
+                    <span class="status-dot status-offline"></span> OFFLINE
+                </span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Tiempo Activo</span>
+                <span class="metric-value" id="val-uptime" style="font-size: 13.5px; color: #38bdf8;">00:00:00</span>
+            </div>
+        </div>
+
+        <!-- BARRA DE PESTAÑAS (TABS) -->
+        <div style="display: flex; gap: 6px; border-bottom: 1.5px solid var(--border-dim); padding-bottom: 6px; flex-shrink: 0;">
+            <button id="tab-btn-logs" class="filter-pill active" style="font-size: 10px; padding: 5px 12px;" onclick="switchMainTab('logs')">
+                ⚡ TERMINAL CONSOLA (LOGS EN VIVO)
+            </button>
+            <button id="tab-btn-bugs" class="filter-pill" style="font-size: 10px; padding: 5px 12px; display: flex; align-items: center; gap: 6px;" onclick="switchMainTab('bugs')">
+                📋 REPORTES DE DUELOS
+                <span id="bugs-count-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-size: 8.5px; padding: 1px 5px; border-radius: 8px; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.4);">0</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: CONSOLA DE LOGS EN VIVO -->
+        <div class="terminal-panel" id="panel-logs">
+            <div class="terminal-toolbar">
+                <div class="terminal-title">
+                    <span>⚡ LIVE TERMINAL LOGS</span>
+                    <span id="log-count" style="color: #64748b; font-size: 9.5px;">(0 líneas)</span>
+                </div>
+                <div class="terminal-filters">
+                    <button class="filter-pill active" onclick="setFilter('ALL')">TODOS</button>
+                    <button class="filter-pill" onclick="setFilter('DUEL')">DUELOS</button>
+                    <button class="filter-pill" onclick="setFilter('DB')">SQL DB</button>
+                    <button class="filter-pill" onclick="setFilter('ERROR')">ERRORES</button>
+                    <button class="filter-pill" onclick="clearLogs()">LIMPIAR</button>
+                </div>
+            </div>
+
+            <div class="terminal-body" id="terminal-body">
+                <!-- Los logs se inyectan en tiempo real aquí -->
+            </div>
+        </div>
+
+        <!-- TAB 2: AUDITORÍA DE REPORTES DE DUELOS (PARA ANÁLISIS EN ANTIGRAVITY) -->
+        <div class="terminal-panel" id="panel-bugs" style="display: none; background: #070c1a;">
+            <div class="terminal-toolbar" style="background: #090e1e; padding: 6px 14px;">
+                <div class="terminal-title" style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: #38bdf8;">📋 AUDITORÍA DE INCIDENCIAS EN DUELOS</span>
+                    <span style="color: #64748b; font-size: 9px; font-family: monospace;">(Reportes enviados por jugadores en duelos reales para análisis directo en Antigravity)</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="filter-pill" style="padding: 3px 10px;" onclick="fetchReportedBugs()">🔄 Refrescar Reportes</button>
+                </div>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 10px 14px; gap: 10px;">
+                <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #03050b; border: 1px solid rgba(255,255,255,0.06); border-radius: 6px;">
+                    <div style="background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; font-family: 'Orbitron', monospace; color: #94a3b8;">
+                        <span>HISTORIAL DE INCIDENCIAS REGISTRADAS EN DUELOS</span>
+                        <span id="bugs-status-summary" style="color: #38bdf8;">0 REPORTES</span>
+                    </div>
+
+                    <div id="duel-bugs-container" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="text-align: center; color: #64748b; font-family: 'Orbitron', monospace; padding: 40px; font-size: 10.5px;">
+                            Cargando reportes de duelos...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER INFORMATIVO -->
+    <footer class="app-footer">
+        <div class="footer-left">
+            <span>DATABASE: MSSQL (AniDimensionDB:1433)</span>
+            <span>PUERTO JUEGO: 3006</span>
+            <span>SUPERVISOR: 3007</span>
+            <span>SSL DOMINIO: PUERTOS 80/443</span>
+        </div>
+        <div id="footer-system-info">OS: Windows | Host: Local | CPU: -- cores</div>
+    </footer>
+
+    <script>
+        let currentFilter = 'ALL';
+        let currentMainTab = 'logs';
+        const terminalBody = document.getElementById('terminal-body');
+        const logCountEl = document.getElementById('log-count');
+        let totalLogs = 0;
+
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            const tabLogs = document.getElementById('panel-logs');
+            const tabBugs = document.getElementById('panel-bugs');
+            const btnLogs = document.getElementById('tab-btn-logs');
+            const btnBugs = document.getElementById('tab-btn-bugs');
+
+            if (tab === 'logs') {
+                tabLogs.style.display = 'flex';
+                tabBugs.style.display = 'none';
+                btnLogs.classList.add('active');
+                btnBugs.classList.remove('active');
+            } else {
+                tabLogs.style.display = 'none';
+                tabBugs.style.display = 'flex';
+                btnLogs.classList.remove('active');
+                btnBugs.classList.add('active');
+                fetchReportedBugs();
+            }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.terminal-filters .filter-pill').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            filterLogs();
+        }
+
+        function filterLogs() {
+            const rows = document.querySelectorAll('.log-entry');
+            rows.forEach(row => {
+                if (currentFilter === 'ALL') {
+                    row.style.display = 'flex';
+                } else if (currentFilter === 'DUEL') {
+                    row.style.display = (row.dataset.type === 'duel' || row.innerText.includes('DUELO') || row.innerText.includes('DROP')) ? 'flex' : 'none';
+                } else if (currentFilter === 'DB') {
+                    row.style.display = (row.dataset.type === 'db' || row.innerText.includes('SQL')) ? 'flex' : 'none';
+                } else if (currentFilter === 'ERROR') {
+                    row.style.display = (row.dataset.type === 'error' || row.dataset.source.includes('ERR')) ? 'flex' : 'none';
+                }
+            });
+        }
+
+        function clearLogs() {
+            terminalBody.innerHTML = '';
+            totalLogs = 0;
+            logCountEl.innerText = `(0 líneas)`;
+        }
+
+        function appendLogEntry(entry) {
+            totalLogs++;
+            const row = document.createElement('div');
+            row.className = `log-entry type-${entry.type}`;
+            row.dataset.type = entry.type;
+            row.dataset.source = entry.source;
+
+            row.innerHTML = `
+                <span class="log-time">[${entry.time}]</span>
+                <span class="log-source source-${entry.source}">${entry.source}</span>
+                <span class="log-text">${escapeHtml(entry.text)}</span>
+            `;
+
+            terminalBody.appendChild(row);
+            logCountEl.innerText = `(${totalLogs} líneas)`;
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Conectar a Server-Sent Events (SSE) para recibir logs en tiempo real
+        let sseInstance = null;
+        function connectSse() {
+            if (sseInstance) {
+                try { sseInstance.close(); } catch(e) {}
+            }
+            sseInstance = new EventSource('/api/supervisor/logs/stream');
+            sseInstance.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'INIT_HISTORY') {
+                        if (totalLogs === 0 && Array.isArray(data.history)) {
+                            terminalBody.innerHTML = '';
+                            totalLogs = 0;
+                            data.history.forEach(appendLogEntry);
+                        }
+                    } else {
+                        appendLogEntry(data);
+                    }
+                } catch (e) {}
+            };
+        }
+        connectSse();
+
+        // Polling de métricas cada 1 segundo
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/api/supervisor/status');
+                if (!res.ok) return;
+                const d = await res.json();
+
+                const statusEl = document.getElementById('val-game-status');
+                if (d.gameStatus === 'ONLINE') {
+                    statusEl.innerHTML = '<span class="status-dot status-online"></span> ONLINE';
+                } else if (d.gameStatus === 'STARTING') {
+                    statusEl.innerHTML = '<span class="status-dot status-starting"></span> INICIANDO';
+                } else {
+                    statusEl.innerHTML = '<span class="status-dot status-offline"></span> OFFLINE';
+                }
+
+                const caddyEl = document.getElementById('val-caddy');
+                if (d.caddyStatus === 'ONLINE') {
+                    caddyEl.innerHTML = '<span class="status-dot status-online"></span> ONLINE';
+                } else {
+                    caddyEl.innerHTML = '<span class="status-dot status-offline"></span> ' + d.caddyStatus;
+                }
+
+                document.getElementById('val-players').innerText = d.connectedSockets || 0;
+                document.getElementById('val-duels').innerText = d.activeDuels || 0;
+
+                if (d.system) {
+                    document.getElementById('val-ram').innerText = `${d.system.usedMemMb} / ${d.system.totalMemMb} MB`;
+                    document.getElementById('footer-system-info').innerText = `OS: ${d.system.osPlatform} | Host: ${d.system.hostName} | CPU: ${d.system.cpuCores} cores`;
+                }
+
+                const s = d.uptimeSeconds || 0;
+                const hrs = String(Math.floor(s / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+                const secs = String(s % 60).padStart(2, '0');
+                document.getElementById('val-uptime').innerText = `${hrs}:${mins}:${secs}`;
+
+            } catch (err) {}
+        }
+        setInterval(fetchStatus, 1000);
+        fetchStatus();
+
+        async function sendAction(action) {
+            try {
+                const res = await fetch('/api/supervisor/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                const data = await res.json();
+                if (action === 'backup' && data.success) {
+                    alert(`✅ Respaldo de Base de Datos completado:\n${data.file}`);
+                }
+                fetchStatus();
+            } catch (err) {
+                console.error('Error enviando acción:', err);
+            }
+        }
+
+        // =====================================================================
+        // AUDITORÍA DE REPORTES DE BUGS EN DUELOS (PARA ANTIGRAVITY)
+        // =====================================================================
+        async function fetchReportedBugs() {
+            try {
+                const res = await fetch('/api/supervisor/bug-reports');
+                if (!res.ok) return;
+                const data = await res.json();
+                const reports = data.reports || [];
+                renderDuelBugs(reports);
+                const badge = document.getElementById('bugs-count-badge');
+                if (badge) badge.innerText = reports.length;
+                const summary = document.getElementById('bugs-status-summary');
+                if (summary) summary.innerText = `${reports.length} REPORTES REGISTRADOS`;
+            } catch (e) {}
+        }
+
+        function renderDuelBugs(reports) {
+            const container = document.getElementById('duel-bugs-container');
+            if (!container) return;
+            if (!reports || reports.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #64748b; font-family: 'Orbitron', monospace; padding: 40px; font-size: 10.5px;">
+                        ✅ No hay incidencias registradas en este momento. Los duelos operan con normalidad.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reports.map(b => {
+                const timeStr = b.timestamp ? new Date(b.timestamp).toLocaleTimeString() : 'Reciente';
+                const diagBlock = `[REPORTE DUELO #${b.rawIndex}]\nFecha/Hora: ${b.timestamp}\nSala: ${b.room}\nReportado por: @${b.reporter}\nTurno: #${b.turn} (${b.phase})\nNota del Jugador: "${b.description}"\nLínea Completa: ${b.rawLine || ''}`;
+
+                return `
+                    <div class="autofix-card" style="border-left-color: #38bdf8;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 800; color: #fff;">
+                                    🚨 Incidencia #${b.rawIndex} • @${escapeHtml(b.reporter)}
+                                </span>
+                                <span class="autofix-badge" style="color: #38bdf8; border-color: #38bdf8; background: rgba(56, 189, 248, 0.1);">
+                                    SALA: ${escapeHtml(b.room)} | TURNO #${b.turn} (${escapeHtml(b.phase)})
+                                </span>
+                            </div>
+                            <span style="font-size: 9.5px; color: #64748b; font-family: monospace;">${timeStr}</span>
+                        </div>
+
+                        <div style="font-size: 11px; color: #e2e8f0; background: rgba(0,0,0,0.35); padding: 6px 10px; border-radius: 4px; border-left: 2px solid #38bdf8;">
+                            "${escapeHtml(b.description)}"
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 2px;">
+                            <button class="btn-action btn-open" style="padding: 4px 10px; font-size: 9px;" onclick='copyDiagnosis(${JSON.stringify(diagBlock)})'>
+                                📋 Copiar Diagnóstico para Antigravity
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function copyDiagnosis(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Diagnóstico copiado al portapapeles.\nPégalo directamente a Antigravity en el chat para analizarlo y corregirlo con el motor Core Dimension.');
+            }).catch(() => {
+                prompt('Copia este diagnóstico para Antigravity:', text);
+            });
+        }
+
+        // Carga inicial
+        fetchReportedBugs();
+    </script>
+</body>
+</html>

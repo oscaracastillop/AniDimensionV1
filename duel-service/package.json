@@ -1,0 +1,16 @@
+{
+  "name": "ani-dimension-duel-service",
+  "version": "1.0.0",
+  "description": "Microservicio de Duelos Oficiales OCG/TCG para Ani-Dimension (Project Ignis / ocgcore WASM)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-duel.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "koishipro-core.js": "^1.5.5",
+    "sql.js": "^1.13.0"
+  }
+}

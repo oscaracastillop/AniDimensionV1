@@ -165,12 +165,18 @@ function checkCardActivationEligibility(cardObj, location = 'HAND') {
     if (!cardObj || !lastDuelState) return { canActivate: false, reason: 'Estado de duelo no disponible' };
     const numId = Number(cardObj.id || cardObj.card_id || cardObj);
     const cd = cardObj.card_data || cardObj;
-    const isSpell = (cd.type && cd.type.includes('Spell') && !cd.type.includes('Monster') && !cd.type.includes('Spellcaster')) || cd.attribute === 'SPELL';
-    const isTrap = (cd.type && cd.type.includes('Trap') && !cd.type.includes('Monster')) || cd.attribute === 'TRAP';
-    const isQuickPlay = cd.race === 'Quick-Play' || (cd.type && cd.type.includes('Quick-Play'));
-    const isEquip = cd.race === 'Equip' || (cd.type && cd.type.includes('Equip'));
-    const isField = cd.race === 'Field' || (cd.type && cd.type.includes('Field'));
-    const isRitualSpell = cd.race === 'Ritual' || (cd.type && cd.type.includes('Ritual')) || RITUAL_RECIPES[numId];
+
+    const typeNum = Number(cd.typeCode || (typeof cd.type === 'number' ? cd.type : 0));
+    const typeStr = typeof cd.type === 'string' ? cd.type : '';
+    const raceStr = typeof cd.race === 'string' ? cd.race : '';
+    const attrStr = typeof cd.attribute === 'string' ? cd.attribute.toUpperCase() : '';
+
+    const isSpell = (typeNum & 0x2) !== 0 || typeStr.includes('Spell') || attrStr === 'SPELL' || raceStr === 'Spell';
+    const isTrap = (typeNum & 0x4) !== 0 || typeStr.includes('Trap') || attrStr === 'TRAP' || raceStr === 'Trap';
+    const isQuickPlay = (typeNum & 0x10000) !== 0 || raceStr === 'Quick-Play' || typeStr.includes('Quick-Play');
+    const isEquip = (typeNum & 0x40000) !== 0 || raceStr === 'Equip' || typeStr.includes('Equip') || Boolean(cd.isEquip);
+    const isField = (typeNum & 0x80000) !== 0 || raceStr === 'Field' || typeStr.includes('Field') || Boolean(cd.isField);
+    const isRitualSpell = (typeNum & 0x80) !== 0 || raceStr === 'Ritual' || typeStr.includes('Ritual') || Boolean(RITUAL_RECIPES[numId]);
 
     const localPlayer = getLocalDuelPlayer();
     const rivalPlayer = getRivalDuelPlayer();
@@ -344,7 +350,7 @@ function checkCardActivationEligibility(cardObj, location = 'HAND') {
     const myLp = Number(localPlayer && localPlayer.lp !== undefined ? localPlayer.lp : 8000);
 
     // 8. Contra-Trampas (Counter Trap): en campo requieren responder a una cadena
-    const isCounterTrap = cd.race === 'Counter' || (cd.type && cd.type.includes('Counter'));
+    const isCounterTrap = (typeNum & 0x100000) !== 0 || raceStr === 'Counter' || typeStr.includes('Counter');
     if (location === 'FIELD' && isCounterTrap) {
         const isChainPrompt = typeof isChainWindowActive === 'function' && isChainWindowActive();
         if (!isChainPrompt && !lastDuelState.currentChain && !lastDuelState.isChaining) {
@@ -413,7 +419,7 @@ function checkCardActivationEligibility(cardObj, location = 'HAND') {
         }
         // Monstruos en Defensa
         if ((descLower.includes('defense position') || numId === 63102017) && (descLower.includes('change') || descLower.includes('destroy 1 defense'))) {
-            const hasDefMonster = rivalMonsters.some(m => m && m.position === 'DEF');
+            const hasDefMonster = rivalMonsters.some(m => m && (m.position === 'DEF' || m.position === 'SET' || m.faceDown === true));
             if (!hasDefMonster) {
                 return { canActivate: false, reason: 'El adversario no controla monstruos en Posición de Defensa.' };
             }
@@ -436,7 +442,14 @@ function checkCardActivationEligibility(cardObj, location = 'HAND') {
         [83764718, 70828912, 97077563, 43434803, 31560081, 28933734, 5758500, 82542267].includes(numId);
 
     if (targetsGraveyard) {
-        const anyMonsterInGy = [...myGy, ...rivalGy].some(c => (c.type && c.type.includes('Monster')) || (c.card_data && c.card_data.type && c.card_data.type.includes('Monster')));
+        const isMonsterCardSafe = (c) => {
+            if (!c) return false;
+            const tCode = Number(c.type || (c.card_data && c.card_data.type) || 0);
+            if ((tCode & 0x1) !== 0) return true;
+            const tStr = typeof c.type === 'string' ? c.type : (c.card_data && typeof c.card_data.type === 'string' ? c.card_data.type : '');
+            return tStr.includes('Monster') || c.atk !== undefined || (c.card_data && c.card_data.atk !== undefined);
+        };
+        const anyMonsterInGy = [...myGy, ...rivalGy].some(isMonsterCardSafe);
         const anyCardInGy = [...myGy, ...rivalGy].length > 0;
         if (!anyCardInGy) {
             return { canActivate: false, reason: 'No hay cartas en los Cementerios para seleccionar como objetivo.' };
@@ -445,6 +458,21 @@ function checkCardActivationEligibility(cardObj, location = 'HAND') {
             if (!anyMonsterInGy) {
                 return { canActivate: false, reason: 'No hay monstruos en ningún Cementerio para Invocar de Modo Especial.' };
             }
+        }
+        if (numId === 82542267) {
+            const oppMonsterInGy = rivalGy.some(isMonsterCardSafe);
+            if (!oppMonsterInGy) {
+                return { canActivate: false, reason: 'No hay monstruos en el Cementerio del adversario para desterrar con "Gravedigger Ghoul".' };
+            }
+        }
+    }
+
+    // 13.5 Requisito de Efecto de Mano de Dragón de Trueno
+    if (numId === 31786629) {
+        const myDeck = (localPlayer && localPlayer.deck) || [];
+        const hasCopy = myDeck.some(c => Number(c.card_id || c.id || (c.card_data && c.card_data.id)) === 31786629);
+        if (!hasCopy) {
+            return { canActivate: false, reason: 'No quedan copias de "Dragón de Trueno" en tu Deck para buscar.' };
         }
     }
 
@@ -564,6 +592,44 @@ function checkCardActivationEligibility(cardObj, location = 'HAND') {
         }
     }
 
+    // 26. Polymerization (24094653): Requiere tener monstruos de Fusión en Extra Deck y materiales disponibles
+    if (numId === 24094653) {
+        const fusionCheck = typeof window.checkCanPerformFusion === 'function' 
+            ? window.checkCanPerformFusion(false) 
+            : (typeof checkCanPerformFusion === 'function' ? checkCanPerformFusion(false) : null);
+        if (fusionCheck && !fusionCheck.canFusion) {
+            return { canActivate: false, reason: fusionCheck.reason || 'No tienes los materiales necesarios o monstruos de Fusión en tu Extra Deck.' };
+        }
+    }
+
+    // 27. Card Destruction (72892473): Al menos 1 jugador debe tener cartas en mano y ambos tener suficientes en Deck
+    if (numId === 72892473) {
+        const p1HandDiscard = location === 'HAND' ? (myHand.length - 1) : myHand.length;
+        const p2HandDiscard = (rivalPlayer && rivalPlayer.hand) ? rivalPlayer.hand.length : 0;
+        if (p1HandDiscard <= 0 && p2HandDiscard <= 0) {
+            return { canActivate: false, reason: 'Ningún jugador tiene cartas en su mano para descartar.' };
+        }
+        const p1DeckCount = (localPlayer && localPlayer.deck) ? localPlayer.deck.length : (localPlayer && localPlayer.mainDeckCount !== undefined ? localPlayer.mainDeckCount : 99);
+        const p2DeckCount = (rivalPlayer && rivalPlayer.deck) ? rivalPlayer.deck.length : (rivalPlayer && rivalPlayer.mainDeckCount !== undefined ? rivalPlayer.mainDeckCount : 99);
+        if (p1HandDiscard > p1DeckCount || p2HandDiscard > p2DeckCount) {
+            return { canActivate: false, reason: 'Un jugador no tiene suficientes cartas en su Deck para robar.' };
+        }
+    }
+
+    // 28. Gravedigger Ghoul (82542267): Requiere al menos 1 monstruo en el Cementerio del rival
+    if (numId === 82542267) {
+        const oppMonInGY = (rivalPlayer && rivalPlayer.graveyard) ? rivalPlayer.graveyard.some(c => {
+            if (!c) return false;
+            const tCode = Number(c.type || (c.card_data && c.card_data.type) || 0);
+            if ((tCode & 0x1) !== 0) return true;
+            const tStr = typeof c.type === 'string' ? c.type.toLowerCase() : '';
+            return tStr.includes('monster') || (c.atk !== undefined && c.atk !== null);
+        }) : false;
+        if (!oppMonInGY) {
+            return { canActivate: false, reason: 'El Cementerio de tu adversario no contiene ninguna Carta de Monstruo.' };
+        }
+    }
+
     return { canActivate: true };
 }
 
@@ -592,127 +658,31 @@ function canActivateMonsterEffectOnField(monsterObj) {
         return { canActivate: false, reason: 'Los monstruos normales no tienen efectos activables.' };
     }
 
-    // 2. Monstruos sin ignición manual en campo (Flip, Float en Cementerio, Continuos, Gatillos de Daño)
-    const nonIgnitionCardIds = new Set([
-        // FLIP monsters
-        54652250, 33508719, 42703248, 85852291, 15383415, 31560081, 79335209, 38142739, 39978267,
-        15025844, 46130346, 73597415, 78734254, 96981563, 62473983, 1102515, 39774685, 34906152,
-        // Searchers / Float on battle destruction
-        22589918, // Nimble Momonga
-        26202165, // Sangan
-        78010363, // Witch of the Black Forest
-        34290328, // Mystic Tomato
-        95956346, // Shining Angel
-        85310459, // Giant Rat
-        57442478, // Mother Grizzly
-        73886307, // Flying Kamakiri #1
-        60802218, // UFO Turtle
-        97077563, // Giant Germ
-        40844552, // Pyramid Turtle
-        // Continuous / Passive / Battle Trigger
-        77585513, // Jinzo
-        78193831, // Buster Blader
-        53982768, // Dark Ruler Ha Des
-        30778711, // Shadow Ghoul
-        63120904, // Hayabusa Knight
-        22609617, // Mataza the Zapper
-        2851070,  // Reflect Bounder
-        15341821, // D.D. Warrior Lady
-        70074904, // D.D. Assailant
-        86498013, // D.D. Warrior
-        13839129, // Don Zaloog
-        75356564, 89631139, 46986414, // Vanillas
-        // Six Samurai sin ignición manual en campo (gatillos automáticos, continuos o respuesta en cadena)
-        2511717,  // Legendary Six Samurai - Kageki (disparo automático al Invocarse Normal)
-        49721904, // Legendary Six Samurai - Kizan (efecto continuo + invocación especial de mano)
-        48505422, // Legendary Six Samurai - Shinai (gatillo en Cementerio)
-        83039729, // Grandmaster of the Six Samurai (gatillo en Cementerio)
-        95519486, // The Six Samurai - Zanji (gatillo en Damage Step)
-        27782503, // The Six Samurai - Irou (gatillo en Damage Step)
-        29981921, // Legendary Six Samurai - Shi En (negación en respuesta a cadena)
-        1498130   // Kagemusha of the Six Samurai (redirección en respuesta a selección)
-    ]);
-
-    if (nonIgnitionCardIds.has(numId)) {
-        return { canActivate: false, reason: 'Este monstruo tiene un efecto pasivo, de volteo o disparado automáticamente.' };
+    // 2. Monstruos sin ignición manual en campo (Flip, Continuos, Gatillos o pasivos)
+    if (cardData.hasIgnitionEffect === false || cardData.isVictoryCondition || cardData.isContinuous || cardData.isPassive) {
+        return { canActivate: false, reason: 'Este monstruo no posee un efecto de ignición manual en campo.' };
     }
 
-    if (type.includes('flip') && !type.includes('union')) {
+    if (type.includes('flip')) {
         return { canActivate: false, reason: 'Los efectos de volteo se activan automáticamente al voltear el monstruo.' };
     }
 
-    const localPlayer = getLocalDuelPlayer();
-    const rivalPlayer = getRivalDuelPlayer();
-
-    // 3. Verificaciones específicas de requerimientos previos para Igniciones Reales
-    // The Six Samurai - Yaichi (64398890)
-    if (numId === 64398890) {
-        const hasOtherSixSam = localPlayer && localPlayer.monsters && localPlayer.monsters.some(m => m && m !== monsterObj && !m.faceDown && Number(m.card_id || m.card_data?.id) !== 64398890 && ((m.card_data?.name || '').toLowerCase().includes('six samurai') || (m.card_data?.name || '').toLowerCase().includes('seis samur')));
-        if (!hasOtherSixSam) return { canActivate: false, reason: 'Yaichi requiere controlar otro "Seis Samuráis" boca arriba con nombre diferente.' };
-        const hasFacedownST = rivalPlayer && rivalPlayer.spells && rivalPlayer.spells.some(s => s && (s.faceDown || s.position === 'SET'));
-        if (!hasFacedownST) return { canActivate: false, reason: 'El adversario no tiene Cartas Mágicas o de Trampa boca abajo (SET) para destruir.' };
+    if (type.includes('continuous') || type.includes('pasivo') || type.includes('passive')) {
+        return { canActivate: false, reason: 'Los efectos continuos se aplican de forma pasiva en el campo.' };
     }
 
-    // The Six Samurai - Kamon (90397998)
-    if (numId === 90397998) {
-        const hasOtherSixSam = localPlayer && localPlayer.monsters && localPlayer.monsters.some(m => m && m !== monsterObj && !m.faceDown && Number(m.card_id || m.card_data?.id) !== 90397998 && ((m.card_data?.name || '').toLowerCase().includes('six samurai') || (m.card_data?.name || '').toLowerCase().includes('seis samur')));
-        if (!hasOtherSixSam) return { canActivate: false, reason: 'Kamon requiere controlar otro "Seis Samuráis" boca arriba con nombre diferente.' };
-        const hasFaceupST = (rivalPlayer && rivalPlayer.spells && rivalPlayer.spells.some(s => s && !s.faceDown && s.position !== 'SET')) || (rivalPlayer && rivalPlayer.fieldSpell);
-        if (!hasFaceupST) return { canActivate: false, reason: 'El adversario no tiene Cartas Mágicas o de Trampa boca arriba para destruir.' };
+    // Regla Oficial Konami OCG: Un monstruo en campo SOLO posee efecto de ignición si se declara explícitamente
+    const hasIgnition = cardData.hasIgnitionEffect === true || (Array.isArray(cardData.effectOptions) && cardData.effectOptions.length > 0);
+    if (!hasIgnition) {
+        return { canActivate: false, reason: 'El efecto de esta carta es continuo o pasivo y no se activa manualmente.' };
     }
 
-    // Legendary Six Samurai - Mizuho (74094021)
-    if (numId === 74094021) {
-        const hasOtherSixSamToTribute = localPlayer && localPlayer.monsters && localPlayer.monsters.some(m => m && m !== monsterObj && !m.faceDown && ((m.card_data?.name || '').toLowerCase().includes('six samurai') || (m.card_data?.name || '').toLowerCase().includes('seis samur')));
-        if (!hasOtherSixSamToTribute) return { canActivate: false, reason: 'Mizuho requiere controlar otro "Seis Samuráis" boca arriba para tributar como costo.' };
-        const anyTargetOnField = [...((localPlayer && localPlayer.monsters) || []), ...((localPlayer && localPlayer.spells) || []), ...((rivalPlayer && rivalPlayer.monsters) || []), ...((rivalPlayer && rivalPlayer.spells) || [])].some(c => c !== null && c !== monsterObj);
-        if (!anyTargetOnField) return { canActivate: false, reason: 'No hay otras cartas en el campo para destruir.' };
-    }
-    if (numId === 74131780) { // Exiled Force
-        const anyMonsterOnField = [...((localPlayer && localPlayer.monsters) || []), ...((rivalPlayer && rivalPlayer.monsters) || [])].some(m => m !== null);
-        if (!anyMonsterOnField) return { canActivate: false, reason: 'No hay monstruos en el campo para destruir.' };
-    }
-
-    if (numId === 33184167) { // Tribe-Infecting Virus
-        if (!localPlayer || !localPlayer.hand || localPlayer.hand.length === 0) {
-            return { canActivate: false, reason: 'Debes tener al menos 1 carta en tu mano para descartar como costo.' };
+    // Si el módulo de la carta define una verificación de activación personalizada, respetarla
+    if (typeof cardData.canActivate === 'function') {
+        const customCheck = cardData.canActivate({ duelState: curState, playerKey: isMyTurn ? 'player1' : 'player2' });
+        if (customCheck && customCheck.canActivate === false) {
+            return customCheck;
         }
-    }
-
-    if (numId === 11384280) { // Cannon Soldier
-        const hasMyMonster = localPlayer && localPlayer.monsters && localPlayer.monsters.some(m => m !== null);
-        if (!hasMyMonster) return { canActivate: false, reason: 'No tienes monstruos en tu campo para tributar.' };
-    }
-
-    if (numId === 72989439 || numId === 72710085) { // BLS / Chaos Sorcerer
-        const hasFaceupMon = [...((localPlayer && localPlayer.monsters) || []), ...((rivalPlayer && rivalPlayer.monsters) || [])].some(m => m && !m.faceDown);
-        if (!hasFaceupMon) return { canActivate: false, reason: 'No hay monstruos boca arriba en el campo para desterrar.' };
-    }
-
-    if (numId === 64631466 || numId === 63519741) { // Relinquished / TER
-        if (monsterObj.equippedMonster) return { canActivate: false, reason: 'Ya tiene un monstruo equipado.' };
-        const hasRivalMon = rivalPlayer && rivalPlayer.monsters && rivalPlayer.monsters.some(m => m !== null);
-        if (!hasRivalMon) return { canActivate: false, reason: 'El adversario no controla monstruos para absorber.' };
-    }
-
-    if (numId === 37721209) { // Levia-Dragon Daedalus
-        const hasUmi = (localPlayer && localPlayer.fieldSpell && (localPlayer.fieldSpell.name?.includes('Umi') || Number(localPlayer.fieldSpell.id) === 22702055)) ||
-                        (rivalPlayer && rivalPlayer.fieldSpell && (rivalPlayer.fieldSpell.name?.includes('Umi') || Number(rivalPlayer.fieldSpell.id) === 22702055));
-        if (!hasUmi) return { canActivate: false, reason: 'Requiere que "Umi" esté boca arriba en el Campo.' };
-    }
-
-    if (numId === 18318842) { // Abyss Soldier
-        const hasWaterInHand = localPlayer && localPlayer.hand && localPlayer.hand.some(c => c && (c.attribute === 'WATER' || c.attributeCode === 0x2 || c.card_data?.attribute === 'WATER'));
-        if (!hasWaterInHand) return { canActivate: false, reason: 'Debes tener al menos 1 monstruo de AGUA en mano para descartar.' };
-    }
-
-    if (numId === 65622692) { // Y-Dragon Head
-        const hasTargetX = localPlayer && localPlayer.monsters && localPlayer.monsters.some(m => m && !m.faceDown && Number(m.card_id || (m.card_data && m.card_data.id)) === 62651957);
-        if (!hasTargetX) return { canActivate: false, reason: 'No controlas ningún "X-Head Cannon" boca arriba para equipar.' };
-    }
-    if (numId === 64500000) { // Z-Metal Tank
-        const hasTargetXY = localPlayer && localPlayer.monsters && localPlayer.monsters.some(m => m && !m.faceDown && [62651957, 65622692].includes(Number(m.card_id || (m.card_data && m.card_data.id))));
-        if (!hasTargetXY) return { canActivate: false, reason: 'No controlas ningún "X-Head Cannon" ni "Y-Dragon Head" boca arriba para equipar.' };
     }
 
     return { canActivate: true };
@@ -737,7 +707,7 @@ function setSummonMode(mode) {
     }
 }
 
-function highlightAvailableSlots(enable, isMonsterCard) {
+function highlightAvailableSlots(enable, isMonsterCard, isFieldSpell = false) {
     const local = getLocalDuelPlayer();
     if (!local) return;
     for (let i = 0; i < 5; i++) {
@@ -751,11 +721,19 @@ function highlightAvailableSlots(enable, isMonsterCard) {
         }
         const slotS = document.getElementById(`p-s${i}`);
         if (slotS) {
-            if (enable && !isMonsterCard && (!local.spells || !local.spells[i])) {
+            if (enable && !isMonsterCard && !isFieldSpell && (!local.spells || !local.spells[i])) {
                 slotS.classList.add('slot-droppable');
             } else {
                 slotS.classList.remove('slot-droppable');
             }
+        }
+    }
+    const slotCampo = document.getElementById('p-campo');
+    if (slotCampo) {
+        if (enable && isFieldSpell) {
+            slotCampo.classList.add('slot-droppable');
+        } else {
+            slotCampo.classList.remove('slot-droppable');
         }
     }
 }
@@ -831,16 +809,17 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                 const foundIdx = localPlayer.hand.indexOf(cardObj);
                 if (foundIdx !== -1) selectedHandCardIndex = foundIdx;
             }
-            let isMonsterCard = true;
-            let isSpell = false;
-            let isTrap = false;
+            const cd = (cardObj && (cardObj.card_data || cardObj)) || {};
+            const typeNum = Number(cd.typeCode || (typeof cd.type === 'number' ? cd.type : 0));
+            const typeStr = typeof cd.type === 'string' ? cd.type : (typeof cardObj?.type === 'string' ? cardObj.type : '');
+            const raceStr = typeof cd.race === 'string' ? cd.race : (typeof cardObj?.race === 'string' ? cardObj.race : '');
+            const attrStr = typeof cd.attribute === 'string' ? cd.attribute.toUpperCase() : '';
 
-            const cType = (cardObj && (cardObj.type || (cardObj.card_data && cardObj.card_data.type))) || '';
-            if (cType) {
-                isMonsterCard = cType.includes('Monster') || cType.includes('Spellcaster') || (!cType.includes('Spell') && !cType.includes('Trap'));
-                isSpell = cType.includes('Spell') && !cType.includes('Monster') && !cType.includes('Spellcaster');
-                isTrap = cType.includes('Trap') && !cType.includes('Monster');
-            }
+            const isSpell = (typeNum & 0x2) !== 0 || typeStr.includes('Spell') || attrStr === 'SPELL' || raceStr === 'Spell';
+            const isTrap = (typeNum & 0x4) !== 0 || typeStr.includes('Trap') || attrStr === 'TRAP' || raceStr === 'Trap';
+            const isMonsterCard = !isSpell && !isTrap;
+            const isEquip = (typeNum & 0x40000) !== 0 || raceStr === 'Equip' || typeStr.includes('Equip') || Boolean(cd.isEquip);
+            const isFieldSpell = (typeNum & 0x80000) !== 0 || raceStr === 'Field' || typeStr.includes('Field') || Boolean(cd.isField);
 
             if (isSpell || isTrap) {
                 currentSummonMode = 'DEF';
@@ -858,9 +837,8 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
             const isMainPhase = currentPhase === 'MAIN_1' || currentPhase === 'MAIN_2' || currentPhase === 'M1' || currentPhase === 'M2';
 
             if (isMyTurn && isMainPhase) {
-                highlightAvailableSlots(true, isMonsterCard);
+                highlightAvailableSlots(true, isMonsterCard, isFieldSpell);
             }
-            inspectCardById(cardId);
 
             // Si es turno del rival o fase no válida, solo inspecciona la carta
             if (!isMyTurn) {
@@ -883,46 +861,32 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                 if (isMonsterCard) {
                     const isFlip = Boolean(cardObj && cardObj.type && (cardObj.type.includes('Flip') || cardObj.race === 'Flip'));
                     const isNormal = Boolean(cardObj && cardObj.type && cardObj.type.includes('Normal') && !cardObj.type.includes('Effect'));
-                    const isHandMonster = Boolean(cardObj && (cardObj.isHandEffect || [31709826, 31786629, 40640057, 11324436, 14558127, 23434538].includes(numId)));
+                    const mDescLower = (cardObj && (cardObj.desc || cardObj.description) ? (cardObj.desc || cardObj.description) : '').toLowerCase();
+                    const isThunderDragon = (numId === 31786629);
+                    const isHandMonster = Boolean(cardObj && (cardObj.isHandEffect || cardObj.hasHandEffect)) || isThunderDragon || mDescLower.includes('discard this card') || mDescLower.includes('descartar esta carta');
 
                     if (!isFlip && !isNormal && isHandMonster) {
                         actions.push({
-                            label: `⚡ Activar Efecto (${cardObj ? cardObj.name : 'Mano'})`,
+                            label: isThunderDragon ? `⚡ Activar Efecto (Descartar y buscar 2 Dragones de Trueno)` : `⚡ Activar Efecto (${cardObj ? cardObj.name : 'Mano'})`,
                             onClick: () => activateCardFromHand(cardId)
                         });
                     }
 
-                    // Caso especial: Gate Guardian (MRD-000)
-                    if (numId === 25833572) {
-                        const localP = getLocalDuelPlayer();
-                        const myMonsters = (localP && localP.monsters) || [];
-                        const hasSanga = myMonsters.some(m => m && Number(m.card_id || (m.card_data ? m.card_data.id : 0)) === 25955164);
-                        const hasKazejin = myMonsters.some(m => m && Number(m.card_id || (m.card_data ? m.card_data.id : 0)) === 20277860);
-                        const hasSuijin = myMonsters.some(m => m && Number(m.card_id || (m.card_data ? m.card_data.id : 0)) === 98434877);
-
-                        if (hasSanga && hasKazejin && hasSuijin) {
-                            actions.push({
-                                label: '🚪⚡ Invocación Especial: Guardián de la Puerta (Sacrificar Sanga + Kazejin + Suijin)',
-                                onClick: () => {
-                                    const activeSocket = getActiveSocket();
-                                    if (activeSocket) {
-                                        activeSocket.emit('CLIENT_SUMMON', {
-                                            action_type: 'SPECIAL_SUMMON_GATE_GUARDIAN',
-                                            room_id: getActiveDuelRoomId(),
-                                            player_name: myUsername,
-                                            card_id: 25833572
-                                        });
-                                    }
+                    if (cardObj && (cardObj.isSpecialSummonOnly || cardObj.specialSummonType)) {
+                        actions.push({
+                            label: `🚪⚡ Invocación Especial (${cardObj.name})`,
+                            onClick: () => {
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('CLIENT_SUMMON', {
+                                        action_type: 'SPECIAL_SUMMON_EFFECT',
+                                        room_id: getActiveDuelRoomId(),
+                                        player_name: myUsername,
+                                        card_id: numId
+                                    });
                                 }
-                            });
-                        } else {
-                            actions.push({
-                                label: '⚠️ Requiere Sanga, Kazejin y Suijin en el campo',
-                                onClick: () => {
-                                    showRuleAlert('⚠️ [Regla Oficial Konami] "Guardián de la Puerta" no puede ser Invocado de Modo Normal ni Colocado. Requiere Invocación Especial sacrificando a "Sanga del Trueno", "Kazejin" y "Suijin" desde tu campo.');
-                                }
-                            });
-                        }
+                            }
+                        });
                         return showContextMenu(event, `${cardName} (Mano)`, actions);
                     }
 
@@ -944,18 +908,26 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                     let canSpecialSummon = false;
                     let specialSummonLabel = '✨ Invocación Especial';
 
-                    // 1. Cyber Dragon (70095154): Mi campo = 0, Rival >= 1
-                    if (numId === 70095154 && myMonsterCount === 0 && rivalMonsterCount >= 1) {
+                    // 1. Elder of the Six Samurai (61737116) y Cyber Dragon (70095154)
+                    if ((numId === 61737116 || numId === 70095154 || descLower.includes('opponent controls a monster and you control no monsters') || descLower.includes('adversario controla un monstruo y tú no controlas ninguno')) && myMonsterCount === 0 && rivalMonsterCount >= 1) {
                         canSpecialSummon = true;
-                        specialSummonLabel = '✨ Invocación Especial (Ciber Dragón)';
+                        specialSummonLabel = numId === 61737116 ? '🌸✨ Invocación Especial (Anciano de los Seis Samuráis)' : '⚡✨ Invocación Especial (Ciber Dragón)';
                     }
-                    // 2. Grandmaster of the Six Samurai (83039729): Controlas 1 Six Samurai boca arriba y no controlas otro Gran Maestro
-                    else if (numId === 83039729) {
+                    // 1.1 Great Shogun Shien (63176202): Controlas 2 o más Seis Samuráis boca arriba
+                    else if (numId === 63176202 || (descLower.includes('six samurai') && (descLower.includes('control 2 or more') || descLower.includes('controlas 2 o más')))) {
+                        const sixSamCount = myMonsters.filter(m => m && !m.faceDown && ((m.card_data?.name || '').toLowerCase().includes('six samurai') || (m.card_data?.name || '').toLowerCase().includes('seis samur'))).length;
+                        if (sixSamCount >= 2) {
+                            canSpecialSummon = true;
+                            specialSummonLabel = '🔥⚔️ Invocación Especial (Gran Shogun Shien)';
+                        }
+                    }
+                    // 2. Grandmaster of the Six Samurai (83039727 / 83039729): Controlas 1 Six Samurai boca arriba y no controlas otro Gran Maestro
+                    else if (numId === 83039727 || numId === 83039729) {
                         const hasSixSam = myMonsters.some(m => m && !m.faceDown && ((m.card_data?.name || '').toLowerCase().includes('six samurai') || (m.card_data?.name || '').toLowerCase().includes('seis samur')));
-                        const alreadyControlsGrandmaster = myMonsters.some(m => m && !m.faceDown && Number(m.card_id || m.card_data?.id) === 83039729);
+                        const alreadyControlsGrandmaster = myMonsters.some(m => m && !m.faceDown && (Number(m.card_id || m.card_data?.id) === 83039727 || Number(m.card_id || m.card_data?.id) === 83039729));
                         if (hasSixSam && !alreadyControlsGrandmaster) {
                             canSpecialSummon = true;
-                            specialSummonLabel = '✨ Invocación Especial (Gran Maestro)';
+                            specialSummonLabel = '🏯✨ Invocación Especial (Gran Maestro)';
                         }
                     }
                     // 2.1 Legendary Six Samurai - Kizan (49721904): Controlas otro Six Samurai boca arriba con nombre diferente
@@ -963,7 +935,7 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                         const hasOtherSixSam = myMonsters.some(m => m && !m.faceDown && Number(m.card_id || m.card_data?.id) !== 49721904 && ((m.card_data?.name || '').toLowerCase().includes('six samurai') || (m.card_data?.name || '').toLowerCase().includes('seis samur')));
                         if (hasOtherSixSam) {
                             canSpecialSummon = true;
-                            specialSummonLabel = '✨ Invocación Especial (Kizan)';
+                            specialSummonLabel = '⚡✨ Invocación Especial (Kizan)';
                         }
                     }
                     // 2.2 Legendary Six Samurai - Shinai (48505422): Controlas a Mizuho boca arriba
@@ -1015,8 +987,9 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                         }
                     }
                     // 7. Monstruos genéricos con Invocación Especial inherente
-                    else if (![83039729, 49721904, 48505422, 74094021].includes(numId) && (descLower.includes('you can special summon this card') || descLower.includes('puedes invocar esta carta de modo especial'))) {
+                    else if (cardObj?.canSpecialSummon || (![83039727, 83039729, 49721904, 48505422, 74094021].includes(numId) && (descLower.includes('you can special summon this card') || descLower.includes('puedes invocar esta carta de modo especial')))) {
                         canSpecialSummon = true;
+                        specialSummonLabel = `✨ Invocación Especial (${cardName})`;
                     }
 
                     if (canSpecialSummon) {
@@ -1243,6 +1216,16 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                                 label: '🎯 Opción 3: Descartar 1 Carta al Azar de Mano Rival',
                                 onClick: () => activateCardFromHand(cardId, { effect_choice: 3 })
                             });
+                        } else if (isFieldSpell) {
+                            actions.push({
+                                label: '🌌 Activar Campo Mágico',
+                                onClick: () => activateCardFromHand(cardId)
+                            });
+                        } else if (isEquip) {
+                            actions.push({
+                                label: '⚔️ Equipar a un Monstruo',
+                                onClick: () => activateCardFromHand(cardId)
+                            });
                         } else {
                             actions.push({
                                 label: '✨ Activar Efecto',
@@ -1251,7 +1234,7 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                         }
                     }
                     actions.push({
-                        label: 'Colocar Boca Abajo (SET)',
+                        label: isFieldSpell ? 'Colocar Campo Boca Abajo (SET)' : 'Colocar Boca Abajo (SET)',
                         onClick: () => {
                             setSummonMode('DEF');
                             const activeSocket = getActiveSocket();
@@ -1268,7 +1251,7 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                                 }
                                 selectedHandCardIndex = -1;
                                 selectedHandCardId = null;
-                                highlightAvailableSlots(false, false);
+                                highlightAvailableSlots(false, false, false);
                                 document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
                             } else {
                                 const localP = getLocalDuelPlayer();
@@ -1372,8 +1355,9 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                         showRuleAlert('⚠️ [Regla Oficial OCG] No hay un monstruo en esa casilla.');
                         return;
                     }
-                    if (targetMonster.position !== 'DEF') {
-                        showRuleAlert('⚠️ [Regla Oficial OCG - Parar la Defensa] Solo puedes seleccionar monstruos que estén en Posición de Defensa (DEF). Esta carta no puede seleccionar monstruos en Posición de Ataque.');
+                    const isDefPosition = targetMonster.position === 'DEF' || targetMonster.position === 'SET' || targetMonster.faceDown === true;
+                    if (!isDefPosition) {
+                        showRuleAlert('⚠️ [Regla Oficial OCG - Parar la Defensa] Solo puedes seleccionar monstruos que estén en Posición de Defensa (boca arriba o boca abajo). Esta carta no puede seleccionar monstruos en Posición de Ataque.');
                         return;
                     }
 
@@ -1826,33 +1810,80 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                     if (handCard && handCard.type) isMonsterCard = handCard.type.includes('Monster');
                 }
 
-                const isFieldSpell = handCard && (handCard.race === 'Field' || (handCard.type && handCard.type.includes('Field')));
+                const cd = (handCard && (handCard.card_data || handCard)) || {};
+                const typeNum = Number(cd.typeCode || (typeof cd.type === 'number' ? cd.type : 0));
+                const typeStr = typeof cd.type === 'string' ? cd.type : (typeof handCard?.type === 'string' ? handCard.type : '');
+                const raceStr = typeof cd.race === 'string' ? cd.race : (typeof handCard?.race === 'string' ? handCard.race : '');
+                const isFieldSpell = (typeNum & 0x80000) !== 0 || raceStr === 'Field' || typeStr.includes('Field') || Boolean(cd.isField);
 
                 if (zoneType === 'P_CAMPO') {
                     if (!isFieldSpell) {
-                        showRuleAlert('⚠️ [Zona de Campo] Solo puedes colocar Cartas Mágicas de Campo en esta ranura.');
+                        showRuleAlert('⚠️ [Zona de Campo] Solo puedes colocar o activar Cartas Mágicas de Campo en esta ranura.');
                         return;
                     }
                     const activeSocket = getActiveSocket();
-                    if (activeSocket) {
-                        activeSocket.emit('CLIENT_SET', {
-                            room_id: getActiveDuelRoomId(),
-                            player_name: myUsername,
-                            card_id: selectedHandCardId,
-                            slot_index: 0,
-                            zone_type: 'P_CAMPO',
-                            position: 'DEF'
-                        });
+                    if (currentSummonMode === 'DEF') {
+                        if (activeSocket) {
+                            activeSocket.emit('CLIENT_SET', {
+                                room_id: getActiveDuelRoomId(),
+                                player_name: myUsername,
+                                card_id: selectedHandCardId,
+                                slot_index: 0,
+                                zone_type: 'P_CAMPO',
+                                position: 'DEF'
+                            });
+                        }
+                    } else {
+                        activateCardFromHand(selectedHandCardId);
                     }
                     selectedHandCardIndex = -1;
                     selectedHandCardId = null;
-                    highlightAvailableSlots(false, false);
+                    highlightAvailableSlots(false, false, false);
                     document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
                     return;
                 }
 
-                if (zoneType === 'P_M' && !isMonsterCard) {
-                    if (localPlayer && localPlayer.monsters && localPlayer.monsters[slotIndex]) {
+                if ((zoneType === 'P_M' || zoneType === 'R_M') && !isMonsterCard) {
+                    const isEquipSpell = handCard && (handCard.race === 'Equip' || (handCard.type && handCard.type.includes('Equip')));
+                    const targetPlayerKey = (zoneType === 'P_M') ? localKey : rivalKey;
+                    const targetPlayerObj = (zoneType === 'P_M') ? localPlayer : rivalPlayer;
+                    const targetMonster = targetPlayerObj && targetPlayerObj.monsters ? targetPlayerObj.monsters[slotIndex] : null;
+
+                    if (isEquipSpell && targetMonster) {
+                        if (targetMonster.faceDown) {
+                            showRuleAlert('⚠️ Las cartas de equipo solo pueden equiparse a monstruos boca arriba en el campo.');
+                            return;
+                        }
+                        const checkFn = (typeof checkMonsterMeetsEquipCondition === 'function') 
+                            ? checkMonsterMeetsEquipCondition 
+                            : (typeof window !== 'undefined' && window.checkMonsterMeetsEquipCondition) 
+                                ? window.checkMonsterMeetsEquipCondition 
+                                : null;
+                        if (checkFn && !checkFn(handCard, targetMonster)) {
+                            showRuleAlert(`⚠️ "${handCard.name}" no es compatible con "${targetMonster.card_data ? targetMonster.card_data.name : 'Monstruo'}". Selecciona un monstruo del tipo requerido.`);
+                            return;
+                        }
+                        const activeSocket = getActiveSocket();
+                        if (activeSocket) {
+                            activeSocket.emit('OCG_ACTIVATE_CARD', {
+                                room_id: getActiveDuelRoomId(),
+                                card_id: selectedHandCardId,
+                                slot_index: -1,
+                                from_hand: true,
+                                target_data: {
+                                    slot_index: slotIndex,
+                                    target_slot: slotIndex,
+                                    target_player: targetPlayerKey
+                                }
+                            });
+                        }
+                        showRuleAlert(`⚔️ Equipando "${handCard.name}" a "${targetMonster.card_data ? targetMonster.card_data.name : 'Monstruo'}"...`);
+                        selectedHandCardIndex = -1;
+                        selectedHandCardId = null;
+                        document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
+                        highlightAvailableSlots(false, false);
+                        return;
+                    } else if (localPlayer && localPlayer.monsters && localPlayer.monsters[slotIndex]) {
                         selectedHandCardIndex = -1;
                         selectedHandCardId = null;
                         document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
@@ -1986,46 +2017,12 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                         if (((state && (state.phase === 'MAIN_1' || state.phase === 'MAIN_2')) || !state) && !monsterObj.faceDown && isEffectMonster) {
                             const monCheck = canActivateMonsterEffectOnField(monsterObj);
                             if (monCheck.canActivate) {
-                                const monId = Number(monsterObj.card_id || cardData.id || 0);
-                                if (monId === 72989439) { // BLS - Envoy of the Beginning
-                                    actions.push({
-                                        label: '⚔️ Opción 1: Desterrar Monstruo en el Campo',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 1 })
-                                    });
-                                    actions.push({
-                                        label: '⚔️ Opción 2: Habilitar Ataque Doble en Batalla',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 2 })
-                                    });
-                                } else if (monId === 86346643) { // Rainbow Neos
-                                    actions.push({
-                                        label: '🌈 Opción 1: Sacrificar Monstruo -> Barajar Monstruos Rivales en Deck',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 1 })
-                                    });
-                                    actions.push({
-                                        label: '🌈 Opción 2: Sacrificar Magia/Trampa -> Barajar Magias/Trampas Rivales en Deck',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 2 })
-                                    });
-                                    actions.push({
-                                        label: '🌈 Opción 3: Enviar Deck al GY -> Barajar Cementerio Rival en Deck',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 3 })
-                                    });
-                                } else if (monId === 65422840) { // Shutendoji
-                                    actions.push({
-                                        label: '👹 Opción 1: Desterrar 2 Zombis de GY -> Robar 1 Carta',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 1 })
-                                    });
-                                    actions.push({
-                                        label: '👹 Opción 2: Devolver Zombi Desterrado a la Cima del Deck',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 2 })
-                                    });
-                                } else if (monId === 3657444) { // Cyber Valley
-                                    actions.push({
-                                        label: '🤖 Opción 1: Desterrar con otro monstruo -> Robar 2 cartas',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 2 })
-                                    });
-                                    actions.push({
-                                        label: '🤖 Opción 2: Desterrar con carta de mano -> Devolver carta de GY a la cima del Deck',
-                                        onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: 3 })
+                                if (cardData.effectOptions && Array.isArray(cardData.effectOptions)) {
+                                    cardData.effectOptions.forEach(opt => {
+                                        actions.push({
+                                            label: opt.label || '✨ Activar Efecto',
+                                            onClick: () => triggerMonsterEffect(slotIndex, monsterObj.card_id, { effect_choice: opt.choice })
+                                        });
                                     });
                                 } else {
                                     actions.push({
@@ -2344,7 +2341,7 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                             // CARTA BOCA ARRIBA EN ZONA DE MAGIA/TRAMPA
                             const cData = sObj.card_data || {};
                             const cId = Number(sObj.card_id || cData.id || 0);
-                            const isUnionMonster = sObj.isUnionEquip || [65622692, 64500000, 74364659, 12472242, 63102017, 30068120, 21417692, 93220025, 40048328].includes(cId) || ((cData.type || '').includes('Union')) || ((cData.desc || '').includes('Special Summon this card') && (cData.desc || '').includes('equip'));
+                            const isUnionMonster = sObj.isUnionEquip || [65622692, 64500000, 74364659, 12472242, 30068120, 21417692, 93220025, 40048328].includes(cId) || ((cData.type || '').includes('Union')) || ((cData.desc || '').includes('Special Summon this card') && (cData.desc || '').includes('equip'));
 
                             if (isUnionMonster && isMyTurn && (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2')) {
                                 actions.push({
@@ -2366,8 +2363,8 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                                     }
                                 });
                             } else if (isMyTurn && (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2')) {
-                                // Magias continuas / Cartas con contadores / Efectos manuales: SOLO si tienen efecto de ignición y cumplen requisitos
-                                const isFieldIgnitionCard = [27970830, 72345736, 54913680, 41458579, 39910367].includes(cId) || (sObj.bushidoCounters > 0) || (sObj.spellCounters > 0);
+                                // Magias continuas / Cartas con contadores / Efectos manuales: SOLO si tienen efecto de ignición modular y cumplen requisitos
+                                const isFieldIgnitionCard = Boolean(cData.hasIgnitionEffect || cData.hasFieldEffect) || (sObj.bushidoCounters > 0) || (sObj.spellCounters > 0);
                                 const fieldCheck = checkCardActivationEligibility(sObj, 'FIELD');
                                 if (isFieldIgnitionCard && fieldCheck.canActivate) {
                                     actions.push({
@@ -2422,9 +2419,8 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                     inspectCardById(fObj.card_id || fObj.id);
                     if (event) {
                         event.stopPropagation();
-                        const isFusionGate = Number(fObj.card_id || fObj.id) === 33550694;
-                        const actions = [];
-                        if (isFusionGate && isMyTurn && (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2')) {
+                        const isSet = fObj.faceDown || fObj.position === 'SET';
+                        if (isFusionGate && !isSet && isMyTurn && (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2')) {
                             actions.push({
                                 label: '🌀 Invocar por Fusión (Fusion Gate)',
                                 onClick: () => {
@@ -2439,12 +2435,21 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                                 }
                             });
                         } else if (isMyTurn && (lastDuelState.phase === 'MAIN_1' || lastDuelState.phase === 'MAIN_2')) {
-                            actions.push({
-                                label: `✨ Activar Efecto de Campo (${fObj.card_data?.name || fObj.name || 'Campo'})`,
-                                onClick: () => {
-                                    activateCardDirectly(fObj.card_id || fObj.id, false, 0, fObj.card_data?.name || fObj.name || 'Campo');
-                                }
-                            });
+                            if (isSet) {
+                                actions.push({
+                                    label: '🌌 Activar Campo Mágico (Voltear)',
+                                    onClick: () => {
+                                        activateCardDirectly(fObj.card_id || fObj.id, false, -1, fObj.card_data?.name || fObj.name || 'Campo');
+                                    }
+                                });
+                            } else if (fObj.card_data?.hasIgnitionEffect || fObj.hasIgnitionEffect) {
+                                actions.push({
+                                    label: `✨ Activar Efecto de Campo (${fObj.card_data?.name || fObj.name || 'Campo'})`,
+                                    onClick: () => {
+                                        activateCardDirectly(fObj.card_id || fObj.id, false, -1, fObj.card_data?.name || fObj.name || 'Campo');
+                                    }
+                                });
+                            }
                         }
                         actions.push({
                             label: 'ℹ️ Info Carta',
@@ -2626,6 +2631,13 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
             actionSocket.off('ACTION_ERROR');
             actionSocket.on('ACTION_ERROR', (data) => {
                 showRuleAlert(data.message || 'Error en la acción solicitada.');
+                isAttackTargetingMode = false;
+                window.isAttackTargetingMode = false;
+                if (typeof cancelInteractiveTargeting === 'function') cancelInteractiveTargeting();
+                selectedHandCardIndex = -1;
+                selectedHandCardId = null;
+                document.querySelectorAll('.hand-card').forEach(c => c.classList.remove('selected-hand'));
+                if (typeof highlightAvailableSlots === 'function') highlightAvailableSlots(false, false);
             });
 
             actionSocket.off('CHAIN_START');

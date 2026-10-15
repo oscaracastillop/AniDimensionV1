@@ -41,7 +41,9 @@ const io = new Server(server, {
     cors: {
         origin: '*',
         methods: ['GET', 'POST']
-    }
+    },
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
 // Registrar la instancia de IO en el estado de duelos para emitir logs y actualizaciones

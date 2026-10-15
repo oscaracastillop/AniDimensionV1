@@ -392,6 +392,46 @@ async function testInjectCard(req, res) {
     }
 }
 
+async function getCardImage(req, res) {
+    try {
+        const cardId = parseInt(req.params.id, 10);
+        if (!cardId) {
+            return res.redirect('/assets/card_back.jpg');
+        }
+
+        const cacheDir = path.resolve(__dirname, '../../assets/images/cards_cache');
+        if (!fs.existsSync(cacheDir)) {
+            fs.mkdirSync(cacheDir, { recursive: true });
+        }
+
+        const localPath = path.join(cacheDir, `${cardId}.jpg`);
+        if (fs.existsSync(localPath)) {
+            res.setHeader('Cache-Control', 'public, max-age=2592000');
+            return res.sendFile(localPath);
+        }
+
+        // Descargar y cachear permanentemente en disco
+        const remoteUrl = `https://images.ygoprodeck.com/images/cards_small/${cardId}.jpg`;
+        try {
+            const fetchRes = await fetch(remoteUrl, { signal: AbortSignal.timeout(4000) });
+            if (fetchRes.ok) {
+                const arrayBuf = await fetchRes.arrayBuffer();
+                const buf = Buffer.from(arrayBuf);
+                fs.writeFileSync(localPath, buf);
+                res.setHeader('Content-Type', 'image/jpeg');
+                res.setHeader('Cache-Control', 'public, max-age=2592000');
+                return res.send(buf);
+            }
+        } catch (fetchErr) {
+            // fallback si no hay internet o falla ygoprodeck
+        }
+
+        return res.redirect('/assets/card_back.jpg');
+    } catch (e) {
+        return res.redirect('/assets/card_back.jpg');
+    }
+}
+
 module.exports = {
     health,
     getCardById,
@@ -401,5 +441,6 @@ module.exports = {
     searchCards,
     getCountries,
     getGraveyard,
-    testInjectCard
+    testInjectCard,
+    getCardImage
 };

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Módulo de Eventos (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.5">
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container">
+        <!-- HEADER FIJO -->
+        <div class="admin-header">
+            <div class="admin-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 class="admin-title">MÓDULO DE EVENTOS & COMPETICIONES</h1>
+                    <div class="admin-subtitle">GESTIÓN INTEGRAL DE EVENTOS DE ROMPECABEZAS, TORNEOS Y RETOS DE TEMPORADA</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <a href="../admin.html" class="btn-shop-back" title="Volver a la Consola Principal Admin" style="display:flex; align-items:center; justify-content:center; height:28px; padding:0 14px; background:rgba(0,240,255,0.12); border:1.2px solid rgba(0,240,255,0.45); color:#00f0ff; border-radius:0; cursor:pointer; text-decoration:none; font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700;">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE -->
+        <div class="admin-scroll-content">
+
+            <!-- GRID DE SUB-MÓDULOS DE EVENTOS -->
+            <div class="admin-modules-grid">
+
+                <!-- 1. EVENTOS DE ROMPECABEZAS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="/assets/images/events/halloween_maga_oscura.jpg" alt="Rompecabezas" class="admin-card-img" style="object-position: center top;">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Rompecabezas & Colección</div>
+                        <div class="admin-module-desc">
+                            Configuración de eventos de armado de piezas: subida de imagen, división automática (3x3, 4x4, etc.), algoritmo de drops por duelo, tabla Top 10 y liquidación de sobrantes.
+                        </div>
+                    </div>
+
+                    <a href="/views/admin/eventos/rompecabezas.html" class="btn-module-access">
+                        <span>Gestionar Rompecabezas</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 2. TORNEOS & COPAS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="/assets/images/duels/pvp.jpg" alt="Torneos" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Torneos & Brackets</div>
+                        <div class="admin-module-desc">
+                            Creación de copas oficiales, llaves de eliminación (8, 16, 32 participantes), espectar partidas en vivo, resolución de matches y entrega de premios.
+                        </div>
+                    </div>
+
+                    <a href="/views/admin/eventos/torneos.html" class="btn-module-access">
+                        <span>Gestionar Torneos</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 3. BONIFICACIONES DE SALAS PVP -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="/assets/images/shop/potenciadores.png" alt="Bonificaciones de Salas PvP" class="admin-card-img">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Bonificaciones de Salas PvP</div>
+                        <div class="admin-module-desc">
+                            Programación de eventos temporales con rango de fecha/hora: multiplicadores de EXP y StarShips en salas PvP y resaltado de salas especiales.
+                        </div>
+                    </div>
+
+                    <a href="/views/admin/eventos/salas-bonus.html" class="btn-module-access">
+                        <span>Gestionar Bonificaciones</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+                <!-- 4. SUBASTAS DE CARTAS -->
+                <div class="admin-module-card">
+                    <div>
+                        <div class="admin-module-header">
+                            <span class="admin-module-badge active">Activo</span>
+                        </div>
+
+                        <div class="admin-card-artwork">
+                            <img src="https://images.ygoprodeck.com/images/cards_small/89631139.jpg" alt="Subastas de Cartas" class="admin-card-img" style="object-position: center top;">
+                            <div class="admin-card-glow-overlay"></div>
+                        </div>
+
+                        <div class="admin-module-title">Subastas de Cartas</div>
+                        <div class="admin-module-desc">
+                            Lanzamiento de subastas en vivo por 1 carta exclusiva: fijación de precio inicial, puja mínima, tiempo de duración, retención y reintegro atómico de estrellas y liquidación automática al buzón.
+                        </div>
+                    </div>
+
+                    <a href="/views/admin/eventos/subasta.html" class="btn-module-access">
+                        <span>Gestionar Subastas</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('administracion');
+        });
+    </script>
+</body>
+</html>
+
+

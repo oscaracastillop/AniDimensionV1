@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio de Audio y Sonidos Oficiales | Ani-Dimension</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            max-width: 100% !important;
+            max-height: none !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            background: radial-gradient(circle at 50% 10%, #0d1527 0%, #030712 100%) !important;
+            color: #f8fafc;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(3, 7, 18, 0.95);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 240, 255, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+
+        .audio-header {
+            padding: 20px 32px;
+            background: rgba(3, 7, 18, 0.9);
+            border-bottom: 1.5px solid rgba(0, 240, 255, 0.3);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 25px rgba(0, 240, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: #00f0ff;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            padding: 8px 18px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover {
+            border-color: #00f0ff;
+            color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+        }
+
+        .main-container {
+            max-width: 1320px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 20px 100px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Visualizer Panel */
+        .visualizer-card {
+            background: rgba(10, 15, 29, 0.85);
+            border: 1.5px solid rgba(0, 240, 255, 0.35);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .viz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .viz-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: #00f0ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #audio-canvas {
+            width: 100%;
+            height: 85px;
+            background: #030712;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .controls-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: rgba(3, 7, 18, 0.7);
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .volume-slider {
+            accent-color: #00f0ff;
+            cursor: pointer;
+        }
+
+        /* Section Layout */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        .grid-tracks {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 16px;
+        }
+
+        .audio-card {
+            background: rgba(13, 21, 41, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.25s;
+        }
+
+        .audio-card:hover {
+            border-color: rgba(0, 240, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15);
+        }
+
+        .audio-card.active-bgm {
+            border-color: #00f0ff;
+            background: rgba(0, 240, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .track-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .track-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .track-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .badge-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .badge-bgm {
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid #a855f7;
+            color: #c084fc;
+        }
+
+        .badge-npc {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+        }
+
+        .badge-boss {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #f87171;
+        }
+
+        .badge-sfx {
+            background: rgba(0, 240, 255, 0.2);
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+        }
+
+        .badge-anime {
+            background: rgba(236, 72, 153, 0.2);
+            border: 1px solid #ec4899;
+            color: #f472b6;
+        }
+
+        .badge-shop {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #4ade80;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-play {
+            flex: 1;
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            border: none;
+            border-radius: 4px;
+            background: #00f0ff;
+            color: #030712;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-play:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+        }
+
+        .btn-stop {
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 4px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-stop:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Simulator Card */
+        .simulator-card {
+            background: rgba(8, 14, 28, 0.9);
+            border: 1.5px solid rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sim-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .btn-sim {
+            padding: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-sim:hover {
+            border-color: #00f0ff;
+            background: rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-sim.danger:hover {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-sim.gold:hover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="audio-header">
+        <div class="brand-title">
+            <span>🎧</span> ESTUDIO DE AUDIO Y BANDAS SONORAS DE PERSONAJES (YU-GI-OH!)
+        </div>
+        <div class="header-actions">
+            <a href="admin.html" class="btn-nav">← Panel de Administración</a>
+            <a href="index.html" class="btn-nav">🏠 Menú Principal</a>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- Visualizer & Master Bar -->
+        <div class="visualizer-card">
+            <div class="viz-header">
+                <div class="viz-title">
+                    <span>⚡</span> ESPECTRÓMETRO REACTIVO DE FRECUENCIAS
+                </div>
+                <div class="controls-bar">
+                    <div class="volume-control">
+                        <label>🔊 BGM:</label>
+                        <input type="range" id="bgm-vol" class="volume-slider" min="0" max="1" step="0.05" value="0.7">
+                    </div>
+                    <div class="volume-control">
+                        <label>💥 SFX:</label>
+                        <input type="range" id="sfx-vol" class="volume-slider" min="0" max="1" step="0.05" value="0.85">
+                    </div>
+                    <button id="btn-stop-all" class="btn-stop">⏹️ PARAR TODO</button>
+                </div>
+            </div>
+            <canvas id="audio-canvas"></canvas>
+        </div>
+
+        <!-- 1. MÚSICA DE FONDO POR PERSONAJES Y NPCS (BGM) -->
+        <section>
+            <div class="section-header">
+                <span>🎭</span> BANDAS SONORAS POR PERSONAJE Y CAPÍTULOS DE NPCS (BGM)
+            </div>
+            <div class="grid-tracks" id="bgm-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- 2. EFECTOS DE DUELO (SFX) -->
+        <section>
+            <div class="section-header">
+                <span>⚔️</span> EFECTOS DE SONIDO DE DUELO (SFX)
+            </div>
+            <div class="grid-tracks" id="sfx-duel-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- 3. EFECTOS ESPECIALES ANIME, TIENDA Y SOBRES -->
+        <section>
+            <div class="section-header">
+                <span>✨</span> EFECTOS ESPECIALES ANIME, TIENDA Y SOBRES
+            </div>
+            <div class="grid-tracks" id="sfx-special-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- 4. SIMULADOR EN VIVO -->
+        <section class="simulator-card">
+            <div class="section-header" style="color: #00f0ff; border-color: rgba(0, 240, 255, 0.3);">
+                <span>🎮</span> SIMULADOR DE BATALLA CON RIVALES EN VIVO
+            </div>
+            <p style="color: #94a3b8; font-size: 13px;">
+                Selecciona la música de tu rival favorito y dispara las acciones de duelo para probar la experiencia sonora:
+            </p>
+            <div class="sim-grid">
+                <button class="btn-sim" style="background: rgba(245, 158, 11, 0.2); border-color: #f59e0b;" onclick="playDuelMusic('duel_joey_rock')">
+                    <span>🎸 Joey Wheeler / Jono</span>
+                    <small>Rock & Pasión (Cap 1)</small>
+                </button>
+                <button class="btn-sim" style="background: rgba(168, 85, 247, 0.2); border-color: #a855f7;" onclick="playDuelMusic('duel_yugi_roses')">
+                    <span>🔮 Yugi Muto / Atem</span>
+                    <small>Tema Místico Roses</small>
+                </button>
+                <button class="btn-sim" style="background: rgba(239, 68, 68, 0.2); border-color: #ef4444;" onclick="playDuelMusic('duel_boss_kaiba')">
+                    <span>👑 Seto Kaiba (Boss)</span>
+                    <small>Tema Legendario Dragón</small>
+                </button>
+                <button class="btn-sim" style="background: rgba(126, 34, 206, 0.2); border-color: #7e22ce;" onclick="playDuelMusic('duel_marik_darkness')">
+                    <span>👁️ Yami Bakura / Marik</span>
+                    <small>Oscuridad & Sombras</small>
+                </button>
+                <button class="btn-sim" style="background: rgba(14, 165, 233, 0.2); border-color: #0ea5e9;" onclick="playDuelMusic('duel_zane_cyber')">
+                    <span>🐉 Zane / Aster Phoenix</span>
+                    <small>Dragón Cyber & Fusión</small>
+                </button>
+                <button class="btn-sim" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981;" onclick="playDuelMusic('duel_turbo_synchro')">
+                    <span>💫 Turbo Duelo / Sincronía</span>
+                    <small>Capítulo 4 Guardianes</small>
+                </button>
+                <button class="btn-sim gold" onclick="playDuelMusic('duel_legendary_gods')">
+                    <span>👑 Dioses Egipcios / Exodia</span>
+                    <small>Capítulo 5 Legendarios</small>
+                </button>
+                <button class="btn-sim" onclick="playSfxTrack('duel_start')">
+                    <span>⚡ ¡Es Hora del Duelo!</span>
+                    <small>Inicio de partida</small>
+                </button>
+                <button class="btn-sim" onclick="playSfxTrack('draw')">
+                    <span>🎴 Robar Carta</span>
+                    <small>Draw Phase</small>
+                </button>
+                <button class="btn-sim" onclick="playSfxTrack('summon_normal')">
+                    <span>🌀 Invocación Normal</span>
+                    <small>Monstruo al campo</small>
+                </button>
+                <button class="btn-sim gold" onclick="playSfxTrack('summon_special')">
+                    <span>⚡ Invocación Especial</span>
+                    <small>Dragón / Boss</small>
+                </button>
+                <button class="btn-sim" style="border-color: #c084fc;" onclick="playSfxTrack('summon_fusion')">
+                    <span>🔮 Fusión / Polímero</span>
+                    <small>Vórtice mágico</small>
+                </button>
+                <button class="btn-sim" style="border-color: #38bdf8;" onclick="playSfxTrack('summon_synchro')">
+                    <span>💫 Sincronía</span>
+                    <small>Anillos de afinación</small>
+                </button>
+                <button class="btn-sim" onclick="playSfxTrack('activate')">
+                    <span>📜 Activar Magia/Trampa</span>
+                    <small>Spell/Trap trigger</small>
+                </button>
+                <button class="btn-sim" onclick="playSfxTrack('attack')">
+                    <span>⚔️ Declarar Ataque</span>
+                    <small>Attack declaration</small>
+                </button>
+                <button class="btn-sim danger" onclick="playSfxTrack('damage')">
+                    <span>💔 Recibir Daño LP</span>
+                    <small>Impacto a los LP</small>
+                </button>
+                <button class="btn-sim gold" onclick="playSfxTrack('pack_open')">
+                    <span>📦 Abrir Sobre</span>
+                    <small>Foil Tear + Sparkle</small>
+                </button>
+                <button class="btn-sim gold" onclick="playSfxTrack('exodia_win')">
+                    <span>💥 Exodia Obliterate</span>
+                    <small>Victoria Inmediata</small>
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="../../js/core/sound-manager.js"></script>
+    <script>
+        const BGM_LIST = [
+            // Menú, Login, Tienda y Eventos
+            { id: 'login', name: '🌌 Login & Pantalla de Título', desc: 'Arpegios cibernéticos espaciales y bienvenida', tag: 'BGM / LOGIN', type: 'menu', path: '/assets/audio/bgm/bgm_login.wav' },
+            { id: 'menu', name: '🌟 Menú Principal & Lobby', desc: 'Tema futurista de interfaz central', tag: 'BGM / MENÚ', type: 'menu', path: '/assets/audio/bgm/bgm_menu.mp3' },
+            { id: 'shop', name: '🏪 Tienda & Mercado KaibaCorp', desc: 'Jazz-funk optimista con campanas arcade', tag: 'BGM / SHOP', type: 'menu', path: '/assets/audio/bgm/bgm_shop.wav' },
+            { id: 'events', name: '🏆 Centro de Eventos & Torneos', desc: 'Fanfarria marcial orquestal y competición', tag: 'BGM / EVENTS', type: 'menu', path: '/assets/audio/bgm/bgm_events.wav' },
+            { id: 'deck', name: '🃏 Deck Builder & Colección', desc: 'Música para armar mazos y catálogo', tag: 'BGM / DECK', type: 'menu', path: '/assets/audio/bgm/bgm_deck_builder.mp3' },
+
+            // Jefes Épicos Exclusivos por Era (12 Eras)
+            { id: 'duel_pegasus_toon', name: '🏰 Boss: Pegasus & Mundo Toon', desc: 'Órgano místico y cortejo del Castillo Toon (Era 2)', tag: 'BOSS / ERA 2', type: 'boss', path: '/assets/audio/bgm/bgm_duel_pegasus_toon.wav' },
+            { id: 'duel_virtual_noah', name: '🛸 Boss: Noah Kaiba & Ciberespacio', desc: 'Sintetizador digital y Shinato (Era 4)', tag: 'BOSS / ERA 4', type: 'boss', path: '/assets/audio/bgm/bgm_duel_virtual_noah.wav' },
+            { id: 'duel_orichalcos_dartz', name: '💠 Boss: Dartz & El Gran Leviatán', desc: 'Cánticos oscuros de la Atlántida Sumergida (Era 6)', tag: 'BOSS / ERA 6', type: 'boss', path: '/assets/audio/bgm/bgm_duel_orichalcos_dartz.wav' },
+            { id: 'duel_zorc_egypt', name: '👁️ Boss: Zorc Necrophades & Atem', desc: 'Tambores milenarios y Dios de la Oscuridad (Era 7)', tag: 'BOSS / ERA 7', type: 'boss', path: '/assets/audio/bgm/bgm_duel_zorc_egypt.wav' },
+            { id: 'duel_society_light', name: '⚪ Boss: Sartorius & Fuerza Arcana', desc: 'Ondas cósmicas de La Luz de la Ruina (Era 9)', tag: 'BOSS / ERA 9', type: 'boss', path: '/assets/audio/bgm/bgm_duel_society_light.wav' },
+            { id: 'duel_supreme_king', name: '🌌 Boss: El Rey Supremo Haou & Yubel', desc: 'Furia de Héroes Malvados y Páramo Oscuro (Era 10)', tag: 'BOSS / ERA 10', type: 'boss', path: '/assets/audio/bgm/bgm_duel_supreme_king.wav' },
+            { id: 'duel_dark_signers', name: '🕸️ Boss: Rex Goodwin & Inmortales', desc: 'Doble Portador Cóndor/Dragón y Nazca (Era 11)', tag: 'BOSS / ERA 11', type: 'boss', path: '/assets/audio/bgm/bgm_duel_dark_signers.wav' },
+            { id: 'duel_zone_apocalypse', name: '⏳ Boss Final: Z-one & Sephylon Nv.500', desc: 'Los 10 Señores del Tiempo y Ark Cradle (Era 12)', tag: 'BOSS / ERA 12', type: 'boss', path: '/assets/audio/bgm/bgm_duel_zone_apocalypse.wav' },
+
+            // Personajes y Rivales Clásicos
+            { id: 'duel_joey_rock', name: '🎸 Joey Wheeler / Jono', desc: 'Tema enérgico Rock para Joey, Keith y Cap. 1', tag: 'NPC / JOEY', type: 'npc', path: '/assets/audio/bgm/bgm_duel_joey_rock.mp3' },
+            { id: 'duel_yugi_roses', name: '🔮 Yugi Muto / Atem (Roses)', desc: 'Tema orquestal místico de The Duelists of the Roses', tag: 'NPC / YUGI', type: 'npc', path: '/assets/audio/bgm/bgm_duel_yugi_roses.mp3' },
+            { id: 'duel_boss_kaiba', name: '👑 Seto Kaiba / Rival Legendario', desc: 'Tema de batalla para Seto Kaiba y Dragón Blanco', tag: 'NPC / BOSS', type: 'boss', path: '/assets/audio/bgm/bgm_duel_boss_kaiba.mp3' },
+            { id: 'duel_marik_darkness', name: '👁️ Yami Bakura & Marik', desc: 'Tema de oscuridad para el Reino de las Sombras y Panik', tag: 'NPC / SHADOW', type: 'boss', path: '/assets/audio/bgm/bgm_duel_marik_darkness.mp3' },
+            { id: 'duel_zane_cyber', name: '🐉 Zane Truesdale / Aster Phoenix', desc: 'Tema electrónico para el Dragón Cyber y D-Heroes', tag: 'NPC / CYBER', type: 'npc', path: '/assets/audio/bgm/bgm_duel_zane_cyber.mp3' },
+            { id: 'duel_turbo_synchro', name: '💫 Turbo Duelo & Team 5D\'s', desc: 'Tema acelerado de Sincronía para Duelos Turbo', tag: 'NPC / SYNCHRO', type: 'npc', path: '/assets/audio/bgm/bgm_duel_turbo_synchro.mp3' },
+            { id: 'duel_kalin_rock', name: '💀 Kalin Kessler (Infernity)', desc: 'Tema de armónica y hard rock del Inframundo', tag: 'NPC / KALIN', type: 'npc', path: '/assets/audio/bgm/bgm_duel_kalin_rock.mp3' },
+            { id: 'duel_speed_world', name: '🏍️ Speed World Riding Duel', desc: 'Banda sonora para carreras y duelos de velocidad', tag: 'NPC / SPEED', type: 'npc', path: '/assets/audio/bgm/bgm_duel_speed_world.mp3' },
+            { id: 'duel_legendary_gods', name: '👑 Dioses Egipcios & Exodia', desc: 'Tema supremo para la Torre Alcatraz y duelos finales', tag: 'NPC / GODS', type: 'boss', path: '/assets/audio/bgm/bgm_duel_legendary_gods.mp3' },
+            { id: 'duel_standard', name: '⚔️ Duelo Estándar (NPCs Comunes)', desc: 'Tema general para duelistas de campo', tag: 'NPC / STANDARD', type: 'npc', path: '/assets/audio/bgm/bgm_duel_standard.mp3' },
+            { id: 'duel_finals', name: '🏆 Finales de Torneo PVP', desc: 'Tema épico para rondas decisivas', tag: 'BGM / FINALS', type: 'menu', path: '/assets/audio/bgm/bgm_duel_tournament_finals.mp3' },
+            { id: 'climax_advantage', name: '🔥 Clímax (Ventaja en LP)', desc: 'Música acelerada cuando dominas la mesa', tag: 'BGM / CLIMAX', type: 'menu', path: '/assets/audio/bgm/bgm_climax_advantage.mp3' },
+            { id: 'climax_disadvantage', name: '⚠️ Clímax (Tensión Máxima)', desc: 'Tema de peligro con LP críticos', tag: 'BGM / TENSION', type: 'menu', path: '/assets/audio/bgm/bgm_climax_disadvantage.mp3' },
+            { id: 'victory', name: '🥇 Fanfarria de Victoria', desc: 'Melodía triunfal al ganar el duelo', tag: 'BGM / WIN', type: 'menu', path: '/assets/audio/bgm/bgm_victory.mp3' },
+            { id: 'defeat', name: '💀 Tema de Derrota', desc: 'Cierre melancólico al perder', tag: 'BGM / LOSE', type: 'menu', path: '/assets/audio/bgm/bgm_defeat.mp3' }
+        ];
+
+        const SFX_DUEL_LIST = [
+            { id: 'duel_start', name: '⚡ Inicio del Duelo', desc: 'Gong cósmico y entrada a la batalla', tag: 'DUEL', path: '/assets/audio/sfx/sfx_duel_start.wav' },
+            { id: 'boss_intro', name: '👑 Entrada de Jefe Final', desc: 'Impacto cinemático de jefe supremo', tag: 'BOSS', path: '/assets/audio/sfx/sfx_boss_intro.wav' },
+            { id: 'draw', name: '🎴 Robar Carta', desc: 'Extracción de carta del mazo', tag: 'CARDS', path: '/assets/audio/sfx/sfx_card_draw.wav' },
+            { id: 'summon_normal', name: '🌀 Invocación Normal', desc: 'Invocación de monstruo al campo', tag: 'SUMMON', path: '/assets/audio/sfx/sfx_summon_normal.wav' },
+            { id: 'summon_special', name: '⚡ Invocación Especial', desc: 'Invocación de monstruos de alto nivel', tag: 'SUMMON', path: '/assets/audio/sfx/sfx_summon_special.wav' },
+            { id: 'set_card', name: '🛡️ Colocar en Defensa', desc: 'Carta colocada boca abajo / defensa', tag: 'CARDS', path: '/assets/audio/sfx/sfx_card_set.wav' },
+            { id: 'flip', name: '🔄 Cambiar Posición', desc: 'Voltear carta o cambiar a ataque/defensa', tag: 'CARDS', path: '/assets/audio/sfx/sfx_card_flip.wav' },
+            { id: 'activate', name: '📜 Activar Magia/Trampa', desc: 'Destello al activar efecto o trampa', tag: 'SPELL/TRAP', path: '/assets/audio/sfx/sfx_card_activate.wav' },
+            { id: 'attack', name: '⚔️ Declarar Ataque', desc: 'Impacto y sonido de ataque', tag: 'BATTLE', path: '/assets/audio/sfx/sfx_attack.wav' },
+            { id: 'direct_attack', name: '💥 Ataque Directo', desc: 'Golpe directo al rival', tag: 'BATTLE', path: '/assets/audio/sfx/sfx_direct_attack.wav' },
+            { id: 'damage', name: '💔 Daño a LP', desc: 'Pérdida de puntos de vida', tag: 'LP', path: '/assets/audio/sfx/sfx_lp_damage.wav' },
+            { id: 'heal', name: '💖 Recuperación de LP', desc: 'Aumento de puntos de vida', tag: 'LP', path: '/assets/audio/sfx/sfx_lp_heal.wav' },
+            { id: 'destroy', name: '💥 Destrucción de Carta', desc: 'Envío de carta destruida al cementerio', tag: 'BATTLE', path: '/assets/audio/sfx/sfx_card_destroy.wav' },
+            { id: 'shuffle', name: '🌪️ Barajar Deck', desc: 'Mezcla rápida de baraja', tag: 'DECK', path: '/assets/audio/sfx/sfx_shuffle.wav' },
+            { id: 'chain', name: '🔗 Cadena (Chain Link)', desc: 'Activación de cadena de efectos', tag: 'CHAIN', path: '/assets/audio/sfx/sfx_chain.wav' },
+            { id: 'turn_change', name: '⏩ Cambio de Turno', desc: 'Transición de turno / fase de duelo', tag: 'PHASE', path: '/assets/audio/sfx/sfx_turn_change.wav' },
+            { id: 'banish', name: '🌌 Desterrar Carta', desc: 'Carta enviada a la zona de desterradas', tag: 'ZONE', path: '/assets/audio/sfx/sfx_banish.wav' }
+        ];
+
+        const SFX_SPECIAL_LIST = [
+            { id: 'summon_fusion', name: '🔮 Invocación por Fusión', desc: 'Polimerización y vórtice mágico', tag: 'ANIME', path: '/assets/audio/sfx/sfx_fusion_summon.wav' },
+            { id: 'summon_synchro', name: '💫 Invocación por Sincronía', desc: 'Anillos de afinación y rayo cósmico', tag: 'ANIME', path: '/assets/audio/sfx/sfx_synchro_summon.wav' },
+            { id: 'exodia_win', name: '💥 Exodia Obliterate', desc: 'Trueno divino de victoria inmediata', tag: 'ANIME', path: '/assets/audio/sfx/sfx_exodia_win.wav' },
+            { id: 'pack_open', name: '📦 Abrir Sobre de Cartas', desc: 'Rasgado de empaque + destello Ultra Raro', tag: 'SHOP', path: '/assets/audio/sfx/sfx_pack_open.wav' },
+            { id: 'shop_buy', name: '💰 Compra en Tienda', desc: 'Monedas galácticas / StarShips', tag: 'SHOP', path: '/assets/audio/sfx/sfx_shop_buy.wav' },
+            { id: 'login_success', name: '🔑 Login & Registro Exitoso', desc: 'Acceso concedido al sistema', tag: 'SYSTEM', path: '/assets/audio/sfx/sfx_login_success.wav' },
+            { id: 'login_hover', name: '✨ Hover en Menú/Input', desc: 'Sonido suave de interacción', tag: 'SYSTEM', path: '/assets/audio/sfx/sfx_login_hover.wav' },
+            { id: 'login_error', name: '⚠️ Error de Autenticación', desc: 'Aviso sonoro de error', tag: 'SYSTEM', path: '/assets/audio/sfx/sfx_login_error.wav' },
+            { id: 'coinflip', name: '🎲 Moneda / Dado', desc: 'Efecto de lanzamiento de suerte', tag: 'SYSTEM', path: '/assets/audio/sfx/sfx_coinflip.wav' },
+            { id: 'button', name: '🔘 Clic de Botón', desc: 'Respuesta táctil de botones', tag: 'UI', path: '/assets/audio/sfx/sfx_button.wav' }
+        ];
+
+        // Visualizer
+        let audioCtx = null;
+        let analyser = null;
+        let sourceNode = null;
+        const canvas = document.getElementById('audio-canvas');
+        const canvasCtx = canvas.getContext('2d');
+
+        function setupVisualizer(audioElement) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 64;
+                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                if (sourceNode) {
+                    try { sourceNode.disconnect(); } catch (e) {}
+                }
+                sourceNode = audioCtx.createMediaElementSource(audioElement);
+                sourceNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                drawVisualizer();
+            } catch (e) {
+                drawFallbackVisualizer();
+            }
+        }
+
+        function drawVisualizer() {
+            requestAnimationFrame(drawVisualizer);
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            canvasCtx.fillStyle = '#030712';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const barWidth = (canvas.width / bufferLength) * 1.5;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = (dataArray[i] / 255) * canvas.height;
+                const gradient = canvasCtx.createLinearGradient(0, canvas.height, 0, 0);
+                gradient.addColorStop(0, '#00f0ff');
+                gradient.addColorStop(0.6, '#a855f7');
+                gradient.addColorStop(1, '#ffd700');
+
+                canvasCtx.fillStyle = gradient;
+                canvasCtx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+                x += barWidth;
+            }
+        }
+
+        let fallbackTimer = 0;
+        function drawFallbackVisualizer() {
+            requestAnimationFrame(drawFallbackVisualizer);
+            canvasCtx.fillStyle = '#030712';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            fallbackTimer += 0.05;
+            const bars = 28;
+            const barWidth = canvas.width / bars;
+
+            for (let i = 0; i < bars; i++) {
+                const isBgmPlaying = SoundManager.bgmAudio && !SoundManager.bgmAudio.paused;
+                const h = isBgmPlaying 
+                    ? Math.abs(Math.sin(fallbackTimer + i * 0.35)) * canvas.height * 0.8 + 4
+                    : 2;
+
+                const gradient = canvasCtx.createLinearGradient(0, canvas.height, 0, 0);
+                gradient.addColorStop(0, '#00f0ff');
+                gradient.addColorStop(0.7, '#a855f7');
+                gradient.addColorStop(1, '#ffd700');
+
+                canvasCtx.fillStyle = gradient;
+                canvasCtx.fillRect(i * barWidth, canvas.height - h, barWidth - 2, h);
+            }
+        }
+
+        // Render
+        function renderTrackGrid(list, containerId, isBgm = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'audio-card';
+                card.id = `card-${item.id}`;
+
+                let badgeClass = 'badge-sfx';
+                if (isBgm) {
+                    if (item.type === 'boss') badgeClass = 'badge-boss';
+                    else if (item.type === 'npc') badgeClass = 'badge-npc';
+                    else badgeClass = 'badge-bgm';
+                } else if (item.tag === 'ANIME') badgeClass = 'badge-anime';
+                else if (item.tag === 'SHOP') badgeClass = 'badge-shop';
+
+                card.innerHTML = `
+                    <div class="card-top">
+                        <div class="track-info">
+                            <span class="track-name">${item.name}</span>
+                            <span class="track-desc">${item.desc}</span>
+                        </div>
+                        <span class="badge-tag ${badgeClass}">${item.tag}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-play" onclick="${isBgm ? `playBgmTrack('${item.id}')` : `playSfxTrack('${item.id}')`}">
+                            <span>▶️</span> Reproducir
+                        </button>
+                        ${isBgm ? `<button class="btn-stop" onclick="stopBgmTrack('${item.id}')">⏹️</button>` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function playBgmTrack(key) {
+            document.querySelectorAll('.audio-card').forEach(c => c.classList.remove('active-bgm'));
+            const card = document.getElementById(`card-${key}`);
+            if (card) card.classList.add('active-bgm');
+
+            SoundManager.playBGM(key, true);
+            if (SoundManager.bgmAudio) setupVisualizer(SoundManager.bgmAudio);
+        }
+
+        function stopBgmTrack(key) {
+            SoundManager.stopBGM();
+            document.querySelectorAll('.audio-card').forEach(c => c.classList.remove('active-bgm'));
+        }
+
+        function playDuelMusic(key, loop = true) {
+            document.querySelectorAll('.audio-card').forEach(c => c.classList.remove('active-bgm'));
+            const card = document.getElementById(`card-${key}`);
+            if (card) card.classList.add('active-bgm');
+            SoundManager.playBGM(key, loop);
+            if (SoundManager.bgmAudio) setupVisualizer(SoundManager.bgmAudio);
+        }
+
+        function playSfxTrack(key) {
+            SoundManager.playSFX(key);
+            const card = document.getElementById(`card-${key}`);
+            if (card) {
+                card.style.borderColor = '#ffd700';
+                card.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.5)';
+                setTimeout(() => {
+                    card.style.borderColor = '';
+                    card.style.boxShadow = '';
+                }, 400);
+            }
+        }
+
+        document.getElementById('bgm-vol').addEventListener('input', (e) => {
+            SoundManager.setBgmVolume(parseFloat(e.target.value));
+        });
+
+        document.getElementById('sfx-vol').addEventListener('input', (e) => {
+            SoundManager.setSfxVolume(parseFloat(e.target.value));
+        });
+
+        document.getElementById('btn-stop-all').addEventListener('click', () => {
+            SoundManager.stopBGM();
+            document.querySelectorAll('.audio-card').forEach(c => c.classList.remove('active-bgm'));
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            canvas.width = canvas.parentElement.clientWidth - 48;
+            canvas.height = 85;
+            drawFallbackVisualizer();
+
+            renderTrackGrid(BGM_LIST, 'bgm-grid', true);
+            renderTrackGrid(SFX_DUEL_LIST, 'sfx-duel-grid', false);
+            renderTrackGrid(SFX_SPECIAL_LIST, 'sfx-special-grid', false);
+        });
+    </script>
+</body>
+</html>

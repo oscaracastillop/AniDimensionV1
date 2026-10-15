@@ -1,0 +1,31 @@
+/**
+ * [Passcode: 1412158] Super Roboyarou
+ * Tipo: Fusion Effect Monster | Expansión: LOD
+ */
+module.exports = {
+    id: 1412158,
+    name: "Super Roboyarou",
+    type: "Fusion Effect Monster",
+    atk: 1200,
+    def: 500,
+    level: 6,
+    race: "Machine",
+    attribute: "EARTH",
+    isFusion: true,
+    fusionMaterials: [38916461,48766543],
+
+    canActivate() { return { canActivate: true }; },
+
+    async onActivate(duelState, playerKey, opponentKey, targetData, link, effectUtils) {
+            effectUtils.emitDuelLog(duelState.roomId, `🤖 [Super Roboyarou] En la Main Phase puede intercambiarse con "Super Robolady".`, 'monster');
+            return { success: true };
+        },
+
+    async execute(context) {
+        const { duelState, playerKey, opponentKey, targetData, link, effectUtils } = context;
+        if (context.isFlip && typeof this.onFlip === 'function') {
+            return this.onFlip(context);
+        }
+        return this.onActivate(duelState, playerKey, opponentKey, targetData, link, effectUtils);
+    }
+};

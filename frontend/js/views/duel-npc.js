@@ -319,9 +319,10 @@ function showGameOverModal(data) {
                         <div style="font-family:'Orbitron', sans-serif; font-size:11.5px; font-weight:900; color:#ffd700;">
                             🎖️ ¡NUEVA MEDALLA DESBLOQUEADA: ${rewards.unlockedMedal.name}! 🎖️
                         </div>
+                        ${(rewards.unlockedMedal.desc && rewards.unlockedMedal.desc !== 'undefined') ? `
                         <div style="font-size:9.5px; color:#fff; margin-top:2px;">
                             ${rewards.unlockedMedal.desc}
-                        </div>
+                        </div>` : ''}
                     </div>
                 ` : ''}
                 ${rewards && rewards.isNewNpcUnlocked ? `
@@ -402,7 +403,7 @@ function showGameOverModal(data) {
                         <!-- CAJA VISUAL DE DROP DE CARTA (SOLO IMAGEN Y ESTADO) -->
                         <div style="background:rgba(15,23,42,0.85); border:1px solid ${cardDrop ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.08)'}; border-radius:8px; padding:10px 12px; display:flex; align-items:center; gap:12px; flex:1;">
                             ${cardDrop ? `
-                                <img src="https://images.ygoprodeck.com/images/cards_small/${cardDrop.card_id || cardDrop.id}.jpg" onerror="this.onerror=null; this.src='/assets/card_back.jpg';" style="width:52px; height:76px; object-fit:cover; border-radius:4px; border:1.5px solid #10b981; box-shadow:0 0 14px rgba(16,185,129,0.45); flex-shrink:0;">
+                                <img src="/api/cards/${cardDrop.card_id || cardDrop.id}/image" onerror="this.onerror=null; this.src='/assets/card_back.jpg';" style="width:52px; height:76px; object-fit:cover; border-radius:4px; border:1.5px solid #10b981; box-shadow:0 0 14px rgba(16,185,129,0.45); flex-shrink:0;">
                                 <div style="text-align:left; flex:1; min-width:0;">
                                     <div style="font-size:9px; font-weight:900; color:#10b981; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">¡CARTA OBTENIDA!</div>
                                     <div style="font-size:11.5px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${cardDrop.name}</div>
@@ -478,9 +479,10 @@ function showGameOverModal(data) {
                                 <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:#ffd700;">
                                     🎖️ ¡NUEVA MEDALLA DESBLOQUEADA: ${advRes.unlockedMedal.name}! 🎖️
                                 </div>
+                                ${(advRes.unlockedMedal.desc && advRes.unlockedMedal.desc !== 'undefined') ? `
                                 <div style="font-size:10px; color:#fff; margin-top:2px;">
                                     ${advRes.unlockedMedal.desc}
-                                </div>
+                                </div>` : ''}
                             </div>
                         `;
                         mBox.style.display = 'block';

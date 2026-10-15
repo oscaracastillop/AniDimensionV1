@@ -342,17 +342,13 @@ window.openPackCardInspect = function(cardId) {
         const descEs = card.desc_es || card.description_es || '';
         if (descEs && descEs !== descEn) {
             elDesc.innerHTML = `
-                <div style="margin-bottom:8px;">
-                    <div style="font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:800; color:#94a3b8; margin-bottom:2px; letter-spacing:0.5px;">🇺🇸 TEXTO EN INGLÉS:</div>
-                    <div style="font-family:'Inter', sans-serif; font-size:11px; line-height:1.45; color:#cbd5e1;">${descEn}</div>
-                </div>
-                <div style="padding-top:6px; border-top:1px solid rgba(255,255,255,0.08);">
-                    <div style="font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:800; color:#00f0ff; margin-bottom:2px; letter-spacing:0.5px;">🇪🇸 TEXTO EN ESPAÑOL:</div>
-                    <div style="font-family:'Inter', sans-serif; font-size:11px; line-height:1.45; color:#cbd5e1;">${descEs}</div>
+                <div style="font-family:'Outfit', sans-serif; font-size:9.5px; font-weight:400; line-height:1.4; color:#cbd5e1; margin-bottom:6px;">${descEn}</div>
+                <div style="padding-top:6px; border-top:1px dashed rgba(255,255,255,0.1);">
+                    <div style="font-family:'Outfit', sans-serif; font-size:9.5px; font-weight:400; line-height:1.4; color:#94a3b8;">${descEs}</div>
                 </div>
             `;
         } else {
-            elDesc.innerHTML = `<div style="font-family:'Inter', sans-serif; font-size:11px; line-height:1.45; color:#cbd5e1;">${descEn}</div>`;
+            elDesc.innerHTML = `<div style="font-family:'Outfit', sans-serif; font-size:9.5px; font-weight:400; line-height:1.4; color:#cbd5e1;">${descEn}</div>`;
         }
     }
 

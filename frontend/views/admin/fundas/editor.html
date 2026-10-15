@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Edición de Funda de Cartas (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.5">
+    <link rel="stylesheet" href="../cards/cards.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.5">
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container" style="display:flex; flex-direction:column; width:100vw; height:100vh; overflow:hidden;">
+        
+        <!-- HEADER FIJO -->
+        <div class="shop-header">
+            <div class="shop-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 id="sleeve-editor-title" class="shop-title">FORMULARIO DE EDICIÓN Y CREACIÓN DE FUNDA</h1>
+                    <div class="shop-subtitle">PANEL DEDICADO DE PERSONALIZACIÓN DE REVERSOS DE CARTAS, PRECIO Y ARTE</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" onclick="switchToNewSleeveForm()" class="btn-act-sm btn-act-activate" style="height:28px; padding:0 14px; font-size:9.5px;">
+                    NUEVA FUNDA
+                </button>
+                <a href="fundas.html" class="btn-shop-back" title="Volver al Catálogo de Fundas">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (LAYOUT: PREVIA A LA IZQUIERDA Y FORMULARIO A LA DERECHA) -->
+        <div class="shop-scroll-content" style="flex:1; padding:16px 20px 90px 20px; overflow-y:auto;">
+            
+            <div class="admin-editor-layout" style="display:flex; gap:24px; justify-content:center; align-items:flex-start; max-width:1050px; margin:0 auto; flex-wrap:wrap; width:100%;">
+                
+                <!-- LADO IZQUIERDO: VISTA PREVIA EN VIVO -->
+                <div class="admin-editor-preview-col" style="flex:0 0 300px; display:flex; flex-direction:column; align-items:center;">
+                    <div style="font-family:'Orbitron', sans-serif; font-size:11px; font-weight:900; color:#00f0ff; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; text-align:center;">
+                        VISTA PREVIA EN VIVO
+                    </div>
+
+                    <div id="sleeve-preview-card" style="width:100%; max-width:260px; background:linear-gradient(180deg, #0e172a 0%, #060a14 100%); border:2px solid #00f0ff; border-radius:10px; padding:14px; text-align:center; box-shadow:0 0 25px rgba(0,240,255,0.25); position:relative; overflow:hidden; box-sizing:border-box;">
+                        <!-- Se inyecta dinámicamente desde admin-fundas-editor.js -->
+                    </div>
+                </div>
+
+                <!-- LADO DERECHO: FORMULARIO DEDICADO -->
+                <div class="admin-editor-form-col" style="flex:1; min-width:280px; max-width:650px; background:linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(7, 12, 24, 0.98)); border:1.5px solid rgba(0,240,255,0.35); border-radius:10px; padding:20px; box-shadow:0 0 25px rgba(0,240,255,0.15); box-sizing:border-box;">
+                    <div id="sleeve-form-panel">
+                        <!-- Se inyecta dinámicamente desde admin-fundas-editor.js -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVBAR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/data/sleeves-data.js"></script>
+    <script src="../../../js/views/admin-fundas-editor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('administracion');
+        });
+    </script>
+</body>
+</html>

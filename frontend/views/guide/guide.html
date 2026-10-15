@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Guía del Duelista & Manual Oficial</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.6">
+    <link rel="stylesheet" href="../../css/guide.css?v=4.6">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.6">
+</head>
+<body>
+
+    <div class="guide-page-container">
+        <!-- HEADER SUPERIOR CONGELADO / FIJO -->
+        <div class="guide-header">
+            <div class="guide-title-box">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo">
+                <div>
+                    <h1 class="guide-title">GUÍA DEL DUELISTA & SISTEMAS</h1>
+                    <div class="guide-subtitle">MANUAL OFICIAL: MECÁNICAS, POTENCIADORES, VIP, AVATARES Y EVENTOS</div>
+                </div>
+            </div>
+
+            <a href="/views/lobby/lobby.html" class="btn-guide-back" title="Volver al Lobby">
+                VOLVER
+            </a>
+        </div>
+
+        <!-- BARRA DE TABS / FILTROS DE CATEGORÍA (SIN ICONOS EN LOS BOTONES) -->
+        <div class="guide-tab-bar">
+            <button class="guide-tab-btn active" onclick="switchGuideTab('all', this)">MANUAL COMPLETO</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('potenciadores', this)">POTENCIADORES & BUZÓN</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('vip', this)">MEMBRESÍA VIP</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('avatares', this)">AVATARES & SUERTE</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('cosmeticos', this)">TAPETES & FUNDAS</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('aventura', this)">MODO AVENTURA & MEDALLAS</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('duelos', this)">DUELOS & RECOMPENSAS</button>
+            <button class="guide-tab-btn" onclick="switchGuideTab('eventos', this)">ROMPECABEZAS & EVENTOS</button>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL DESLIZABLE -->
+        <div class="guide-scroll-content">
+
+            <!-- 1. POTENCIADORES & BUZÓN DE RECOMPENSAS -->
+            <div class="guide-content-section" data-category="potenciadores">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/shop/potenciadores.png" alt="Potenciadores y Boosters" class="guide-hero-img">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>1. POTENCIADORES & BUZÓN DE RECOMPENSAS</h2>
+                            <p>
+                                Los potenciadores son artefactos dimensionales que aumentan de forma permanente las estadísticas del avatar que tengas activo. Puedes adquirirlos en la Tienda de Potenciadores o recibirlos como premios y compensaciones de la administración directamente en tu Buzón.
+                            </p>
+                            <span class="guide-highlight-pill">CONSUMO DIRECTO Y PERMANENTE EN EL AVATAR ACTIVO</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Multiplicadores de EXP, Starships y Suerte</div>
+                            <div class="guide-feature-desc">Cada potenciador otorga un porcentaje específico de bonificación a EXP (experiencia de duelo), Starships (ganancias por victoria) o Suerte (mayor probabilidad de cartas raras).</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Buzón Satelital & Baúl de Recompensas</div>
+                            <div class="guide-feature-desc">Tus potenciadores comprados o regalados se resguardan de forma segura en tu Buzón. Desde allí puedes inspeccionarlos o consumirlos cuando lo desees.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Acumulación Directa en tu Avatar</div>
+                            <div class="guide-feature-desc">Al pulsar "Aplicar Potenciador" en el Buzón, el porcentaje se transfiere de inmediato y de forma permanente al Avatar que tengas equipado en ese instante.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. MEMBRESÍA VIP -->
+            <div class="guide-content-section" data-category="vip">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/shop/vip.png" alt="Membresía VIP" class="guide-hero-img">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>2. MEMBRESÍA VIP ANI-DIMENSION</h2>
+                            <p>
+                                El estatus VIP otorga privilegios exclusivos para los duelistas más dedicados, mejorando el ratio de recompensas durante el período contratado.
+                            </p>
+                            <span class="guide-highlight-pill">MEMBRESÍA TEMPORAL POR DÍAS ACUMULABLES</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Bonificaciones Activas de Duelo</div>
+                            <div class="guide-feature-desc">Otorga bonificaciones globales adicionales de EXP, Starships y Suerte durante todos los días que tu membresía se encuentre activa.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Distintivo VIP Dorado</div>
+                            <div class="guide-feature-desc">Insignia VIP dorada visible en tu perfil de duelista, ranking mundial y estado de jugador.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Días Acumulables</div>
+                            <div class="guide-feature-desc">Adquirir múltiples paquetes VIP en la Tienda suma los días de duración a tu saldo temporal sin perder tiempo previo.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. AVATARES & SUERTE -->
+            <div class="guide-content-section" data-category="avatares">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/shop/avatares.png" alt="Avatares y Suerte" class="guide-hero-img">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>3. AVATARES, IDENTIDAD & SUERTE</h2>
+                            <p>
+                                Tu avatar representa tu identidad en el universo de Ani Dimension. Cada avatar posee bonificaciones iniciales propias de EXP, Starships y atributo de Suerte en combate.
+                            </p>
+                            <span class="guide-highlight-pill">1 AVATAR ACTIVO A LA VEZ CON POTENCIADORES PERSONALIZADOS</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Atributo de Suerte del Avatar</div>
+                            <div class="guide-feature-desc">Aumenta las probabilidades de conseguir cartas Ultra Raras y Secret Raras al abrir sobres en la Tienda y en los drops de cartas de NPCs.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Colección de Avatares Libres</div>
+                            <div class="guide-feature-desc">Accede a tu colección completa de avatares desde tu Perfil para alternar entre duelistas según tu preferencia.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">País, Bandera y Título Oficial</div>
+                            <div class="guide-feature-desc">Configura la bandera de tu país, tu avatar favorito y tu título honorífico desde la sección Perfil del menú.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAPETES & FUNDAS (COSMÉTICOS) -->
+            <div class="guide-content-section" data-category="cosmeticos">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/shop/tapetes.png" alt="Tapetes y Fundas de Duelo" class="guide-hero-img" onerror="this.src='../../assets/images/shop/tapetes.jpg'">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>4. TAPETES DE DUELO & FUNDAS DE CARTAS</h2>
+                            <p>
+                                Personaliza la apariencia estética de tu campo de batalla y de tus barajas con tapetes y fundas místicas oficiales.
+                            </p>
+                            <span class="guide-highlight-pill">EQUIPAMIENTO DE 1 TAPETE Y 1 FUNDA POR DUELISTA</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Tapetes de Duelo para tu Campo</div>
+                            <div class="guide-feature-desc">Superficies de combate ilustradas con monstruos legendarios que transforman visualmente tu mitad del campo en duelos.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Fundas Protectoras para tus Barajas</div>
+                            <div class="guide-feature-desc">Diseños exclusivos para el reverso de tus cartas visibles en el Deck Builder, en tu mano y en el campo de batalla.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Gestión Directa desde tu Perfil</div>
+                            <div class="guide-feature-desc">Equipa o desactiva tus tapetes y fundas poseídos en cualquier momento desde los botones de cosméticos de tu perfil.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. MODO AVENTURA: 12 ERAS & MEDALLAS PERMANENTES -->
+            <div class="guide-content-section" data-category="aventura">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/duels/npc.jpg" alt="Modo Aventura 12 Eras" class="guide-hero-img" onerror="this.src='../../assets/images/duels/pvp.jpg'">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>5. MODO AVENTURA: 12 ERAS & MEDALLAS DE HONOR</h2>
+                            <p>
+                                Recorre la historia legendaria de Yu-Gi-Oh! a través de 12 Eras históricas con más de 200 duelistas y jefes épicos, desde Domino y el Reino de Duelistas hasta Neo Domino y el Ark Cradle.
+                            </p>
+                            <span class="guide-highlight-pill">BONIFICADORES AUTOMÁTICOS Y PERMANENTES POR MEDALLA</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Campaña Histórica de 12 Eras</div>
+                            <div class="guide-feature-desc">Enfrenta adversarios con dificultad progresiva, barajas icónicas y temas musicales orquestales dedicados por época.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Medallas de Honor Permanentes</div>
+                            <div class="guide-feature-desc">Al triunfar sobre cada duelista, desbloqueas su Medalla oficial. Sus bonificaciones de EXP, Starships y Suerte se activan de forma automática sin necesidad de equiparlas.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Suma Consolidada en Bonificaciones Globales</div>
+                            <div class="guide-feature-desc">Todas las medallas que obtienes suman sus porcentajes permanentemente a tus Bonificaciones Globales en tu Perfil.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. DUELOS OFICIALES & RECOMPENSAS -->
+            <div class="guide-content-section" data-category="duelos">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/duels/pvp.jpg" alt="Duelos Oficiales" class="guide-hero-img">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>6. DUELOS REGLAMENTARIOS & RECOMPENSAS</h2>
+                            <p>
+                                Ani Dimension implementa las reglas maestras de duelo con 8000 Life Points, 5 fases por turno, cálculo automático de daño y música dinámica reactiva al combate.
+                            </p>
+                            <span class="guide-highlight-pill">DUELOS VS NPCS & MULTIJUGADOR EN TIEMPO REAL</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Duelos vs NPC con IA Temática</div>
+                            <div class="guide-feature-desc">Enfrenta a duelistas legendarios con barajas calibradas y bandas sonoras épicas para entrenar tus estrategias.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Arena Multijugador PvP en Vivo</div>
+                            <div class="guide-feature-desc">Salas de duelo públicas y privadas con límite reglamentario de 120 segundos por turno y clasificación en el Ranking Global.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Estadísticas Oficiales en Perfil</div>
+                            <div class="guide-feature-desc">Seguimiento preciso de tu historial: Total de Duelos, Victorias, Derrotas y Porcentaje de Victorias tanto en modo NPC como en modo PvP.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. ROMPECABEZAS & EVENTOS -->
+            <div class="guide-content-section" data-category="eventos">
+                <div class="guide-content-card">
+                    <div class="guide-card-hero">
+                        <div class="guide-hero-artwork">
+                            <img src="../../assets/images/events/halloween_maga_oscura.jpg" alt="Eventos de Rompecabezas" class="guide-hero-img">
+                        </div>
+                        <div class="guide-hero-info">
+                            <h2>7. EVENTOS DE ROMPECABEZAS & COLECCIÓN MÍSTICA</h2>
+                            <p>
+                                Durante el evento del Rompecabezas Milenario, cada victoria en duelos te permite descubrir piezas místicas numeradas para forjar el artefacto legendario.
+                            </p>
+                            <span class="guide-highlight-pill">COLECCIÓN MÍSTICA EN TABLERO DEL EVENTO</span>
+                        </div>
+                    </div>
+
+                    <div class="guide-features-grid">
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Drop de Piezas por Victorias</div>
+                            <div class="guide-feature-desc">Vencer en duelos de Modo Aventura y en la Arena PvP otorga probabilidad directa de hallar piezas místicas para tu colección.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Ensamblado del Tablero al 100%</div>
+                            <div class="guide-feature-desc">Cada pieza única descubierta se engarza en su posición exacta del artefacto hasta completar el 100% de la reliquia.</div>
+                        </div>
+                        <div class="guide-feature-box">
+                            <div class="guide-feature-title">Registro y Clasificación de Duelistas</div>
+                            <div class="guide-feature-desc">Consulta en todo momento tu conteo de piezas reunidas directamente desde la sección de Eventos.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPTS CORE Y NAVBAR -->
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/guide.js?v=4.6"></script>
+</body>
+</html>

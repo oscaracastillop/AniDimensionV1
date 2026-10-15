@@ -1,6 +1,7 @@
 /**
- * [Passcode: 7089711] Hane-Hane
- * Tipo: Flip Effect Monster
+ * [Passcode: 7089711] Hane-Hane (Hane-Hane)
+ * Tipo: Flip Effect Monster | Expansión: LOB
+ * Descripción Oficial: FLIP: Target 1 monster on the field; return that target to the hand.
  */
 module.exports = {
     id: 7089711,
@@ -12,49 +13,60 @@ module.exports = {
     race: "Beast",
     isFlip: true,
 
-    
-    async onFlip(context) {
-        const { duelState, playerKey, opponentKey, targetData, effectUtils } = context;
-        const tPlayerKey = targetData?.target_player || opponentKey;
-        let targetSlot = targetData?.target_slot !== undefined ? targetData.target_slot : targetData?.slot_index;
-
-        let targetMonster = null;
-        if (targetSlot !== undefined && duelState[tPlayerKey]?.monsters?.[targetSlot]) {
-            targetMonster = duelState[tPlayerKey].monsters[targetSlot];
-        } else {
-            const oppSlots = (duelState[opponentKey]?.monsters || []).map((m, idx) => m ? { m, idx, pKey: opponentKey } : null).filter(Boolean);
-            const playerSlots = (duelState[playerKey]?.monsters || []).map((m, idx) => m ? { m, idx, pKey: playerKey } : null).filter(Boolean);
-            const pick = oppSlots[0] || playerSlots[0];
-            if (pick) {
-                targetMonster = pick.m;
-                targetSlot = pick.idx;
-            }
-        }
-
-        if (targetMonster && targetSlot !== undefined) {
-            const mName = targetMonster.card_data ? targetMonster.card_data.name : 'Monstruo';
-            duelState[tPlayerKey].monsters[targetSlot] = null;
-            if (effectUtils && typeof effectUtils.cleanAttachedEquipsAndContinuousEffects === 'function') {
-                effectUtils.cleanAttachedEquipsAndContinuousEffects(duelState, targetMonster, tPlayerKey);
-            }
-            if (effectUtils && typeof effectUtils.cleanupOrphanedEquipCards === 'function') {
-                effectUtils.cleanupOrphanedEquipCards(duelState);
-            }
-            const returnCard = targetMonster.card_data ? { ...targetMonster.card_data } : targetMonster;
-            duelState[tPlayerKey].hand = duelState[tPlayerKey].hand || [];
-            duelState[tPlayerKey].hand.push(returnCard);
-            effectUtils.emitDuelLog(duelState.roomId, `🦔🔄 [${this.name}] ¡EFECTO DE VOLTEO! Regresa a "${mName}" a la mano de su dueño.`, 'effect');
-            return { success: true };
-        }
-        effectUtils.emitDuelLog(duelState.roomId, `🦔 [${this.name}] ¡EFECTO DE VOLTEO! No hay ningún monstruo en el campo para regresar a la mano.`, 'effect');
-        return { success: true };
+    canActivate({ duelState, playerKey, opponentKey }) {
+        return { canActivate: false, reason: "Los efectos de Volteo se activan automáticamente al voltear la carta boca arriba." };
     },
 
     async onActivate(duelState, playerKey, opponentKey, targetData, link, effectUtils) {
-        return this.onFlip({ duelState, playerKey, opponentKey, targetData, link, effectUtils });
+        const oppKey = opponentKey || (playerKey === 'player1' ? 'player2' : 'player1');
+        let targetMon = null;
+        let targetOwner = oppKey;
+        let targetSlot = -1;
+
+        if (targetData && targetData.slot_index !== undefined) {
+            targetOwner = targetData.target_player || oppKey;
+            targetSlot = targetData.slot_index;
+            targetMon = duelState[targetOwner]?.monsters?.[targetSlot];
+        }
+
+        if (!targetMon) {
+            let maxAtk = -1;
+            const oppMons = duelState[oppKey]?.monsters || [];
+            oppMons.forEach((m, idx) => {
+                if (m) {
+                    const atk = m.currentAtk !== undefined ? m.currentAtk : (m.card_data ? m.card_data.atk : 0);
+                    if (atk > maxAtk) {
+                        maxAtk = atk;
+                        targetSlot = idx;
+                        targetMon = m;
+                        targetOwner = oppKey;
+                    }
+                }
+            });
+        }
+
+        if (targetMon && targetSlot !== -1) {
+            const tName = targetMon.card_data?.name || targetMon.name || 'Monstruo';
+            effectUtils.cleanAttachedEquipsAndContinuousEffects(duelState, targetMon, targetOwner);
+            duelState[targetOwner].monsters[targetSlot] = null;
+
+            if (!duelState[targetOwner].hand) duelState[targetOwner].hand = [];
+            duelState[targetOwner].hand.push(targetMon.card_data || targetMon);
+
+            effectUtils.emitDuelLog(
+                duelState.roomId,
+                `💨🎴 [Hane-Hane] ¡Devuelve a "${tName}" a la mano de su dueño!`,
+                'flip'
+            );
+            return { success: true };
+        }
+
+        effectUtils.emitDuelLog(duelState.roomId, `💨 [Hane-Hane] No hay monstruos en el campo para devolver a la mano.`, 'flip');
+        return { success: true };
     },
 
     async execute(context) {
-        return this.onFlip(context);
+        const { duelState, playerKey, opponentKey, targetData, link, effectUtils } = context;
+        return this.onActivate(duelState, playerKey, opponentKey, targetData, link, effectUtils);
     }
 };

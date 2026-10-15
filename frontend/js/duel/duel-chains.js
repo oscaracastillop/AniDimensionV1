@@ -46,28 +46,30 @@ function checkMonsterMeetsEquipCondition(equipCardData, monster) {
     const mType = (mData.type || monster.type || '').toLowerCase();
     const mAttr = (mData.attribute || monster.attribute || '').toUpperCase();
 
-    // Comprobación rigurosa de razas específicas
+    const raceCode = Number(mData.raceCode || mData.race || 0);
+
+    // Comprobación rigurosa de razas específicas (inglés, español y bitmask)
     const racePatterns = [
-        { req: 'warrior', match: (mRace === 'warrior' || mRace.includes('warrior') || mType.includes('warrior')) && !mRace.includes('beast-warrior') },
-        { req: 'aqua', match: mRace === 'aqua' || mRace.includes('aqua') || mType.includes('aqua') },
-        { req: 'beast-warrior', match: mRace === 'beast-warrior' || mRace.includes('beast-warrior') || mType.includes('beast-warrior') },
-        { req: 'beast', match: (mRace === 'beast' || mRace.includes('beast') || mType.includes('beast')) && !mRace.includes('beast-warrior') && !mRace.includes('winged beast') },
-        { req: 'winged beast', match: mRace === 'winged beast' || mRace.includes('winged beast') || mType.includes('winged beast') },
-        { req: 'zombie', match: mRace === 'zombie' || mRace.includes('zombie') || mType.includes('zombie') },
-        { req: 'spellcaster', match: mRace === 'spellcaster' || mRace.includes('spellcaster') || mType.includes('spellcaster') },
-        { req: 'fiend', match: mRace === 'fiend' || mRace.includes('fiend') || mType.includes('fiend') },
-        { req: 'insect', match: mRace === 'insect' || mRace.includes('insect') || mType.includes('insect') },
-        { req: 'plant', match: mRace === 'plant' || mRace.includes('plant') || mType.includes('plant') },
-        { req: 'fairy', match: mRace === 'fairy' || mRace.includes('fairy') || mType.includes('fairy') },
-        { req: 'dragon', match: mRace === 'dragon' || mRace.includes('dragon') || mType.includes('dragon') },
-        { req: 'thunder', match: mRace === 'thunder' || mRace.includes('thunder') || mType.includes('thunder') },
-        { req: 'machine', match: mRace === 'machine' || mRace.includes('machine') || mType.includes('machine') },
-        { req: 'dinosaur', match: mRace === 'dinosaur' || mRace.includes('dinosaur') || mType.includes('dinosaur') },
-        { req: 'rock', match: mRace === 'rock' || mRace.includes('rock') || mType.includes('rock') },
-        { req: 'pyro', match: mRace === 'pyro' || mRace.includes('pyro') || mType.includes('pyro') },
-        { req: 'fish', match: mRace === 'fish' || mRace.includes('fish') || mType.includes('fish') },
-        { req: 'sea serpent', match: mRace === 'sea serpent' || mRace.includes('sea serpent') || mType.includes('sea serpent') },
-        { req: 'reptile', match: mRace === 'reptile' || mRace.includes('reptile') || mType.includes('reptile') }
+        { req: 'warrior', match: ((raceCode & 0x1) !== 0 || mRace === 'warrior' || mRace.includes('warrior') || mRace.includes('guerrero') || mType.includes('warrior') || mType.includes('guerrero')) && !mRace.includes('beast-warrior') && !mRace.includes('guerrero-bestia') },
+        { req: 'aqua', match: (raceCode & 0x400000) !== 0 || mRace === 'aqua' || mRace.includes('aqua') || mType.includes('aqua') },
+        { req: 'beast-warrior', match: (raceCode & 0x10000) !== 0 || mRace === 'beast-warrior' || mRace.includes('beast-warrior') || mRace.includes('guerrero-bestia') || mRace.includes('bestia guerrera') || mType.includes('beast-warrior') || mType.includes('guerrero-bestia') },
+        { req: 'beast', match: ((raceCode & 0x8000) !== 0 || mRace === 'beast' || mRace.includes('beast') || mRace.includes('bestia') || mType.includes('beast') || mType.includes('bestia')) && !mRace.includes('beast-warrior') && !mRace.includes('guerrero-bestia') && !mRace.includes('winged beast') && !mRace.includes('bestia alada') },
+        { req: 'winged beast', match: (raceCode & 0x20000) !== 0 || mRace === 'winged beast' || mRace.includes('winged beast') || mRace.includes('bestia alada') || mType.includes('winged beast') },
+        { req: 'zombie', match: (raceCode & 0x10) !== 0 || mRace === 'zombie' || mRace.includes('zombie') || mRace.includes('zombi') || mType.includes('zombie') || mType.includes('zombi') },
+        { req: 'spellcaster', match: (raceCode & 0x2) !== 0 || mRace === 'spellcaster' || mRace.includes('spellcaster') || mRace.includes('lanzador de conjuros') || mRace.includes('mago') || mType.includes('spellcaster') },
+        { req: 'fiend', match: (raceCode & 0x8) !== 0 || mRace === 'fiend' || mRace.includes('fiend') || mRace.includes('demonio') || mType.includes('fiend') },
+        { req: 'insect', match: (raceCode & 0x80) !== 0 || mRace === 'insect' || mRace.includes('insect') || mRace.includes('insecto') || mType.includes('insect') },
+        { req: 'plant', match: (raceCode & 0x400) !== 0 || mRace === 'plant' || mRace.includes('plant') || mRace.includes('planta') || mType.includes('plant') },
+        { req: 'fairy', match: (raceCode & 0x4) !== 0 || mRace === 'fairy' || mRace.includes('fairy') || mRace.includes('hada') || mType.includes('fairy') },
+        { req: 'dragon', match: (raceCode & 0x2000) !== 0 || mRace === 'dragon' || mRace.includes('dragon') || mRace.includes('dragón') || mType.includes('dragon') || mType.includes('dragón') },
+        { req: 'thunder', match: (raceCode & 0x800) !== 0 || mRace === 'thunder' || mRace.includes('thunder') || mRace.includes('trueno') || mType.includes('thunder') },
+        { req: 'machine', match: (raceCode & 0x40) !== 0 || mRace === 'machine' || mRace.includes('machine') || mRace.includes('máquina') || mRace.includes('maquina') || mType.includes('machine') },
+        { req: 'dinosaur', match: (raceCode & 0x1000) !== 0 || mRace === 'dinosaur' || mRace.includes('dinosaur') || mRace.includes('dinosaurio') || mType.includes('dinosaur') },
+        { req: 'rock', match: (raceCode & 0x200) !== 0 || mRace === 'rock' || mRace.includes('rock') || mRace.includes('roca') || mType.includes('rock') },
+        { req: 'pyro', match: (raceCode & 0x4000) !== 0 || mRace === 'pyro' || mRace.includes('pyro') || mRace.includes('piro') || mType.includes('pyro') },
+        { req: 'fish', match: (raceCode & 0x40000) !== 0 || mRace === 'fish' || mRace.includes('fish') || mRace.includes('pez') || mType.includes('fish') },
+        { req: 'sea serpent', match: (raceCode & 0x80000) !== 0 || mRace === 'sea serpent' || mRace.includes('sea serpent') || mRace.includes('serpiente marina') || mType.includes('sea serpent') },
+        { req: 'reptile', match: (raceCode & 0x100000) !== 0 || mRace === 'reptile' || mRace.includes('reptile') || mRace.includes('reptil') || mType.includes('reptile') }
     ];
 
     for (const p of racePatterns) {
@@ -78,10 +80,10 @@ function checkMonsterMeetsEquipCondition(equipCardData, monster) {
     }
 
     if (desc.includes('equip only to a dark') || desc.includes('a dark monster equipped')) {
-        return mAttr === 'DARK';
+        return mAttr === 'DARK' || mAttr === 'OSCURIDAD';
     }
     if (desc.includes('equip only to a light') || desc.includes('a light monster equipped')) {
-        return mAttr === 'LIGHT';
+        return mAttr === 'LIGHT' || mAttr === 'LUZ';
     }
 
     return true;
@@ -182,19 +184,42 @@ function isCardRequiringTarget(cardId) {
         }
     }
 
+    // Graveyard targeting spells handled via dedicated selection modals (Project Ignis / Master Duel style)
+    if (numId === 82542267 || numId === 83764718) return null;
+
     if (desc.includes('destruye 1 magia/trampa') || desc.includes('destruye 1 carta mágica') || desc.includes('selecciona 1 magia/trampa') || desc.includes('spell/trap') ||
         desc.includes('target 1 spell') || desc.includes('target 1 trap') || desc.includes('destroy 1 spell') || desc.includes('destroy 1 trap')) {
         return 'SPELL_TRAP';
     }
-    if (desc.includes('selecciona 1 monstruo') || desc.includes('destruye 1 monstruo') || desc.includes('cambia la posición') ||
-        desc.includes('target 1 monster') || desc.includes('target 1 face-up monster') || desc.includes('select 1 monster') || 
-        desc.includes('destroy 1 monster') || desc.includes('return it to the hand') || desc.includes('return that target to the hand') || 
-        desc.includes('change the battle position') || desc.includes('target up to 2 monsters')) {
-        return 'MONSTER_ANY';
+    if (!desc.includes('graveyard') && !desc.includes('cementerio')) {
+        if (desc.includes('selecciona 1 monstruo') || desc.includes('destruye 1 monstruo') || desc.includes('cambia la posición') ||
+            desc.includes('target 1 monster') || desc.includes('target 1 face-up monster') || desc.includes('select 1 monster') || 
+            desc.includes('destroy 1 monster') || desc.includes('return it to the hand') || desc.includes('return that target to the hand') || 
+            desc.includes('change the battle position') || desc.includes('target up to 2 monsters')) {
+            return 'MONSTER_ANY';
+        }
     }
 
     return null;
 }
+
+function showMasterDuelTargetingLaser(slotIndex, fromHand) {
+    // Desactivado por solicitud del usuario (sin flechas ni láseres invasivos)
+    return;
+}
+
+function hideMasterDuelTargetingLaser() {
+    const svg = document.getElementById('duel-targeting-svg');
+    const reticle = document.getElementById('targeting-crosshair-reticle');
+    if (svg) svg.style.display = 'none';
+    if (reticle) reticle.style.display = 'none';
+    if (window._masterDuelTargetingMoveHandler) {
+        window.removeEventListener('mousemove', window._masterDuelTargetingMoveHandler);
+        window._masterDuelTargetingMoveHandler = null;
+    }
+}
+window.showMasterDuelTargetingLaser = showMasterDuelTargetingLaser;
+window.hideMasterDuelTargetingLaser = hideMasterDuelTargetingLaser;
 
 function startInteractiveTargeting(mode, cardId, slotIndex = -1, fromHand = false, isChain = false, cardName = 'Carta', actionType = 'ACTIVATE', cardData = null) {
     pendingTargetAction = {
@@ -213,6 +238,8 @@ function startInteractiveTargeting(mode, cardId, slotIndex = -1, fromHand = fals
         const modal = document.getElementById('chain-prompt-modal');
         if (modal) modal.style.display = 'none';
     }
+
+    showMasterDuelTargetingLaser(slotIndex, fromHand);
 
     const banner = document.getElementById('targeting-floating-banner');
     const icon = document.getElementById('targeting-icon');
@@ -287,6 +314,7 @@ function startInteractiveTargeting(mode, cardId, slotIndex = -1, fromHand = fals
 }
 
 function cancelInteractiveTargeting() {
+    hideMasterDuelTargetingLaser();
     const wasChain = pendingTargetAction && pendingTargetAction.isChain;
     pendingTargetAction = null;
 
@@ -339,7 +367,7 @@ function highlightTargets(mode, enable) {
     } else if (mode === 'MONSTER_OPPONENT_DEF') {
         for (let i = 0; i < 5; i++) {
             const m = rival && rival.monsters && rival.monsters[i];
-            if (m && m.position === 'DEF') {
+            if (m && (m.position === 'DEF' || m.position === 'SET' || m.faceDown === true)) {
                 const el = document.getElementById(`r-m${i}`);
                 if (el) el.classList.add('trap-target-candidate');
             }
@@ -447,6 +475,24 @@ function activateCardDirectly(cardId, fromHand = false, slotIndex = -1, cardName
             return;
         }
     }
+    if (numId === 82542267) {
+        if (typeof openGravediggerGhoulModal === 'function') {
+            openGravediggerGhoulModal(fromHand, slotIndex);
+            return;
+        }
+    }
+    if (numId === 24094653) {
+        const check = typeof window.checkCanPerformFusion === 'function' ? window.checkCanPerformFusion(false, false) : (typeof checkCanPerformFusion === 'function' ? checkCanPerformFusion(false, false) : { canFusion: false });
+        if (!check.canFusion || !check.availableFusions || check.availableFusions.length === 0) {
+            const alertFunc = (typeof showRuleAlert === 'function') ? showRuleAlert : alert;
+            alertFunc(`⚠️ [Polimerización] ${check.reason || 'No tienes materiales suficientes en mano o campo para ninguna Invocación por Fusión de tu Extra Deck.'}`);
+            return;
+        }
+        if (typeof window.openFusionModal === 'function') {
+            window.openFusionModal(check.availableFusions, false, false);
+            return;
+        }
+    }
 
     const targetMode = isCardRequiringTarget(cardId);
     if (targetMode) {
@@ -540,7 +586,7 @@ function openRebornModal(fromHand = true, slotIndex = -1) {
             const el = document.createElement('div');
             el.className = 'gy-card-item';
             el.innerHTML = `
-                <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards_small/${cId}.jpg');"></div>
+                <div class="gy-card-img" style="background-image:url('/api/cards/${cId}/image');"></div>
                 <div class="gy-card-name">${c.name || 'Monstruo'}</div>
                 <div style="font-size:8px; color:var(--accent-gold);">ATK: ${c.atk} / DEF: ${c.def}</div>
             `;
@@ -558,7 +604,7 @@ function openRebornModal(fromHand = true, slotIndex = -1) {
             const el = document.createElement('div');
             el.className = 'gy-card-item';
             el.innerHTML = `
-                <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards_small/${cId}.jpg');"></div>
+                <div class="gy-card-img" style="background-image:url('/api/cards/${cId}/image');"></div>
                 <div class="gy-card-name">${c.name || 'Monstruo'}</div>
                 <div style="font-size:8px; color:var(--accent-gold);">ATK: ${c.atk} / DEF: ${c.def}</div>
             `;
@@ -603,6 +649,194 @@ function selectRebornMonster(targetGy, targetIndex) {
 }
 
 // =========================================================================
+// GRAVEDIGGER GHOUL (LADRÓN DE TUMBAS / CAVADOR DE TUMBAS OCG - 82542267)
+// =========================================================================
+let gravediggerActivationSource = { fromHand: true, slotIndex: -1 };
+let gravediggerSelectedIndices = [];
+
+function openGravediggerGhoulModal(fromHand = true, slotIndex = -1) {
+    if (!lastDuelState) return;
+    gravediggerActivationSource = { fromHand, slotIndex };
+    gravediggerSelectedIndices = [];
+    const rival = getRivalDuelPlayer();
+
+    const rivalGy = (rival && rival.graveyard) || [];
+    const isMonster = c => {
+        if (!c) return false;
+        const t = (c.type || c.card_data?.type || '').toLowerCase();
+        if (t.includes('spell') || t.includes('trap') || t.includes('mágica') || t.includes('trampa')) return false;
+        if (t.includes('monster') || t.includes('monstruo')) return true;
+        const atk = c.atk !== null && c.atk !== undefined ? c.atk : (c.card_data?.atk !== null && c.card_data?.atk !== undefined ? c.card_data.atk : null);
+        return atk !== null && !isNaN(atk) && atk >= 0;
+    };
+    const rivalMonsters = rivalGy.filter(isMonster);
+
+    if (rivalMonsters.length === 0) {
+        const alertFunc = (typeof showRuleAlert === 'function') ? showRuleAlert : alert;
+        alertFunc('⚠️ [Gravedigger Ghoul] No hay monstruos en el Cementerio del adversario para desterrar.');
+        return;
+    }
+
+    let modal = document.getElementById('gravedigger-modal');
+    if (!modal) {
+        const div = document.createElement('div');
+        div.id = 'gravedigger-modal';
+        div.className = 'ocg-modal-overlay';
+        div.style.display = 'none';
+        div.innerHTML = `
+            <div class="gy-modal-card" style="border: 2px solid #a855f7; box-shadow: 0 0 35px rgba(168, 85, 247, 0.5); width: 720px; max-height: 520px; background: linear-gradient(145deg, #0f172a, #1e1b4b); border-radius: 12px; display:flex; flex-direction:column; padding: 16px; color: #fff;">
+                <div class="gy-modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(168, 85, 247, 0.3); padding-bottom: 10px; margin-bottom: 12px;">
+                    <h3 style="color:#c084fc; font-size:14px; font-weight:900; margin:0; display:flex; align-items:center; gap:8px;">
+                        <span>🪦👻</span> Gravedigger Ghoul: Selecciona hasta 2 Monstruos
+                    </h3>
+                    <button class="modal-close-btn" onclick="closeGravediggerGhoulModal()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+                </div>
+                <div style="font-size:11px; color:#cbd5e1; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span>Selecciona hasta 2 monstruos en el Cementerio del adversario para desterrarlos del juego:</span>
+                    <span id="gravedigger-count-badge" style="padding:3px 10px; border-radius:12px; background:rgba(192, 132, 252, 0.2); border:1px solid #c084fc; color:#e9d5ff; font-weight:bold; font-size:11px;">0 / 2 seleccionados</span>
+                </div>
+                <div id="gravedigger-cards-grid" class="gy-cards-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap:10px; max-height: 280px; overflow-y:auto; padding: 8px; background: rgba(0,0,0,0.35); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); flex:1;">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; padding-top:10px; border-top: 1px solid rgba(255,255,255,0.08);">
+                    <button onclick="closeGravediggerGhoulModal()" style="padding: 8px 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; border-radius: 6px; cursor:pointer; font-size:11px; font-weight:700;">
+                        ✕ Cancelar
+                    </button>
+                    <button id="btn-confirm-gravedigger" onclick="confirmGravediggerBanish()" disabled style="padding: 8px 20px; background: linear-gradient(135deg, #9333ea, #6b21a8); border: 1px solid #c084fc; color: #fff; border-radius: 6px; cursor:pointer; font-size:11px; font-weight:800; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); opacity: 0.5; transition: all 0.2s ease;">
+                        ⚡ Desterrar Monstruo(s)
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(div);
+        modal = div;
+    }
+
+    const grid = document.getElementById('gravedigger-cards-grid');
+    if (grid) {
+        grid.innerHTML = '';
+        rivalGy.forEach((c, idx) => {
+            if (!isMonster(c)) return;
+            const cId = c.id || c.card_id || (c.card_data && c.card_data.id);
+            const cardName = c.name || (c.card_data && c.card_data.name) || 'Monstruo';
+            const atk = c.atk !== undefined && c.atk !== null ? c.atk : (c.card_data && c.card_data.atk !== undefined ? c.card_data.atk : 0);
+            const def = c.def !== undefined && c.def !== null ? c.def : (c.card_data && c.card_data.def !== undefined ? c.card_data.def : 0);
+
+            const el = document.createElement('div');
+            el.className = 'gy-card-item gravedigger-card-item';
+            el.dataset.gyIndex = idx;
+            el.style.cssText = 'position:relative; background:rgba(15,23,42,0.8); border:1px solid rgba(168,85,247,0.3); border-radius:6px; padding:6px; cursor:pointer; transition:all 0.2s ease; text-align:center; user-select:none;';
+            el.innerHTML = `
+                <div class="gy-card-img" style="background-image:url('/api/cards/${cId}/image'); height:90px; background-size:cover; background-position:center; border-radius:4px; margin-bottom:4px;"></div>
+                <div class="gy-card-name" style="font-size:10px; font-weight:700; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${cardName}</div>
+                <div style="font-size:8.5px; color:#ffd700; font-weight:bold;">ATK: ${atk} / DEF: ${def}</div>
+            `;
+            el.onclick = () => toggleGravediggerSelection(idx, el);
+            grid.appendChild(el);
+        });
+    }
+
+    updateGravediggerUiState();
+    modal.style.display = 'flex';
+}
+
+function closeGravediggerGhoulModal() {
+    const modal = document.getElementById('gravedigger-modal');
+    if (modal) modal.style.display = 'none';
+    gravediggerSelectedIndices = [];
+    updateGravediggerUiState();
+}
+
+function toggleGravediggerSelection(gyIndex, cardElement) {
+    const existingPos = gravediggerSelectedIndices.indexOf(gyIndex);
+    if (existingPos !== -1) {
+        gravediggerSelectedIndices.splice(existingPos, 1);
+        if (cardElement) {
+            cardElement.style.borderColor = 'rgba(168,85,247,0.3)';
+            cardElement.style.background = 'rgba(15,23,42,0.8)';
+            cardElement.style.boxShadow = 'none';
+            cardElement.style.transform = 'none';
+            const badge = cardElement.querySelector('.gravedigger-check-badge');
+            if (badge) badge.remove();
+        }
+    } else {
+        if (gravediggerSelectedIndices.length >= 2) {
+            if (typeof showRuleAlert === 'function') {
+                showRuleAlert('⚠️ [Gravedigger Ghoul] Solo puedes seleccionar hasta un máximo de 2 monstruos.');
+            }
+            return;
+        }
+        gravediggerSelectedIndices.push(gyIndex);
+        if (cardElement) {
+            cardElement.style.borderColor = '#ffd700';
+            cardElement.style.background = 'rgba(168,85,247,0.35)';
+            cardElement.style.boxShadow = '0 0 16px rgba(255,215,0,0.6)';
+            cardElement.style.transform = 'scale(1.04)';
+            const check = document.createElement('div');
+            check.className = 'gravedigger-check-badge';
+            check.style.cssText = 'position:absolute; top:4px; right:4px; background:#ffd700; color:#000; border-radius:50%; width:18px; height:18px; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; box-shadow:0 0 8px rgba(255,215,0,0.8);';
+            check.textContent = '✓';
+            cardElement.appendChild(check);
+        }
+    }
+    updateGravediggerUiState();
+}
+
+function updateGravediggerUiState() {
+    const badge = document.getElementById('gravedigger-count-badge');
+    const confirmBtn = document.getElementById('btn-confirm-gravedigger');
+    const count = gravediggerSelectedIndices.length;
+
+    if (badge) {
+        badge.textContent = `${count} / 2 seleccionados`;
+        if (count > 0) {
+            badge.style.background = 'rgba(255, 215, 0, 0.25)';
+            badge.style.borderColor = '#ffd700';
+            badge.style.color = '#ffd700';
+        } else {
+            badge.style.background = 'rgba(192, 132, 252, 0.2)';
+            badge.style.borderColor = '#c084fc';
+            badge.style.color = '#e9d5ff';
+        }
+    }
+
+    if (confirmBtn) {
+        if (count >= 1 && count <= 2) {
+            confirmBtn.disabled = false;
+            confirmBtn.style.opacity = '1';
+            confirmBtn.style.cursor = 'pointer';
+            confirmBtn.style.boxShadow = '0 0 20px rgba(168, 85, 247, 0.8)';
+        } else {
+            confirmBtn.disabled = true;
+            confirmBtn.style.opacity = '0.5';
+            confirmBtn.style.cursor = 'not-allowed';
+            confirmBtn.style.boxShadow = 'none';
+        }
+    }
+}
+
+function confirmGravediggerBanish() {
+    if (gravediggerSelectedIndices.length === 0) return;
+
+    const activeSocket = getActiveSocket();
+    if (activeSocket) {
+        activeSocket.emit('OCG_ACTIVATE_CARD', {
+            room_id: getActiveDuelRoomId(),
+            card_id: 82542267,
+            from_hand: Boolean(gravediggerActivationSource ? gravediggerActivationSource.fromHand : true),
+            slot_index: (gravediggerActivationSource && gravediggerActivationSource.slotIndex !== undefined) ? gravediggerActivationSource.slotIndex : -1,
+            target_data: {
+                selected_cards: [...gravediggerSelectedIndices]
+            }
+        });
+    }
+
+    closeGravediggerGhoulModal();
+    if (typeof selectedHandCardIndex !== 'undefined') selectedHandCardIndex = -1;
+    if (typeof selectedHandCardId !== 'undefined') selectedHandCardId = null;
+    if (typeof highlightAvailableSlots === 'function') highlightAvailableSlots(false, true);
+}
+
+// =========================================================================
 // LÍMITE DE MANO EN END PHASE (DESCARTE OBLIGATORIO SEGÚN KONAMI OCG)
 // =========================================================================
 let pendingDiscardData = null;
@@ -630,7 +864,7 @@ if (discardSocket) {
             div.className = 'gy-card-item discard-candidate';
             div.id = `discard-card-${idx}`;
             div.innerHTML = `
-                <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards_small/${cId}.jpg');"></div>
+                <div class="gy-card-img" style="background-image:url('/api/cards/${cId}/image');"></div>
                 <div class="gy-card-name">${card.name || 'Carta'}</div>
             `;
             div.onclick = () => toggleDiscardCard(idx);
@@ -736,9 +970,30 @@ function checkCanPerformFusion(isFusionGate = false, isContactOnly = false) {
         const p2Field = rival && rival.fieldSpell;
         const p1FieldId = Number((p1Field && (p1Field.card_id || p1Field.id)) || 0);
         const p2FieldId = Number((p2Field && (p2Field.card_id || p2Field.id)) || 0);
-        if (p1FieldId === 33550694 || p2FieldId === 33550694) {
+        const p1FieldName = (p1Field?.card_data?.name || p1Field?.name || '').toLowerCase();
+        const p2FieldName = (p2Field?.card_data?.name || p2Field?.name || '').toLowerCase();
+        if (p1FieldId === 33550694 || p2FieldId === 33550694 || p1FieldName.includes('fusion gate') || p2FieldName.includes('fusion gate')) {
             isFusionGate = true;
         }
+    }
+
+    // Comprobar si el jugador posee Polimerización en mano o retaguardia
+    const hasPolymerization = (local.hand || []).some(c => {
+        const cId = Number(c.id || c.card_id || (c.card_data && c.card_data.id) || 0);
+        const cName = (c.name || (c.card_data && c.card_data.name) || '').toLowerCase();
+        return cId === 24094653 || cName.includes('polymerization') || cName.includes('polimerizaci');
+    }) || (local.spells || []).some(s => {
+        if (!s) return false;
+        const sId = Number(s.id || s.card_id || (s.card_data && s.card_data.id) || 0);
+        const sName = (s.name || (s.card_data && s.card_data.name) || '').toLowerCase();
+        return sId === 24094653 || sName.includes('polymerization') || sName.includes('polimerizaci');
+    });
+
+    if (!isContactOnly && !isFusionGate && !hasPolymerization) {
+        return {
+            canFusion: false,
+            reason: 'Requieres la carta mágica "Polimerización" en mano/campo o tener activo el Campo "Fusion Gate" para realizar una Invocación por Fusión.'
+        };
     }
 
     const hand = local.hand || [];
@@ -889,7 +1144,7 @@ function openFusionModal(validFusions, isFusionGate = false, isContactFusion = f
         el.className = 'gy-card-item fusion-candidate' + (idx === 0 ? ' gy-card-selected' : '');
         el.id = `fusion-opt-${idx}`;
         el.innerHTML = `
-            <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards_small/${cId}.jpg'), url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+            <div class="gy-card-img" style="background-image:url('/api/cards/${cId}/image');"></div>
             <div class="gy-card-name" style="color:var(--accent-purple); font-weight:800;">${item.fusionCard.name}</div>
             <div style="font-size:8px; color:var(--accent-gold);">ATK: ${item.fusionCard.atk} / DEF: ${item.fusionCard.def}</div>
         `;
@@ -923,7 +1178,7 @@ function selectFusionOption(item, idx) {
             const div = document.createElement('div');
             div.style.cssText = 'background:rgba(255,255,255,0.06); border:1px solid rgba(168,85,247,0.4); border-radius:6px; padding:6px 10px; display:flex; align-items:center; gap:8px;';
             div.innerHTML = `
-                <div style="width:28px; height:40px; background-size:cover; background-position:center; border-radius:3px; background-image:url('https://images.ygoprodeck.com/images/cards_small/${m.card_id}.jpg');"></div>
+                <div style="width:28px; height:40px; background-size:cover; background-position:center; border-radius:3px; background-image:url('/api/cards/${m.card_id}/image');"></div>
                 <div>
                     <div style="font-size:10px; font-weight:700; color:#ffffff;">${m.card.name || 'Material'}</div>
                     <div style="font-size:8px; color:var(--accent-cyan); font-weight:600;">Ubicación: ${m.location === 'HAND' ? '🖐️ Mano' : '⚔️ Campo (Casilla #' + (m.slotIndex + 1) + ')'}</div>
@@ -1131,7 +1386,7 @@ function openSynchroModal(synchroCard, combinations) {
     const cId = Number(synchroCard.id || synchroCard.card_id || sData.id);
     grid.innerHTML = `
         <div class="gy-card-item gy-card-selected" style="border: 2px solid #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);">
-            <div class="gy-card-img" style="background-image:url('https://images.ygoprodeck.com/images/cards_small/${cId}.jpg'), url('https://images.ygoprodeck.com/images/cards/${cId}.jpg');"></div>
+            <div class="gy-card-img" style="background-image:url('/api/cards/${cId}/image');"></div>
             <div class="gy-card-name" style="color:#38bdf8; font-weight:800;">${sData.name}</div>
             <div style="font-size:8px; color:var(--accent-gold);">★ Nivel ${sData.level} | ${sData.atk} ATK / ${sData.def} DEF</div>
         </div>
@@ -1160,7 +1415,7 @@ function renderSynchroMaterials(combo) {
     const tunerDiv = document.createElement('div');
     tunerDiv.style.cssText = 'background:rgba(2,132,199,0.15); border:1px solid #38bdf8; border-radius:6px; padding:6px 10px; display:flex; align-items:center; gap:8px;';
     tunerDiv.innerHTML = `
-        <div style="width:28px; height:40px; background-size:cover; background-position:center; border-radius:3px; background-image:url('https://images.ygoprodeck.com/images/cards_small/${combo.tuner.card_id}.jpg');"></div>
+        <div style="width:28px; height:40px; background-size:cover; background-position:center; border-radius:3px; background-image:url('/api/cards/${combo.tuner.card_id}/image');"></div>
         <div>
             <div style="font-size:10px; font-weight:700; color:#ffffff;">${combo.tuner.name}</div>
             <div style="font-size:8px; color:#38bdf8; font-weight:700;">🎵 Cantante (Tuner) ★ Nivel ${combo.tuner.level} (Casilla #${combo.tuner.slotIndex + 1})</div>
@@ -1173,7 +1428,7 @@ function renderSynchroMaterials(combo) {
         const ntDiv = document.createElement('div');
         ntDiv.style.cssText = 'background:rgba(255,255,255,0.06); border:1px solid rgba(168,85,247,0.4); border-radius:6px; padding:6px 10px; display:flex; align-items:center; gap:8px;';
         ntDiv.innerHTML = `
-            <div style="width:28px; height:40px; background-size:cover; background-position:center; border-radius:3px; background-image:url('https://images.ygoprodeck.com/images/cards_small/${nt.card_id}.jpg');"></div>
+            <div style="width:28px; height:40px; background-size:cover; background-position:center; border-radius:3px; background-image:url('/api/cards/${nt.card_id}/image');"></div>
             <div>
                 <div style="font-size:10px; font-weight:700; color:#ffffff;">${nt.name}</div>
                 <div style="font-size:8px; color:var(--accent-cyan); font-weight:700;">⚔️ No-Cantante ★ Nivel ${nt.level} (Casilla #${nt.slotIndex + 1})</div>
@@ -1228,6 +1483,30 @@ if (typeof window !== 'undefined') {
                     return;
                 }
             }
+            if (numId === 82542267) {
+                if (typeof openGravediggerGhoulModal === 'function') {
+                    openGravediggerGhoulModal(true, -1);
+                    selectedHandCardIndex = -1;
+                    selectedHandCardId = null;
+                    highlightAvailableSlots(false, true);
+                    return;
+                }
+            }
+            if (numId === 24094653) {
+                const check = typeof window.checkCanPerformFusion === 'function' ? window.checkCanPerformFusion(false, false) : (typeof checkCanPerformFusion === 'function' ? checkCanPerformFusion(false, false) : { canFusion: false });
+                if (!check.canFusion || !check.availableFusions || check.availableFusions.length === 0) {
+                    const alertFunc = (typeof showRuleAlert === 'function') ? showRuleAlert : alert;
+                    alertFunc(`⚠️ [Polimerización] ${check.reason || 'No tienes materiales suficientes en mano o campo para ninguna Invocación por Fusión de tu Extra Deck.'}`);
+                    return;
+                }
+                if (typeof window.openFusionModal === 'function') {
+                    window.openFusionModal(check.availableFusions, false, false);
+                    selectedHandCardIndex = -1;
+                    selectedHandCardId = null;
+                    highlightAvailableSlots(false, true);
+                    return;
+                }
+            }
             const local = getLocalDuelPlayer();
             const rival = getRivalDuelPlayer();
 
@@ -1272,7 +1551,12 @@ if (typeof window !== 'undefined') {
                 const myUsername = (window.currentUser && window.currentUser.username) 
                     || (window.Session && window.Session.getUser() && window.Session.getUser().username) 
                     || '';
-                if (data && data.target_player && myUsername && data.target_player.toLowerCase() !== myUsername.toLowerCase()) {
+                const isNpcDuel = Boolean(
+                    (window.lastDuelState && (window.lastDuelState.isNpcDuel || window.lastDuelState.mode === 'NPC')) ||
+                    (typeof window.getActiveDuelRoomId === 'function' && window.getActiveDuelRoomId() === 'ROOM_DEMO') ||
+                    (typeof currentNpcOpponent !== 'undefined' && currentNpcOpponent)
+                );
+                if (!isNpcDuel && data && data.target_player && myUsername && data.target_player.toLowerCase() !== myUsername.toLowerCase()) {
                     console.log(`[OCG CHAIN] Ventana de cadena dirigida a ${data.target_player}, ignorando en cliente ${myUsername}.`);
                     return;
                 }
@@ -1299,7 +1583,7 @@ if (typeof window !== 'undefined') {
                 data.allowed_cards.forEach(card => {
                     const cardDiv = document.createElement('div');
                     cardDiv.className = 'chain-card-item';
-                    cardDiv.style.backgroundImage = `url('https://images.ygoprodeck.com/images/cards_small/${card.card_id}.jpg')`;
+                    cardDiv.style.backgroundImage = `url('/api/cards/${card.card_id}/image')`;
                     cardDiv.innerHTML = `<div class="item-title">${card.name}</div>`;
                     cardDiv.onclick = () => {
                         respondChainCard(card.card_id, card.slot_index, card.location === 'HAND');
@@ -1455,7 +1739,7 @@ if (typeof window !== 'undefined') {
                 const isSelected = selectedTributeSlots.includes(i);
                 const cData = m.card_data || {};
                 const cId = m.card_id || (cData ? (cData.id || cData.card_id) : 0);
-                const cImg = `https://images.ygoprodeck.com/images/cards_small/${cId}.jpg`;
+                const cImg = `/api/cards/${cId}/image`;
                 const curAtk = m.currentAtk !== undefined ? m.currentAtk : (cData.atk || 0);
 
                 const cardDiv = document.createElement('div');
@@ -1597,3 +1881,7 @@ if (typeof window !== 'undefined') {
         if (typeof initiateTributeFlow !== 'undefined') window.initiateTributeFlow = initiateTributeFlow;
         if (typeof activateCardFromHand !== 'undefined') window.activateCardFromHand = activateCardFromHand;
         if (typeof activateCardDirectly !== 'undefined') window.activateCardDirectly = activateCardDirectly;
+        if (typeof openGravediggerGhoulModal !== 'undefined') window.openGravediggerGhoulModal = openGravediggerGhoulModal;
+        if (typeof closeGravediggerGhoulModal !== 'undefined') window.closeGravediggerGhoulModal = closeGravediggerGhoulModal;
+        if (typeof confirmGravediggerBanish !== 'undefined') window.confirmGravediggerBanish = confirmGravediggerBanish;
+        if (typeof toggleGravediggerSelection !== 'undefined') window.toggleGravediggerSelection = toggleGravediggerSelection;

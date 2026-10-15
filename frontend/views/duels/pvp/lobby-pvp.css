@@ -1,0 +1,1062 @@
+/* Ani-Dimension: Estilos Cyber-Arena para el Lobby PvP Multijugador */
+:root {
+    --pvp-cyan: #00f0ff;
+    --pvp-gold: #ffd700;
+    --pvp-red: #ff4757;
+    --pvp-green: #10b981;
+    --pvp-bg-dark: #070b14;
+    --pvp-card-bg: rgba(15, 23, 42, 0.92);
+}
+
+body {
+    background-color: var(--pvp-bg-dark);
+    overflow: hidden;
+}
+
+.pvp-lobby-page-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.08), transparent 45%),
+                radial-gradient(circle at bottom left, rgba(255, 215, 0, 0.05), transparent 45%),
+                #070b14;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Header */
+.pvp-header {
+    background: rgba(10, 15, 28, 0.95);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+.duelist-header-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+}
+
+.btn-create-room-trigger {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(9, 132, 227, 0.45));
+    border: 1px solid var(--pvp-cyan);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-create-room-trigger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.4), rgba(9, 132, 227, 0.6));
+}
+
+.btn-refresh-rooms {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 6px;
+    padding: 7px 11px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-refresh-rooms:hover {
+    background: rgba(0, 240, 255, 0.2);
+    border-color: var(--pvp-cyan);
+}
+
+/* VENTANA FLOTANTE ELEGANTE PARA CREAR SALA (CARD FLOTANTE COMPACTA) */
+.floating-create-bar {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 540px;
+    background: linear-gradient(145deg, rgba(12, 19, 35, 0.98), rgba(7, 11, 20, 0.99));
+    border: 1.5px solid var(--pvp-cyan);
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.3);
+    padding: 16px 20px;
+    z-index: 500;
+    backdrop-filter: blur(16px);
+    animation: slideDownCenter 0.25s ease-out;
+}
+
+@keyframes slideDownCenter {
+    from { opacity: 0; transform: translate(-50%, -15px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.create-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+.create-bar-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--pvp-cyan);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+}
+
+.create-bar-badge {
+    background: rgba(255, 215, 0, 0.15);
+    border: 1px solid var(--pvp-gold);
+    color: var(--pvp-gold);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+.btn-close-bar {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.btn-close-bar:hover {
+    color: #ff4757;
+}
+
+.create-bar-form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.form-field-full {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-field-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bar-helper-text {
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 500;
+    margin-top: -3px;
+    margin-bottom: 2px;
+    padding-left: 2px;
+}
+
+.bar-label {
+    font-size: 9.5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: #cbd5e1;
+    letter-spacing: 0.4px;
+}
+
+.bar-input {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    border-radius: 6px;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.bar-input:focus {
+    border-color: var(--pvp-cyan);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.bar-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-bar-create {
+    background: linear-gradient(135deg, #00f0ff, #0984e3);
+    border: none;
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11.5px;
+    font-weight: 900;
+    padding: 9px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-bar-create:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.75);
+}
+
+.btn-bar-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #cbd5e1;
+    font-size: 10.5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-bar-cancel:hover {
+    background: rgba(255, 71, 87, 0.2);
+    border-color: #ff4757;
+    color: #fff;
+}
+
+/* Vista de Tabla */
+.pvp-scroll-content {
+    flex: 1;
+    padding: 16px 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.table-controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px 12px;
+    width: 320px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    outline: none;
+    width: 100%;
+}
+
+.rooms-stats-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.rooms-stats-tag b {
+    color: var(--pvp-cyan);
+}
+
+/* =========================================================================
+   CUADRÍCULA DE CARDS DE SALAS DE DUELO PVP (~5 POR FILA RESPONSIVE)
+   ========================================================================= */
+.pvp-rooms-container {
+    width: 100%;
+    position: relative;
+}
+
+.pvp-rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* En pantallas amplias (Desktop / Laptop): 5 salas por fila */
+@media (min-width: 1300px) {
+    .pvp-rooms-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 1040px) and (max-width: 1299px) {
+    .pvp-rooms-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 760px) and (max-width: 1039px) {
+    .pvp-rooms-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 480px) and (max-width: 759px) {
+    .pvp-rooms-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 479px) {
+    .pvp-rooms-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================================
+   CARD DE SALA ESTÁNDAR (CYBER GLASS)
+   ========================================================================= */
+.pvp-room-card {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(8, 14, 28, 0.98));
+    border: 1px solid rgba(0, 240, 255, 0.28);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), inset 0 0 12px rgba(0, 240, 255, 0.04);
+    backdrop-filter: blur(14px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.pvp-room-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pvp-cyan), transparent);
+    opacity: 0.7;
+}
+
+.pvp-room-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--pvp-cyan);
+    box-shadow: 0 10px 28px rgba(0, 240, 255, 0.3), inset 0 0 16px rgba(0, 240, 255, 0.08);
+}
+
+/* =========================================================================
+   CARD DE SALA CON ADMINISTRADOR (RESALTADA EN DORADO RADIANTE)
+   ========================================================================= */
+.pvp-room-card.admin-room-card {
+    background: linear-gradient(145deg, rgba(38, 28, 6, 0.96), rgba(18, 14, 4, 0.99));
+    border: 1.5px solid #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.35), inset 0 0 16px rgba(255, 215, 0, 0.1);
+}
+
+.pvp-room-card.admin-room-card::before {
+    background: linear-gradient(90deg, transparent, #ffd700, #ffffff, #ffd700, transparent);
+    opacity: 0.95;
+    height: 2.5px;
+}
+
+.pvp-room-card.admin-room-card:hover {
+    transform: translateY(-4px);
+    border-color: #ffe066;
+    box-shadow: 0 0 32px rgba(255, 215, 0, 0.65), inset 0 0 22px rgba(255, 215, 0, 0.18);
+}
+
+.room-card-admin-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ffd700, #d97706);
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-bottom-left-radius: 8px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    z-index: 5;
+}
+
+/* =========================================================================
+   CARD DE SALA CON BONIFICACIÓN ESPECIAL ACTIVA (FUEGO, RAYO, PÚRPURA)
+   ========================================================================= */
+.pvp-room-card.bonus-room-card {
+    border: 1.5px solid #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), inset 0 0 14px rgba(245, 158, 11, 0.08);
+}
+
+.pvp-room-card.bonus-room-card::before {
+    background: linear-gradient(90deg, transparent, #f59e0b, #ef4444, #f59e0b, transparent);
+    opacity: 0.95;
+    height: 2.5px;
+}
+
+.pvp-room-card.bonus-room-card.style-purple {
+    border-color: #c084fc;
+    box-shadow: 0 0 20px rgba(192, 132, 252, 0.45), inset 0 0 14px rgba(192, 132, 252, 0.08);
+}
+
+.pvp-room-card.bonus-room-card.style-purple::before {
+    background: linear-gradient(90deg, transparent, #c084fc, #ec4899, #c084fc, transparent);
+}
+
+.pvp-room-card.bonus-room-card.style-cyan {
+    border-color: #00f0ff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.45), inset 0 0 14px rgba(0, 240, 255, 0.08);
+}
+
+.room-card-bonus-badge {
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    font-weight: 900;
+    padding: 2.5px 6.5px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    letter-spacing: 0.3px;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+    animation: bonusGlowPulse 2s infinite;
+}
+
+@keyframes bonusGlowPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6)); }
+    50% { filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9)); }
+}
+
+.lobby-active-bonus-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(239, 68, 68, 0.2));
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 8px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+    animation: slideDownCenter 0.3s ease-out;
+}
+
+/* Header de la Card */
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+
+.room-lock-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.3px;
+}
+
+.room-lock-pill.unlocked {
+    background: rgba(0, 240, 255, 0.1);
+    color: #00f0ff;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.room-lock-pill.locked {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+/* Título de la Sala */
+.room-card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.3px;
+    margin-top: 1px;
+}
+
+.admin-room-card .room-card-title {
+    color: #ffeaa7;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Host Info */
+.room-host-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 6px 10px;
+}
+
+.admin-room-card .room-host-row {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 215, 0, 0.25);
+}
+
+.room-host-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--pvp-cyan);
+    object-fit: cover;
+    background: #000;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.room-host-avatar.admin-avatar-glow {
+    border-color: #ffd700;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.room-host-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.room-host-name {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.room-host-name.admin-name-glow {
+    color: #ffd700;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.room-host-level {
+    font-size: 9.5px;
+    color: var(--pvp-gold);
+    font-weight: 700;
+}
+
+/* Meta info (Rango Nivel & ID) */
+.room-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+
+.lvl-range-badge {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.12);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    color: var(--pvp-gold);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.room-id-tag {
+    font-size: 9.5px;
+    color: #64748b;
+    font-family: monospace;
+    font-weight: 700;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2.5px 7px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 9.5px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.status-badge.waiting {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid var(--pvp-green);
+    color: var(--pvp-green);
+}
+
+.status-badge.dueling {
+    background: rgba(255, 71, 87, 0.15);
+    border: 1px solid var(--pvp-red);
+    color: var(--pvp-red);
+}
+
+.status-badge.ready {
+    background: rgba(0, 240, 255, 0.15);
+    border: 1px solid var(--pvp-cyan);
+    color: var(--pvp-cyan);
+}
+
+/* Botones de Acción en Card */
+.room-card-action {
+    width: 100%;
+}
+
+.btn-card-action {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    letter-spacing: 0.4px;
+}
+
+.btn-join-regular {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(9, 132, 227, 0.5));
+    border: 1px solid var(--pvp-cyan);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+}
+
+.btn-join-regular:hover {
+    background: linear-gradient(135deg, #00f0ff, #0984e3);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+    transform: translateY(-1px);
+}
+
+.btn-join-admin {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.35), rgba(217, 119, 6, 0.6));
+    border: 1px solid #ffd700;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.4);
+}
+
+.btn-join-admin:hover {
+    background: linear-gradient(135deg, #ffd700, #f59e0b);
+    color: #000;
+    box-shadow: 0 0 22px rgba(255, 215, 0, 0.8);
+    transform: translateY(-1px);
+}
+
+.btn-my-room {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: 1px solid #34d399;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-my-room:hover {
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #000;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.6);
+    transform: translateY(-1px);
+}
+
+.btn-disabled {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+/* Empty State */
+.empty-state-box {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-icon {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.empty-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--pvp-cyan);
+    margin-bottom: 4px;
+}
+
+.empty-desc {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 16px;
+}
+
+.btn-empty-create {
+    background: linear-gradient(135deg, #00f0ff, #0984e3);
+    border: none;
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11.5px;
+    font-weight: 900;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* SALA DE ESPERA / VERSUS STAGE */
+.pvp-waiting-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.waiting-card {
+    background: var(--pvp-card-bg);
+    border: 1.5px solid var(--pvp-cyan);
+    border-radius: 12px;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.3);
+    width: 680px;
+    max-width: 94vw;
+    padding: 22px;
+    position: relative;
+}
+
+.waiting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.waiting-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9.5px;
+    font-weight: 800;
+    color: var(--pvp-gold);
+    letter-spacing: 0.5px;
+}
+
+.waiting-room-title {
+    margin: 3px 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: #fff;
+}
+
+.waiting-room-meta {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.btn-cancel-waiting {
+    background: rgba(255, 71, 87, 0.15);
+    border: 1px solid var(--pvp-red);
+    color: var(--pvp-red);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel-waiting:hover {
+    background: var(--pvp-red);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+}
+
+.vs-stage-grid {
+    display: grid;
+    grid-template-columns: 1fr 140px 1fr;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.duelist-slot {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+    position: relative;
+}
+
+.duelist-slot.host-slot {
+    border-color: rgba(0, 240, 255, 0.4);
+}
+
+.duelist-slot.guest-slot {
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.slot-role {
+    font-size: 9px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.slot-avatar-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 6px;
+}
+
+.slot-avatar-img {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 2px solid var(--pvp-cyan);
+    object-fit: cover;
+}
+
+.slot-ready-indicator {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    font-weight: 900;
+    padding: 1px 6px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.slot-ready-indicator.ready {
+    background: var(--pvp-green);
+    color: #000;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+}
+
+.slot-ready-indicator.pending {
+    background: #475569;
+    color: #cbd5e1;
+}
+
+.slot-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 4px;
+}
+
+.slot-level {
+    font-size: 10.5px;
+    color: var(--pvp-gold);
+    font-weight: 700;
+}
+
+.vs-center-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.vs-emblem {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--pvp-gold);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+    margin-bottom: 6px;
+}
+
+.vs-status-text {
+    font-size: 9.5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    color: var(--pvp-cyan);
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.btn-accept-duel {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10.5px;
+    font-weight: 900;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    animation: pulseGlow 1.5s infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.9); }
+}
+
+/* Countdown Overlay */
+.countdown-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 11, 20, 0.92);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+
+.countdown-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--pvp-cyan);
+    margin-bottom: 8px;
+}
+
+.countdown-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 58px;
+    font-weight: 900;
+    color: var(--pvp-gold);
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+    animation: zoomCountdown 1s infinite;
+}
+
+@keyframes zoomCountdown {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.countdown-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN PARA MÓVILES (LOBBY PVP Y SALA DE ESPERA)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .pvp-header {
+        padding: 6px 12px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pvp-rooms-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    .vs-stage-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    .vs-center-col {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .vs-emblem {
+        font-size: 20px;
+        margin-bottom: 0;
+    }
+
+    .waiting-card {
+        padding: 12px;
+        max-width: 96vw;
+    }
+
+    .duelist-slot {
+        padding: 10px;
+    }
+
+    .slot-avatar-img {
+        width: 52px;
+        height: 52px;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-create-bar {
+        width: 95%;
+        padding: 12px 14px;
+        top: 50px;
+    }
+
+    .btn-create-room-trigger {
+        font-size: 9.5px;
+        padding: 6px 10px;
+    }
+}
+

@@ -72,7 +72,7 @@ function emitDuelLog(roomId, message, type = 'info', metadata = null) {
     try {
         const scratchDir = path.join(__dirname, '../../scratch');
         if (!fs.existsSync(scratchDir)) fs.mkdirSync(scratchDir, { recursive: true });
-        fs.appendFileSync(LOG_FILE_PATH, consoleEntry + '\n');
+        fs.appendFile(LOG_FILE_PATH, consoleEntry + '\n', () => {});
     } catch (e) {}
 }
 
@@ -128,7 +128,7 @@ function createInitialDuelState(roomId, player1Name, player2Name, player1Sleeve 
     const initialDuelState = {
         roomId: roomId,
         turnPlayer: startingTurnPlayer,
-        phase: 'MAIN_1',
+        phase: 'DRAW',
         turnNumber: 1,
         firstPlayer: firstPlayer,
         normalSummonUsed: false,
@@ -444,14 +444,18 @@ function calculateMonsterCurrentStats(arg1, arg2, arg3) {
     // Determinar controlador y oponente
     let controllerObj = null;
     let opponentObj = null;
+    let controllerKey = 'player1';
     if (arg3 && duelState[arg3]) {
         controllerObj = duelState[arg3];
+        controllerKey = arg3;
         opponentObj = arg3 === 'player1' ? duelState.player2 : duelState.player1;
     } else if (duelState.player1 && duelState.player1.monsters && duelState.player1.monsters.includes(monster)) {
         controllerObj = duelState.player1;
+        controllerKey = 'player1';
         opponentObj = duelState.player2;
     } else if (duelState.player2 && duelState.player2.monsters && duelState.player2.monsters.includes(monster)) {
         controllerObj = duelState.player2;
+        controllerKey = 'player2';
         opponentObj = duelState.player1;
     }
 
@@ -482,49 +486,23 @@ function calculateMonsterCurrentStats(arg1, arg2, arg3) {
         const monAttr = ((cardData.attribute || '')).toUpperCase();
         const monRace = ((cardData.race || '')).toUpperCase();
         activeFieldObjects.forEach(fs => {
-            const fsName = (fs.name || (fs.card_data ? fs.card_data.name : '')).toLowerCase();
-            if (fsName.includes('umi') || fsName.includes('a legendary ocean')) {
-                if (monRace.includes('FISH') || monRace.includes('SEA SERPENT') || monRace.includes('THUNDER') || monRace.includes('AQUA') || monAttr === 'WATER') {
-                    atkMod += 200; defMod += 200;
+            const fsId = Number(fs.card_id || fs.id || (fs.card_data && fs.card_data.id) || 0);
+            const { getCardEffect } = require('./card-registry');
+            const fsMod = getCardEffect(fsId);
+            if (fsMod && typeof fsMod.calculateFieldBonus === 'function') {
+                const bonus = fsMod.calculateFieldBonus(monster, duelState, controllerKey);
+                if (bonus) {
+                    if (bonus.atk) atkMod += bonus.atk;
+                    if (bonus.def) defMod += bonus.def;
                 }
-                if (monRace.includes('PYRO') || monRace.includes('MACHINE')) {
-                    atkMod -= 200; defMod -= 200;
+            } else if ((fs.name || (fs.card_data ? fs.card_data.name : '')).toLowerCase().includes('temple of the six') && fs.bushidoCounters) {
+                const fsControllerKey = duelState.player1 && duelState.player1.fieldSpell === fs ? 'player1' : 'player2';
+                const isOpponentOfField = (controllerObj === duelState[fsControllerKey === 'player1' ? 'player2' : 'player1']);
+                if (isOpponentOfField) {
+                    const reduction = Number(fs.bushidoCounters) * 100;
+                    atkMod -= reduction;
+                    defMod -= reduction;
                 }
-            } else if (fsName.includes('yami')) {
-                if (monRace.includes('SPELLCASTER') || monRace.includes('FIEND')) {
-                    atkMod += 200; defMod += 200;
-                }
-                if (monRace.includes('FAIRY')) {
-                    atkMod -= 200; defMod -= 200;
-                }
-            } else if (fsName.includes('sogen')) {
-                if (monRace.includes('WARRIOR') || monRace.includes('BEAST-WARRIOR')) {
-                    atkMod += 200; defMod += 500;
-                }
-            } else if (fsName.includes('forest')) {
-                if (monRace.includes('INSECT') || monRace.includes('BEAST') || monRace.includes('PLANT') || monRace.includes('BEAST-WARRIOR')) {
-                    atkMod += 200; defMod += 200;
-                }
-            } else if (fsName.includes('wasteland')) {
-                if (monRace.includes('DINOSAUR') || monRace.includes('ZOMBIE') || monRace.includes('ROCK')) {
-                    atkMod += 200; defMod += 200;
-                }
-            } else if (fsName.includes('mountain')) {
-                if (monRace.includes('DRAGON') || monRace.includes('WINGED BEAST') || monRace.includes('THUNDER')) {
-                    atkMod += 200; defMod += 200;
-                }
-            } else if (fsName.includes('molten destruction') && monAttr === 'FIRE') {
-                atkMod += 500; defMod -= 400;
-            } else if (fsName.includes('rising air current') && monAttr === 'WIND') {
-                atkMod += 500; defMod -= 400;
-            } else if (fsName.includes('gaia power') && monAttr === 'EARTH') {
-                atkMod += 500; defMod -= 400;
-            } else if (fsName.includes('luminous spark') && monAttr === 'LIGHT') {
-                atkMod += 500; defMod -= 400;
-            } else if (fsName.includes('mystic plasma zone') && monAttr === 'DARK') {
-                atkMod += 500; defMod -= 400;
-            } else if (fsName.includes('wetlands') && monAttr === 'WATER') {
-                atkMod += 500; defMod -= 400;
             }
         });
     }
@@ -1041,7 +1019,7 @@ async function processDuelGameOver(roomId, duelState, winnerKey, loserKey, reaso
                         const spRes = await pool.request()
                             .input('UserId', sql.Int, dbUser.Id)
                             .input('NpcId', sql.Int, npcId)
-                            .input('Turns', sql.Int, turnsCount || 10)
+                            .input('Turns', sql.Int, duelState.turnNumber || 10)
                             .input('IsWinner', sql.Bit, 1)
                             .execute('dbo.sp_RegistrarVictoriaNpc');
 
@@ -1050,7 +1028,8 @@ async function processDuelGameOver(roomId, duelState, winnerKey, loserKey, reaso
                             if (vicRow.MedalUnlocked && vicRow.UnlockedMedalCode) {
                                 adventureUnlockedMedal = {
                                     id: vicRow.UnlockedMedalCode,
-                                    name: vicRow.UnlockedMedalName,
+                                    name: vicRow.UnlockedMedalName || 'Medalla Conquistada',
+                                    desc: vicRow.UnlockedMedalDesc || vicRow.MedalDescription || '¡Has derrotado con honores a este duelista legendario!',
                                     npcId: npcId
                                 };
                                 emitDuelLog(roomId, `🎖️ [MEDALLA DESBLOQUEADA] ¡${winner.username} obtuvo la Medalla: ${vicRow.UnlockedMedalName}!`, 'reward');
@@ -1306,27 +1285,25 @@ async function processDuelGameOver(roomId, duelState, winnerKey, loserKey, reaso
     return true;
 }
 
-// IDs OFICIALES DE LAS 5 PIEZAS DE EXODIA (c33396948.lua)
-const isExodiaPiece = (c) => {
-    const n = ((c.name || (c.card_data ? c.card_data.name : '')) || '').toLowerCase();
-    return n.includes('forbidden one') || n.includes('el prohibido');
-};
+// Comprobación canónica y modular de victoria por Exodia (Mano y/o Campo de Monstruos)
+function checkExodiaWin(playerOrHand) {
+    if (!playerOrHand) return false;
+    let pool = [];
+    if (Array.isArray(playerOrHand)) {
+        pool = playerOrHand;
+    } else {
+        const hand = Array.isArray(playerOrHand.hand) ? playerOrHand.hand : [];
+        const monsters = Array.isArray(playerOrHand.monsters) ? playerOrHand.monsters.filter(Boolean) : [];
+        pool = [...hand, ...monsters];
+    }
+    if (pool.length < 5) return false;
 
-function checkExodiaWin(hand) {
-    if (!Array.isArray(hand) || hand.length < 5) return false;
-    const pieceNames = [
-        'right leg of the forbidden one',
-        'left leg of the forbidden one',
-        'right arm of the forbidden one',
-        'left arm of the forbidden one',
-        'exodia the forbidden one'
-    ];
-    const handNames = hand.map(c => {
-        if (!c) return '';
-        const cd = c.card_data || c;
-        return (cd.name || '').toLowerCase();
-    });
-    return pieceNames.every(reqName => handNames.some(hn => hn === reqName || hn.includes(reqName)));
+    const { getCardEffect } = require('./card-registry');
+    const exodiaMod = getCardEffect(33396948);
+    if (exodiaMod && typeof exodiaMod.checkVictoryCondition === 'function') {
+        return exodiaMod.checkVictoryCondition(pool);
+    }
+    return false;
 }
 
 /**
@@ -1341,15 +1318,15 @@ function checkDuelGameOver(roomId, duelState) {
     const p2 = duelState.player2 || (duelState.players && duelState.players.player2);
     if (!p1 || !p2) return false;
 
-    // 1. CONDICIÓN ESPECIAL OFICIAL OCG: VICTORIA AUTOMÁTICA POR EXODIA
-    if (p1.hand && checkExodiaWin(p1.hand)) {
-        emitDuelLog(roomId, `✨ ¡¡¡EXODIA, EL PROHIBIDO HA SIDO CONVOCADO POR ${p1.username || 'player1'}!!! Las 5 piezas selladas están en su mano.`, 'victory');
+    // 1. CONDICIÓN ESPECIAL OFICIAL OCG: VICTORIA AUTOMÁTICA POR EXODIA (Mano y/o Campo)
+    if (checkExodiaWin(p1)) {
+        emitDuelLog(roomId, `✨ ¡¡¡EXODIA, EL PROHIBIDO HA SIDO REUNIDO POR ${p1.username || 'player1'}!!! Las 5 piezas sagradas han sido reunidas (Mano/Campo).`, 'victory');
         processDuelGameOver(roomId, duelState, 'player1', 'player2', 'EXODIA');
         return true;
     }
 
-    if (p2.hand && checkExodiaWin(p2.hand)) {
-        emitDuelLog(roomId, `✨ ¡¡¡EXODIA, EL PROHIBIDO HA SIDO CONVOCADO POR ${p2.username || 'player2'}!!! Las 5 piezas selladas están en su mano.`, 'victory');
+    if (checkExodiaWin(p2)) {
+        emitDuelLog(roomId, `✨ ¡¡¡EXODIA, EL PROHIBIDO HA SIDO REUNIDO POR ${p2.username || 'player2'}!!! Las 5 piezas sagradas han sido reunidas (Mano/Campo).`, 'victory');
         processDuelGameOver(roomId, duelState, 'player2', 'player1', 'EXODIA');
         return true;
     }

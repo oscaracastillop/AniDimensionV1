@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Gestión de Tapetes de Duelo (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.5">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.5">
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container">
+        
+        <!-- HEADER FIJO -->
+        <div class="admin-header">
+            <div class="admin-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 class="admin-title">GESTIÓN DE TAPETES DE DUELO</h1>
+                    <div class="admin-subtitle">ADMINISTRACIÓN DE SUPERFICIES DE TABLERO, PRECIOS, BANNERS Y ESTADO VITALICIO</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <a href="editor.html" class="btn-act-sm btn-act-activate" style="height:28px; padding:0 14px; font-size:9.5px; text-decoration:none; display:inline-flex; align-items:center;">
+                    CREAR TAPETE
+                </a>
+
+                <a href="../admin.html" class="btn-shop-back" title="Volver a la Consola Principal Admin">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR DESLIZABLE -->
+        <div class="admin-scroll-content">
+            <div id="admin-tapetes-module" class="admin-card-section" style="min-height: calc(100vh - 125px); margin: 0 0 16px 0;">
+                
+                <div class="admin-section-header">
+                    <div class="admin-section-title">
+                        <span>CATÁLOGO DE TAPETES REGISTRADOS</span>
+                    </div>
+
+                    <!-- BUSCADOR DINÁMICO EN TIEMPO REAL -->
+                    <div class="admin-search-box">
+                        <input type="text" id="admin-tapetes-search" class="admin-search-input" placeholder="Buscar por código (MAT-001), nombre o banner..." oninput="onTapetesSearch(this)">
+                    </div>
+                </div>
+
+                <!-- TABLA DE REGISTROS -->
+                <div class="admin-table-container">
+                    <table class="admin-users-table">
+                        <thead>
+                            <tr>
+                                <th style="width:75px;">CÓDIGO</th>
+                                <th style="width:90px;">PREVIA</th>
+                                <th>NOMBRE Y DESCRIPCIÓN</th>
+                                <th style="width:110px;">BANNER</th>
+                                <th style="width:120px;">PRECIO</th>
+                                <th style="width:100px;">DURACIÓN</th>
+                                <th style="width:90px;">ESTADO</th>
+                                <th style="width:180px; text-align:right;">ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tapetes-tbody">
+                            <!-- Se inyecta dinámicamente desde admin-tapetes.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINACIÓN -->
+                <div id="admin-tapetes-pagination" class="admin-pagination">
+                    <!-- Dinámico -->
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAVBAR INFERIOR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/data/playmats-data.js"></script>
+    <script src="../../../js/views/admin-tapetes.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('administracion');
+        });
+    </script>
+</body>
+</html>

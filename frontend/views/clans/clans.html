@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Sistema de Clanes</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <link rel="stylesheet" href="../../css/clans.css?v=3.0">
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+</head>
+<body>
+
+    <div class="clans-page-container">
+        
+        <!-- HEADER SUPERIOR FIJO -->
+        <div class="clans-header">
+            <div class="clans-title-box">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
+                <div>
+                    <h1 class="clans-title">SISTEMA DE CLANES</h1>
+                    <div class="clans-subtitle">ALIANZAS Y LIGAS COMPETITIVAS • ANI-DIMENSION</div>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div id="clan-user-starships" style="color:#ffd700; font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; background:rgba(0,0,0,0.6); border:1px solid rgba(255,215,0,0.4); padding:4px 10px; border-radius:0;">
+                    ⭐ 0 STARSHIPS
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL DESLIZABLE -->
+        <div class="clans-scroll-content">
+            
+            <!-- CONTENEDOR DINÁMICO: SE RENDERIZA "MI CLAN" O "EXPLORADOR DE CLANES" -->
+            <div id="clan-main-view">
+                <!-- Se llena dinámicamente con clans.js -->
+            </div>
+
+        </div> <!-- Fin clans-scroll-content -->
+
+    </div> <!-- Fin clans-page-container -->
+
+    <!-- ====================================================================== -->
+    <!-- TARJETA FLOTANTE DE PERFIL DE JUGADOR (CON SP SQL) -->
+    <!-- ====================================================================== -->
+    <div id="clan-user-floating-widget" class="chat-user-floating-card" style="display:none; width:320px;">
+        <div class="chat-user-card-header" id="clan-user-card-drag-header">
+            <div class="chat-user-card-title">
+                FICHA DE JUGADOR
+            </div>
+            <button type="button" onclick="closeClanUserProfile()" class="btn-widget-close" title="Cerrar">✕</button>
+        </div>
+
+        <div class="chat-user-card-body">
+            <div class="chat-user-avatar-wrap">
+                <img id="cup-avatar-img" src="/assets/images/avatars/ava-002.png" class="chat-user-avatar-frame" alt="Avatar">
+                <div id="cup-online-dot" class="chat-user-status-dot"></div>
+            </div>
+
+            <div class="chat-user-name-box">
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <span id="cup-username" style="font-family:'Outfit', sans-serif; font-size:15px; font-weight:700; color:#fff;">Duelista</span>
+                    <img id="cup-country-flag-img" src="" alt="Bandera" style="width:18px; height:13px; object-fit:cover; vertical-align:middle; border:1px solid rgba(255,255,255,0.25); display:none; box-shadow:0 0 6px rgba(0,0,0,0.5);">
+                </div>
+                <div id="cup-country-name" style="font-size:10.5px; color:#94a3b8; margin-top:1px;">Internacional</div>
+                <div id="cup-badges-row" style="display:flex; justify-content:center; gap:5px; margin-top:5px; flex-wrap:wrap;">
+                    <span id="cup-level-badge" class="chat-user-badge">Nv. 1</span>
+                    <span id="cup-vip-badge" class="chat-user-badge gold" style="display:none;">VIP ORO</span>
+                    <span id="cup-admin-badge" class="chat-user-badge admin" style="display:none;">ADMIN</span>
+                </div>
+            </div>
+
+            <!-- BARRA DE PROGRESIÓN DE EXPERIENCIA -->
+            <div class="cup-exp-container">
+                <div class="cup-exp-label-row">
+                    <span>EXPERIENCIA</span>
+                    <span id="cup-exp-text">0 / 100 EXP</span>
+                </div>
+                <div class="cup-exp-bar-wrap">
+                    <div class="cup-exp-bar-fill" id="cup-exp-fill" style="width:0%;"></div>
+                </div>
+            </div>
+
+            <!-- ECONOMÍA Y STARSHIPS -->
+            <div class="cup-economy-row">
+                <span class="cup-economy-lbl">STARSHIPS</span>
+                <span id="cup-stat-starships" class="cup-economy-val">0 ★</span>
+            </div>
+
+            <!-- ESTADÍSTICAS DE DUELOS (NPC & PVP) -->
+            <div class="cup-duels-table-wrap">
+                <div class="cup-duels-header">ESTADÍSTICAS DE DUELOS</div>
+                <div class="cup-duels-grid">
+                    <div class="cup-duels-col">
+                        <div class="cup-duels-col-title">AVENTURA (NPC)</div>
+                        <div class="cup-stat-item"><span>Duelos:</span> <b id="cup-npc-duels">0</b></div>
+                        <div class="cup-stat-item"><span>Victorias:</span> <b id="cup-npc-wins" style="color:#00ff88;">0</b></div>
+                        <div class="cup-stat-item"><span>Derrotas:</span> <b id="cup-npc-losses" style="color:#ff0055;">0</b></div>
+                        <div class="cup-stat-item"><span>Win Rate:</span> <b id="cup-npc-wr" style="color:#ffd700;">0.0%</b></div>
+                    </div>
+                    <div class="cup-duels-col">
+                        <div class="cup-duels-col-title">MODO PVP</div>
+                        <div class="cup-stat-item"><span>Duelos:</span> <b id="cup-pvp-duels">0</b></div>
+                        <div class="cup-stat-item"><span>Victorias:</span> <b id="cup-pvp-wins" style="color:#00ff88;">0</b></div>
+                        <div class="cup-stat-item"><span>Derrotas:</span> <b id="cup-pvp-losses" style="color:#ff0055;">0</b></div>
+                        <div class="cup-stat-item"><span>Win Rate:</span> <b id="cup-pvp-wr" style="color:#ffd700;">0.0%</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BONIFICACIONES ACTIVAS -->
+            <div class="cup-boosts-wrap">
+                <div class="cup-boosts-title">BONIFICACIONES ACTIVAS</div>
+                <div class="cup-boosts-row">
+                    <div class="cup-boost-pill"><span>Exp:</span> <b id="cup-boost-exp">+0%</b></div>
+                    <div class="cup-boost-pill"><span>Star:</span> <b id="cup-boost-star">+0%</b></div>
+                    <div class="cup-boost-pill"><span>Suerte:</span> <b id="cup-boost-luck">+0%</b></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL DEDICADO: CREAR / FUNDAR NUEVO CLAN OFICIAL -->
+    <!-- ====================================================================== -->
+    <div id="create-clan-modal" class="clan-modal-overlay" style="display:none;">
+        <div class="clan-modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.3); padding-bottom:8px; margin-bottom:14px;">
+                <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:var(--clan-gold); letter-spacing:0.5px;">
+                    FUNDAR NUEVO CLAN OFICIAL
+                </div>
+                <button type="button" onclick="closeCreateClanModal()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; font-weight:700;">✕</button>
+            </div>
+
+            <form id="form-create-clan" onsubmit="handleCreateClanSubmit(event)">
+                
+                <!-- NOMBRE DEL CLAN (MÁX 15 CARACTERES ALFANUMÉRICO) -->
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <label class="form-label" for="clan-input-name">NOMBRE DEL CLAN (3 A 15 CARACTERES ALFANUMÉRICOS)</label>
+                        <span id="clan-name-counter" style="font-size:9px; color:#94a3b8; font-family:'Orbitron', sans-serif;">0/15</span>
+                    </div>
+                    <input type="text" id="clan-input-name" class="form-input" maxlength="15" placeholder="Ej. DragonKnights" required oninput="updateClanNameCounter(this)">
+                    <div style="font-size:8.5px; color:#94a3b8; margin-top:3px;">* Solo letras y números, sin espacios ni caracteres especiales.</div>
+                </div>
+
+                <!-- TAG / SIGLA (OPCIONAL, MÁX 5) -->
+                <div class="form-group">
+                    <label class="form-label" for="clan-input-tag">SIGLA / TAG DEL CLAN (MÁX 5 LETRAS)</label>
+                    <input type="text" id="clan-input-tag" class="form-input" maxlength="5" placeholder="Ej. DK" style="text-transform:uppercase;">
+                </div>
+
+                <!-- SUBIR LOGO / EMBLEMA DESDE EL DISPOSITIVO -->
+                <div class="form-group">
+                    <label class="form-label">EMBLEMA / LOGO DEL CLAN (DESDE TU DISPOSITIVO)</label>
+                    <input type="file" id="clan-input-emblem" accept="image/*" class="form-input" style="padding:6px;" onchange="previewClanEmblem(this)">
+                    <div class="emblem-preview-box">
+                        <img id="clan-emblem-preview" src="../../assets/images/logo.png" alt="Vista previa del emblema" class="emblem-preview-img">
+                        <div style="font-size:9px; color:#cbd5e1; line-height:1.4;">
+                            Formatos: PNG, JPG, WEBP.<br>
+                            Se guardará en el servidor y será visible para todos los jugadores.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NIVEL MÍNIMO DE ENTRADA -->
+                <div class="form-group">
+                    <label class="form-label" for="clan-input-minlvl">NIVEL MÍNIMO REQUERIDO PARA ENTRAR</label>
+                    <input type="number" id="clan-input-minlvl" class="form-input" min="1" max="500" value="1" required>
+                </div>
+
+                <!-- MENSAJE DE BIENVENIDA / TABLÓN -->
+                <div class="form-group">
+                    <label class="form-label" for="clan-input-notice">MENSAJE O ANUNCIO DE BIENVENIDA</label>
+                    <textarea id="clan-input-notice" class="form-input" rows="2" maxlength="300" placeholder="¡Bienvenidos a nuestra hermandad de duelistas!"></textarea>
+                </div>
+
+                <!-- AVISO DE COSTO 50,000 STARSHIPS & LÍMITE 30 MIEMBROS -->
+                <div style="background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.3); padding:8px 10px; margin-bottom:14px;">
+                    <div style="font-family:'Orbitron', sans-serif; font-size:10.5px; font-weight:900; color:var(--clan-gold); margin-bottom:3px;">
+                        COSTO DE FUNDACIÓN: 50,000 STARSHIPS
+                    </div>
+                    <div style="font-size:9px; color:#e2e8f0; line-height:1.35;">
+                        • Capacidad máxima oficial: <b>30 Jugadores</b>.<br>
+                        • Las 50,000 StarShips se descontarán inmediatamente al fundar el clan.<br>
+                        • Bonificaciones: Inicia en Nivel 1 (+1% EXP / +1% StarShips) hasta Nivel 100 (+100%).
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" onclick="closeCreateClanModal()" class="btn-clan-action" style="background:rgba(255,255,255,0.08); color:#cbd5e1; border-color:rgba(255,255,255,0.2);">
+                        CANCELAR
+                    </button>
+                    <button type="submit" id="btn-submit-create-clan" class="btn-clan-action btn-clan-create">
+                        FUNDAR CLAN
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL: EDITAR CONFIGURACIÓN Y TABLÓN DEL CLAN (LÍDER/COLÍDER) -->
+    <!-- ====================================================================== -->
+    <div id="edit-clan-modal" class="clan-modal-overlay" style="display:none;">
+        <div class="clan-modal-box" style="max-width:460px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,240,255,0.3); padding-bottom:8px; margin-bottom:14px;">
+                <div style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:900; color:var(--clan-primary); letter-spacing:0.5px;">
+                    CONFIGURACIÓN DEL CLAN
+                </div>
+                <button type="button" onclick="closeEditClanModal()" style="background:transparent; border:none; color:#94a3b8; font-size:18px; cursor:pointer; font-weight:700;">✕</button>
+            </div>
+
+            <form id="form-edit-clan" onsubmit="handleEditClanSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label" for="edit-clan-notice">TABLÓN DE ANUNCIOS / MENSAJE DEL LÍDER</label>
+                    <textarea id="edit-clan-notice" class="form-input" rows="3" maxlength="500"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-clan-minlvl">NIVEL MÍNIMO REQUERIDO PARA ENTRAR</label>
+                    <input type="number" id="edit-clan-minlvl" class="form-input" min="1" max="500" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="edit-clan-tag">SIGLA / TAG DEL CLAN</label>
+                    <input type="text" id="edit-clan-tag" class="form-input" maxlength="5" style="text-transform:uppercase;">
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" onclick="closeEditClanModal()" class="btn-clan-action" style="background:rgba(255,255,255,0.08); color:#cbd5e1; border-color:rgba(255,255,255,0.2);">
+                        CANCELAR
+                    </button>
+                    <button type="submit" class="btn-clan-action">
+                        GUARDAR CAMBIOS
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR -->
+    <div id="navbar-container"></div>
+
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/clans.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('clans');
+        });
+    </script>
+</body>
+</html>

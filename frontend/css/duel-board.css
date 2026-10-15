@@ -1258,57 +1258,47 @@ button,
     cursor: default;
 }
 
-/* CASILLA OBJETIVO SELECCIONADA CON RESPLANDOR DORADO ESTÁTICO (SIN RESPIRACIÓN NI ESCALADO) */
+/* CASILLA OBJETIVO SELECCIONADA CON BORDE DORADO ELEGANTE Y SUTIL */
 .field-slot.slot-targeted {
     border-color: #ffd700 !important;
-    box-shadow: 0 0 14px #ffd700, inset 0 0 10px rgba(255, 215, 0, 0.4) !important;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.45) !important;
     transform: none !important;
     animation: none !important;
 }
 
 /* CASILLA LIBRE DESTINO DISPONIBLE CUANDO HAY CARTA EN MANO SELECCIONADA */
 .field-slot.slot-droppable {
-    border-color: #ffd700 !important;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.7), inset 0 0 6px rgba(255, 215, 0, 0.3) !important;
+    border-color: rgba(255, 215, 0, 0.6) !important;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3) !important;
     cursor: pointer;
     transform: none !important;
     animation: none !important;
 }
 
-/* OBJETIVO ELEGIBLE PARA TIFÓN DEL ESPACIO MÍSTICO (VERDE ESMERALDA NEÓN) */
+/* OBJETIVO ELEGIBLE PARA TIFÓN DEL ESPACIO MÍSTICO (VERDE ESMERALDA) */
 .field-slot.mst-target-candidate {
     border-color: #00ff88 !important;
-    box-shadow: 0 0 14px #00ff88, inset 0 0 10px rgba(0, 255, 136, 0.4) !important;
+    box-shadow: 0 0 5px rgba(0, 255, 136, 0.35) !important;
     cursor: pointer !important;
     transform: none !important;
     animation: none !important;
 }
 
-/* OBJETIVO ELEGIBLE PARA CÍRCULO ATADOR DE HECHIZOS (ROSA NEÓN) */
+/* OBJETIVO ELEGIBLE PARA CÍRCULO ATADOR DE HECHIZOS (ROSA) */
 .field-slot.trap-target-candidate {
     border-color: #ff0055 !important;
-    box-shadow: 0 0 14px #ff0055, inset 0 0 10px rgba(255, 0, 85, 0.4) !important;
+    box-shadow: 0 0 5px rgba(255, 0, 85, 0.35) !important;
     cursor: pointer !important;
     transform: none !important;
     animation: none !important;
 }
 
-/* OBJETIVO DE ATAQUE RIVAL ELEGIBLE (ROJO NEÓN PULSANTE) */
+/* OBJETIVO DE ATAQUE RIVAL ELEGIBLE (ROJO SUTIL, SIN PARPADEO) */
 .field-slot.slot-attack-target {
     border-color: #ef4444 !important;
-    box-shadow: 0 0 16px rgba(239, 68, 68, 0.9), inset 0 0 10px rgba(239, 68, 68, 0.5) !important;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5) !important;
     cursor: crosshair !important;
-    animation: attackPulse 1.2s infinite alternate ease-in-out !important;
-}
-
-@keyframes attackPulse {
-    0% {
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.6), inset 0 0 6px rgba(239, 68, 68, 0.3);
-    }
-
-    100% {
-        box-shadow: 0 0 22px rgba(239, 68, 68, 1), inset 0 0 14px rgba(239, 68, 68, 0.7);
-    }
+    animation: none !important;
 }
 
 /* MONSTRUO QUE YA ATACÓ (OPACADO / DESATURADO VISUALMENTE) */
@@ -1443,7 +1433,7 @@ button,
     transform-origin: center center;
     transform: rotate(90deg);
     z-index: 15;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
 }
 
 /* ==========================================================================
@@ -1528,15 +1518,15 @@ button,
 
 .hand-card.selected-hand {
     border-color: #ffd700;
-    transform: translateY(-14px) scale(1.12);
-    box-shadow: 0 0 18px #ffd700;
+    transform: translateY(-12px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 0 6px rgba(255, 215, 0, 0.45);
     z-index: 65;
 }
 
 .hand-card:hover {
-    transform: translateY(-14px) scale(1.10);
+    transform: translateY(-10px) scale(1.06);
     border-color: var(--accent-cyan);
-    box-shadow: 0 0 16px var(--accent-cyan);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 0 6px rgba(0, 240, 255, 0.4);
     z-index: 60;
 }
 
@@ -2680,7 +2670,8 @@ button,
 .floating-desc-text {
     font-family: 'Outfit', sans-serif;
     font-size: 9.5px;
-    line-height: 1.35;
+    font-weight: 400 !important;
+    line-height: 1.4;
     color: #e2e8f0;
     white-space: pre-line;
     user-select: text;
@@ -2716,4 +2707,467 @@ button,
     .floating-desc-text {
         font-size: 10px;
     }
+}
+
+
+
+/* ==========================================================================
+   MASTER DUEL REVAMP: FASES 2, 3 Y 4
+   ========================================================================== */
+
+.phase-slash-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.phase-slash-blade {
+    position: relative;
+    width: 100vw;
+    height: clamp(70px, 10vh, 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, transparent 0%, rgba(5, 12, 24, 0.96) 15%, rgba(10, 22, 42, 0.98) 50%, rgba(5, 12, 24, 0.96) 85%, transparent 100%);
+    border-top: 2.5px solid var(--phase-blade-color, #00f0ff);
+    border-bottom: 2.5px solid var(--phase-blade-color, #00f0ff);
+    box-shadow: 0 0 50px var(--phase-blade-glow, rgba(0, 240, 255, 0.7)), inset 0 0 30px rgba(0, 0, 0, 0.8);
+    transform: skewX(-14deg);
+    opacity: 0;
+}
+
+.phase-slash-blade.phase-slash-active {
+    animation: phaseSlashEnter 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes phaseSlashEnter {
+    0% {
+        opacity: 0;
+        transform: skewX(-14deg) scaleX(0.75);
+    }
+    15% {
+        opacity: 1;
+        transform: skewX(-14deg) scaleX(1.02);
+    }
+    20% {
+        transform: skewX(-14deg) scaleX(1);
+    }
+    86% {
+        opacity: 1;
+        transform: skewX(-14deg) scaleX(1) translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: skewX(-14deg) scaleX(1.05) translateX(60px);
+    }
+}
+
+.phase-slash-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: skewX(14deg); /* Unskew text */
+    text-align: center;
+    z-index: 2;
+}
+
+.phase-slash-turn,
+.phase-slash-sub {
+    display: none !important;
+}
+
+.phase-slash-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 3.8vw, 42px);
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+}
+
+.phase-slash-flare {
+    position: absolute;
+    top: 50%;
+    left: -25%;
+    width: 80px;
+    height: 100%;
+    transform: translateY(-50%) skewX(30deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+    opacity: 0;
+}
+
+.phase-slash-blade.phase-slash-active .phase-slash-flare {
+    opacity: 1;
+    animation: phaseFlareSweep 1.15s ease-out forwards;
+}
+
+@keyframes phaseFlareSweep {
+    0% { left: -20%; }
+    100% { left: 120%; }
+}
+
+/* --- BANNER DE FASES: AZUL PARA EL JUGADOR / ROJO PARA EL RIVAL --- */
+.phase-slash-blade.phase-side-player {
+    --phase-blade-color: #00f0ff;
+    --phase-blade-glow: rgba(0, 240, 255, 0.85);
+    background: linear-gradient(90deg, transparent 0%, rgba(2, 16, 36, 0.96) 15%, rgba(4, 34, 72, 0.98) 50%, rgba(2, 16, 36, 0.96) 85%, transparent 100%);
+    border-top: 2.5px solid #00f0ff;
+    border-bottom: 2.5px solid #00f0ff;
+    box-shadow: 0 0 55px rgba(0, 240, 255, 0.8), inset 0 0 35px rgba(0, 240, 255, 0.3);
+}
+
+.phase-slash-blade.phase-side-player .phase-slash-title {
+    color: #ffffff;
+    text-shadow: 0 0 25px rgba(0, 240, 255, 0.95), 0 0 45px rgba(0, 240, 255, 0.65), 0 3px 6px rgba(0, 0, 0, 0.95);
+}
+
+.phase-slash-blade.phase-side-rival {
+    --phase-blade-color: #ff1744;
+    --phase-blade-glow: rgba(255, 23, 68, 0.85);
+    background: linear-gradient(90deg, transparent 0%, rgba(36, 4, 12, 0.96) 15%, rgba(70, 8, 24, 0.98) 50%, rgba(36, 4, 12, 0.96) 85%, transparent 100%);
+    border-top: 2.5px solid #ff1744;
+    border-bottom: 2.5px solid #ff1744;
+    box-shadow: 0 0 55px rgba(255, 23, 68, 0.8), inset 0 0 35px rgba(255, 23, 68, 0.3);
+}
+
+.phase-slash-blade.phase-side-rival .phase-slash-title {
+    color: #ffffff;
+    text-shadow: 0 0 25px rgba(255, 23, 68, 0.95), 0 0 45px rgba(255, 23, 68, 0.65), 0 3px 6px rgba(0, 0, 0, 0.95);
+}
+
+/* --- FASE 2: FLOATING LP DAMAGE & HEAL DELTA PARTICLES --- */
+.lp-delta-float {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(14px, 1.8vw, 20px);
+    letter-spacing: 1px;
+    z-index: 100;
+    pointer-events: none;
+    animation: floatLpDelta 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lp-delta-float.lp-damage {
+    color: #ff3366;
+    text-shadow: 0 0 14px rgba(255, 51, 102, 0.9), 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.lp-delta-float.lp-heal {
+    color: #10b981;
+    text-shadow: 0 0 14px rgba(16, 185, 129, 0.9), 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+@keyframes floatLpDelta {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.6);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -10px) scale(1.25);
+    }
+    40% {
+        transform: translate(-50%, -18px) scale(1);
+    }
+    80% {
+        opacity: 0.9;
+        transform: translate(-50%, -32px) scale(0.95);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -46px) scale(0.8);
+    }
+}
+
+.lp-box-shock-damage {
+    animation: lpShockDamage 0.5s ease-out;
+}
+
+.lp-box-shock-heal {
+    animation: lpShockHeal 0.5s ease-out;
+}
+
+@keyframes lpShockDamage {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 51, 102, 0); }
+    25% { transform: scale(1.12); box-shadow: 0 0 35px rgba(255, 51, 102, 0.9), inset 0 0 15px rgba(255, 51, 102, 0.5); }
+    100% { transform: scale(1); }
+}
+
+@keyframes lpShockHeal {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+    25% { transform: scale(1.12); box-shadow: 0 0 35px rgba(16, 185, 129, 0.9), inset 0 0 15px rgba(16, 185, 129, 0.5); }
+    100% { transform: scale(1); }
+}
+
+/* --- FASE 3: ILUMINACIÓN ELEGANTE Y PRUDENTE DE CARTAS JUGABLES (ESTÁTICA, SIN PARPADEO) --- */
+.hand-card-activatable,
+.card-playable-glow {
+    position: relative;
+    border-radius: 4px;
+    border: 1.5px solid rgba(255, 215, 0, 0.75) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.75), 0 0 6px rgba(255, 215, 0, 0.35) !important;
+    animation: none !important;
+    transform: none;
+}
+
+.field-card-activatable {
+    border-radius: 3px;
+    border: 1.5px solid rgba(0, 240, 255, 0.75) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65), 0 0 5px rgba(0, 240, 255, 0.35) !important;
+    animation: none !important;
+}
+
+/* --- FASE 4: MEDALLONES CINEMÁTICOS DE CADENA (CHAIN STACK ESTILO MASTER DUEL) --- */
+.master-chain-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 1100;
+    pointer-events: none;
+}
+
+.master-chain-stack {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 90vw;
+}
+
+.chain-medallion {
+    position: relative;
+    width: clamp(70px, 8vw, 92px);
+    height: clamp(80px, 9vw, 105px);
+    background: linear-gradient(145deg, rgba(14, 25, 45, 0.95), rgba(7, 12, 22, 0.98));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+    border: 2px solid #00f0ff;
+    animation: medallionDropIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes medallionDropIn {
+    0% {
+        opacity: 0;
+        transform: scale(2.2) translateY(-40px);
+        filter: blur(8px);
+    }
+    60% {
+        transform: scale(0.92) translateY(4px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+.chain-medallion-icon {
+    font-size: clamp(14px, 1.8vw, 20px);
+    margin-bottom: 2px;
+    filter: drop-shadow(0 0 6px #00f0ff);
+}
+
+.chain-medallion-link {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(10px, 1.3vw, 14px);
+    font-weight: 900;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+    letter-spacing: 1px;
+}
+
+.chain-medallion-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(8px, 0.9vw, 10px);
+    font-weight: 700;
+    color: #e2e8f0;
+    text-align: center;
+    line-height: 1.1;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+.chain-medallion.chain-resolving {
+    border-color: #ffd700;
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.9);
+    animation: medallionResolve 0.6s ease-out forwards;
+}
+
+@keyframes medallionResolve {
+    0% { transform: scale(1); filter: brightness(1); }
+    40% { transform: scale(1.22); filter: brightness(1.6); }
+    100% { transform: scale(0.8) translateY(-20px); opacity: 0; filter: blur(6px); }
+}
+
+/* --- INVOCACIÓN DE MONSTRUOS: ICONOS OFICIALES DE ATAQUE (ESPADAS) Y DEFENSA (ESCUDO) --- */
+.monster-summon-atk,
+.monster-summon-def,
+.monster-summon-vortex {
+    position: relative;
+    overflow: visible !important;
+}
+
+/* Icono de Invocación en Posición de Ataque */
+.monster-summon-atk::before,
+.monster-summon-vortex::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 68px;
+    height: 68px;
+    transform: translate(-50%, -50%) scale(0.3);
+    background-image: url('/assets/images/duels/sword_summon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.85));
+    animation: summonIconPop 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: none;
+    z-index: 25;
+}
+
+/* Icono de Invocación en Posición de Defensa */
+.monster-summon-def::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 66px;
+    height: 66px;
+    transform: translate(-50%, -50%) scale(0.3);
+    background-image: url('/assets/images/duels/shield_summon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(245, 158, 11, 0.9));
+    animation: summonIconPop 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: none;
+    z-index: 25;
+}
+
+/* Destello sutil de invocación */
+.monster-summon-atk::after,
+.monster-summon-vortex::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    transform: translate(-50%, -50%) scale(0.2);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(239, 68, 68, 0.5) 30%, rgba(255, 215, 0, 0.2) 55%, transparent 70%);
+    animation: summonBladeClash 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    pointer-events: none;
+    z-index: 24;
+}
+
+.monster-summon-def::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    transform: translate(-50%, -50%) scale(0.2);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(245, 158, 11, 0.55) 30%, rgba(59, 130, 246, 0.2) 55%, transparent 70%);
+    animation: summonBladeClash 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+    pointer-events: none;
+    z-index: 24;
+}
+
+@keyframes summonIconPop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2) rotate(-15deg);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.25) rotate(0deg);
+        filter: drop-shadow(0 0 14px #ffffff) drop-shadow(0 0 24px rgba(255, 215, 0, 0.95));
+    }
+    55% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.0) rotate(0deg);
+    }
+    75% {
+        opacity: 0.95;
+        transform: translate(-50%, -50%) scale(1.08) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.35) translateY(-8px);
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0));
+    }
+}
+
+@keyframes summonBladeClash {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    60% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.6);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.2);
+    }
+}
+
+/* --- FASE 4: TARGETING RETICLE & LASER LINE --- */
+.duel-targeting-svg,
+.targeting-crosshair-reticle {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.targeting-crosshair-reticle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    transform: translate(-50%, -50%);
+    background: #ff0055;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ff0055;
+}
+
+@keyframes reticleSpin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
 }

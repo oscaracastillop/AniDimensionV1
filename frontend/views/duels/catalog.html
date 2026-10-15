@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Álbum de Colección y Catálogo</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=5.0">
+    <link rel="stylesheet" href="../../css/admin.css?v=5.0">
+    <link rel="stylesheet" href="catalog.css?v=5.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=5.0">
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="catalog-page-container">
+        <!-- HEADER PRINCIPAL FIJO -->
+        <header class="catalog-header">
+            <div class="catalog-header-left">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo" class="catalog-logo">
+                <div>
+                    <h1 class="catalog-title">ÁLBUM DE COLECCIÓN Y CATÁLOGO</h1>
+                    <div class="catalog-subtitle">LIBRO DE EXPANSIONES OFICIALES • SEGUIMIENTO DE CARTAS Y PROGRESO DE DUELISTA</div>
+                </div>
+            </div>
+
+            <div class="catalog-header-right">
+                <a href="menu.html" class="btn-catalog-back" title="Volver a la Arena de Duelos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-back">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span>VOLVER A DUELOS</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL DEL LIBRO (SCROLL DE DASHBOARD Y CAPÍTULOS) -->
+        <main id="catalog-book-scroll" class="catalog-book-scroll">
+            
+            <!-- DASHBOARD GLOBAL DE PROGRESO Y CONTROLES (SE MUEVE CON EL SCROLL) -->
+            <section class="catalog-dashboard-bar">
+                <!-- Global Stats Cards -->
+                <div class="global-stats-row">
+                    <div class="global-stat-card">
+                        <div class="stat-label">TOTAL COLECCIONADO</div>
+                        <div class="stat-value-group">
+                            <span id="global-obtained-count" class="stat-main-val">0</span>
+                            <span class="stat-divider">/</span>
+                            <span id="global-total-count" class="stat-sub-val">0</span>
+                        </div>
+                    </div>
+
+                    <div class="global-stat-card highlight-progress">
+                        <div class="stat-label">COMPLETITUD GLOBAL</div>
+                        <div class="stat-progress-wrap">
+                            <div class="stat-percentage-text" id="global-percentage-txt">0.0%</div>
+                            <div class="global-progress-bar-bg">
+                                <div id="global-progress-fill" class="global-progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="global-stat-card">
+                        <div class="stat-label">SOBRES DISPONIBLES</div>
+                        <div class="stat-value-group">
+                            <span id="global-packs-count" class="stat-main-val">0</span>
+                            <span class="stat-pack-unit">EXPANSIONES</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtros y Buscador en Tiempo Real -->
+                <div class="catalog-filters-row">
+                    <!-- Buscador -->
+                    <div class="catalog-search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="catalog-search-input" placeholder="Buscar por nombre, passcode o código (ej: Dark Magician, LOB-001)...">
+                        <button id="btn-clear-search" class="btn-clear-search" title="Limpiar búsqueda" style="display:none;">✕</button>
+                    </div>
+
+                    <!-- Filtro Posesión -->
+                    <div class="filter-group">
+                        <label>Estado:</label>
+                        <select id="filter-ownership" class="catalog-select">
+                            <option value="all">Todas las Cartas</option>
+                            <option value="owned">Solo Poseídas (Color)</option>
+                            <option value="missing">Solo Faltantes (Oscuras)</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro Tipo -->
+                    <div class="filter-group">
+                        <label>Tipo:</label>
+                        <select id="filter-card-type" class="catalog-select">
+                            <option value="all">Todos los Tipos</option>
+                            <option value="monster">Monstruos</option>
+                            <option value="spell">Magias</option>
+                            <option value="trap">Trampas</option>
+                            <option value="fusion">Fusión</option>
+                            <option value="ritual">Ritual</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro Rareza -->
+                    <div class="filter-group">
+                        <label>Rareza:</label>
+                        <select id="filter-rarity" class="catalog-select">
+                            <option value="all">Todas las Rarezas</option>
+                            <option value="SECRET_RARE">Secret Rare</option>
+                            <option value="ULTRA_RARE">Ultra Rare</option>
+                            <option value="SUPER_RARE">Super Rare</option>
+                            <option value="RARE">Rare</option>
+                            <option value="COMMON">Common</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tira de Capítulos de Sobres (Marcadores de Libro) -->
+                <div class="chapters-nav-strip">
+                    <div class="chapters-nav-label">CAPÍTULOS:</div>
+                    <div id="chapters-pills-container" class="chapters-pills-list">
+                        <!-- Dinámicamente llenado con LOB, MRD, MRL, etc. -->
+                    </div>
+                </div>
+            </section>
+
+            <div id="catalog-chapters-container" class="catalog-chapters-container">
+                <!-- Capítulos de sobres renderizados aquí -->
+                <div class="catalog-loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <span>Cargando catálogo oficial de cartas y verificando inventario...</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE INSPECCIÓN DETALLADA DE CARTA -->
+    <div id="card-inspect-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-backdrop" onclick="closeCardInspectModal()"></div>
+        <div class="inspect-modal-card">
+            <button class="btn-close-modal" onclick="closeCardInspectModal()" title="Cerrar ventana">✕</button>
+            <div class="inspect-modal-content">
+                <div class="inspect-image-col">
+                    <div class="inspect-card-frame" id="modal-card-frame">
+                        <img id="modal-card-img" src="" alt="Carta">
+                        <div id="modal-card-lock-badge" class="modal-lock-badge" style="display:none;">🔒 NO OBTENIDA</div>
+                    </div>
+                </div>
+                <div class="inspect-info-col">
+                    <div class="modal-badge-row">
+                        <span id="modal-card-set" class="modal-set-badge">LOB-000</span>
+                        <span id="modal-card-rarity" class="modal-rarity-badge">ULTRA RARE</span>
+                        <span id="modal-card-status-badge" class="modal-status-badge">EN POSESIÓN: x0</span>
+                    </div>
+                    <h2 id="modal-card-name" class="modal-card-title">Dark Magician</h2>
+                    <div class="modal-card-stats-grid" id="modal-card-stats-grid">
+                        <!-- Stats dinámicas -->
+                    </div>
+                    <div class="modal-card-desc-box">
+                        <div class="desc-label">EFECTO / TEXTO REGLAMENTARIO:</div>
+                        <div id="modal-card-desc" class="desc-text">...</div>
+                    </div>
+                    <div class="modal-footer-info">
+                        <span id="modal-card-passcode" class="modal-passcode">Passcode: 46986414</span>
+                        <span id="modal-card-pack-origin" class="modal-pack-origin">Expansión: Legend of Blue Eyes White Dragon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR FIJO -->
+    <div id="navbar-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/data/packs-data.js"></script>
+    <script src="../../js/data/deck-manager.js"></script>
+    <script src="../../js/views/catalog.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('duels');
+        });
+    </script>
+</body>
+</html>

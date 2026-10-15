@@ -1,0 +1,22 @@
+[
+  {
+    "code": "SLV-001",
+    "name": "Funda Dragón Blanco de Ojos Azules Cósmico",
+    "description": "Reverso de carta con el Dragón Blanco de Ojos Azules en fulgor astral cósmico y borde negro sólido.",
+    "price": 50000,
+    "currency": "STARSHIPS",
+    "image": "/assets/images/sleeves/SLV-001.png",
+    "offer_text": "POPULAR",
+    "active": true
+  },
+  {
+    "code": "SLV-002",
+    "name": "Funda Maga Oscura Hechicera Astral",
+    "description": "Reverso de carta con la Maga Oscura canalizando energía mágica magenta y cian con borde negro sólido.",
+    "price": 50000,
+    "currency": "STARSHIPS",
+    "image": "/assets/images/sleeves/SLV-002.png",
+    "offer_text": "NUEVO",
+    "active": true
+  }
+]

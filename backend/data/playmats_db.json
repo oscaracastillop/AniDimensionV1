@@ -1,0 +1,22 @@
+[
+  {
+    "code": "MAT-001",
+    "name": "Tapete Dragón Blanco de Ojos Azules Cósmico",
+    "description": "Tapete ultra-panorámico del Dragón Blanco de Ojos Azules con vórtice de relámpagos y borde negro sólido.",
+    "price": 80000,
+    "currency": "STARSHIPS",
+    "image": "/assets/images/playmats/MAT-001.jpg",
+    "offer_text": "POPULAR",
+    "active": true
+  },
+  {
+    "code": "MAT-002",
+    "name": "Tapete Maga Oscura Hechicera Astral",
+    "description": "Tapete ultra-panorámico del Santuario Arcano de la Maga Oscura con orbes galácticos y borde negro sólido.",
+    "price": 80000,
+    "currency": "STARSHIPS",
+    "image": "/assets/images/playmats/MAT-002.jpg",
+    "offer_text": "NUEVO",
+    "active": true
+  }
+]

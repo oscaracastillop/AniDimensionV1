@@ -1,0 +1,547 @@
+[
+  {
+    "name": "Landing Page",
+    "url": "/landing.html",
+    "httpStatus": 200,
+    "buttonCount": 7,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Login",
+    "url": "/views/login/login.html",
+    "httpStatus": 200,
+    "buttonCount": 9,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Registro",
+    "url": "/views/register/register.html",
+    "httpStatus": 200,
+    "buttonCount": 9,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Lobby Principal",
+    "url": "/views/lobby/lobby.html",
+    "httpStatus": 200,
+    "buttonCount": 9,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Perfil de Usuario",
+    "url": "/views/profile/profile.html",
+    "httpStatus": 200,
+    "buttonCount": 35,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Hub",
+    "url": "/views/shop/shop.html",
+    "httpStatus": 200,
+    "buttonCount": 17,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Sobres",
+    "url": "/views/shop/shop-sobres.html",
+    "httpStatus": 200,
+    "buttonCount": 36,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": [
+      "GET https://images.ygoprodeck.com/images/cards_small/88494661.jpg (net::ERR_BLOCKED_BY_ORB)"
+    ]
+  },
+  {
+    "name": "Tienda Sobre Detalle",
+    "url": "/views/shop/shop-sobre-detalle.html?pack=LOB",
+    "httpStatus": 200,
+    "buttonCount": 17,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Cartas Singles",
+    "url": "/views/shop/shop-cartas.html",
+    "httpStatus": 200,
+    "buttonCount": 22,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Avatares",
+    "url": "/views/shop/shop-avatares.html",
+    "httpStatus": 200,
+    "buttonCount": 366,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Potenciadores",
+    "url": "/views/shop/shop-potenciadores.html",
+    "httpStatus": 200,
+    "buttonCount": 33,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda VIP",
+    "url": "/views/shop/shop-vip.html",
+    "httpStatus": 200,
+    "buttonCount": 19,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Estrellas",
+    "url": "/views/shop/shop-estrellas.html",
+    "httpStatus": 200,
+    "buttonCount": 16,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Tapetes",
+    "url": "/views/shop/shop-tapetes.html",
+    "httpStatus": 200,
+    "buttonCount": 17,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Fundas",
+    "url": "/views/shop/shop-fundas.html",
+    "httpStatus": 200,
+    "buttonCount": 17,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Fondos",
+    "url": "/views/shop/shop-fondos.html",
+    "httpStatus": 200,
+    "buttonCount": 9,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tienda Instrucciones Pago",
+    "url": "/views/shop/shop-pago-instrucciones.html",
+    "httpStatus": 200,
+    "buttonCount": 11,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Duelos Menu",
+    "url": "/views/duels/menu.html",
+    "httpStatus": 200,
+    "buttonCount": 14,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Catálogo de Cartas",
+    "url": "/views/duels/catalog.html",
+    "httpStatus": 200,
+    "buttonCount": 12,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Constructor de Mazos",
+    "url": "/views/duels/deck-builder.html",
+    "httpStatus": 200,
+    "buttonCount": 16,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Aventura / Selección NPC",
+    "url": "/views/duels/npc/select-npc.html",
+    "httpStatus": 200,
+    "buttonCount": 17,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tablero Duelo NPC",
+    "url": "/views/duels/npc/duel-npc.html?npc=1",
+    "httpStatus": 200,
+    "buttonCount": 65,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Lobby PvP",
+    "url": "/views/duels/pvp/lobby-pvp.html",
+    "httpStatus": 200,
+    "buttonCount": 20,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Tablero Duelo PvP",
+    "url": "/views/duels/pvp/duel-pvp.html",
+    "httpStatus": 200,
+    "buttonCount": 62,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Hub de Eventos",
+    "url": "/views/eventos/eventos.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Torneos Jugadores",
+    "url": "/views/eventos/torneos.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Rompecabezas Evento",
+    "url": "/views/eventos/puzzle.html",
+    "httpStatus": 200,
+    "buttonCount": 11,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Subasta Evento",
+    "url": "/views/eventos/subasta.html",
+    "httpStatus": 200,
+    "buttonCount": 14,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Clanes",
+    "url": "/views/clans/clans.html",
+    "httpStatus": 200,
+    "buttonCount": 18,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Chat Global",
+    "url": "/views/chat/chat.html",
+    "httpStatus": 200,
+    "buttonCount": 47,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Rankings",
+    "url": "/views/rankings/rankings.html",
+    "httpStatus": 200,
+    "buttonCount": 9,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Guía del Duelista",
+    "url": "/views/guide/guide.html",
+    "httpStatus": 200,
+    "buttonCount": 17,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Hub",
+    "url": "/views/admin/admin.html",
+    "httpStatus": 200,
+    "buttonCount": 10,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Usuarios",
+    "url": "/views/admin/users/users.html",
+    "httpStatus": 200,
+    "buttonCount": 14,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Usuario Detalle",
+    "url": "/views/admin/users/users-detalle.html?id=1",
+    "httpStatus": 200,
+    "buttonCount": 10,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Sobres/Cartas",
+    "url": "/views/admin/cards/cards.html",
+    "httpStatus": 200,
+    "buttonCount": 170,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": [
+      "GET https://images.ygoprodeck.com/images/cards_small/88494661.jpg (net::ERR_BLOCKED_BY_ORB)",
+      "GET https://images.ygoprodeck.com/images/cards_small/10000050.jpg (net::ERR_BLOCKED_BY_ORB)"
+    ]
+  },
+  {
+    "name": "Admin Sobre Detalle",
+    "url": "/views/admin/cards/cards-sobre-detalle.html?pack=LOB",
+    "httpStatus": 200,
+    "buttonCount": 24,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Cartas Tienda",
+    "url": "/views/admin/cartas-tienda/cartas-tienda.html",
+    "httpStatus": 200,
+    "buttonCount": 31,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Avatares",
+    "url": "/views/admin/avatars/avatars.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Avatar Detalle",
+    "url": "/views/admin/avatars/avatars-detalle.html?id=AVA-001",
+    "httpStatus": 200,
+    "buttonCount": 10,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Potenciadores",
+    "url": "/views/admin/potenciadores/potenciadores.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Tapetes",
+    "url": "/views/admin/tapetes/tapetes.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Tapetes Editor",
+    "url": "/views/admin/tapetes/editor.html",
+    "httpStatus": 200,
+    "buttonCount": 11,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Fundas",
+    "url": "/views/admin/fundas/fundas.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Fundas Editor",
+    "url": "/views/admin/fundas/editor.html",
+    "httpStatus": 200,
+    "buttonCount": 11,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin VIP",
+    "url": "/views/admin/vip/vip.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Estrellas",
+    "url": "/views/admin/estrellas/estrellas.html",
+    "httpStatus": 200,
+    "buttonCount": 25,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Regalos",
+    "url": "/views/admin/regalos/regalos.html",
+    "httpStatus": 200,
+    "buttonCount": 23,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Eventos Hub",
+    "url": "/views/admin/eventos/eventos.html",
+    "httpStatus": 200,
+    "buttonCount": 9,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Torneos",
+    "url": "/views/admin/eventos/torneos.html",
+    "httpStatus": 200,
+    "buttonCount": 21,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Editor Torneo",
+    "url": "/views/admin/eventos/editor-torneo.html",
+    "httpStatus": 200,
+    "buttonCount": 13,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Rompecabezas",
+    "url": "/views/admin/eventos/rompecabezas.html",
+    "httpStatus": 200,
+    "buttonCount": 10,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Subasta",
+    "url": "/views/admin/eventos/subasta.html",
+    "httpStatus": 200,
+    "buttonCount": 15,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  },
+  {
+    "name": "Admin Salas Bonus",
+    "url": "/views/admin/eventos/salas-bonus.html",
+    "httpStatus": 200,
+    "buttonCount": 16,
+    "localStorageKeys": [],
+    "errors": [],
+    "warnings": [],
+    "failedRequests": []
+  }
+]

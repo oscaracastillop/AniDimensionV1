@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Cartas Singles</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="shop.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <script src="../../js/core/sound-manager.js"></script>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="shop-page-container">
+        
+        <!-- HEADER FIJO CON BOTÓN VOLVER Y BALANCE -->
+        <div class="shop-header">
+            <div class="shop-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
+                <div>
+                    <h1 class="shop-title">CARTAS SINGLES</h1>
+                    <div class="shop-subtitle">VENTA DIRECTA DE CARTAS INDIVIDUALES EN DÓLARES ($ USD)</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <div class="shop-balance-pill">
+                    <span>STARSHIPS:</span>
+                    <span id="shop-user-coins">⭐ ---</span>
+                </div>
+                <a href="shop.html" class="btn-shop-back" title="Volver a la Tienda Principal" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- BARRA DE FILTROS CÓSMICOS (TIPO DE CARTA) -->
+        <div class="shop-filter-bar">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-family:'Orbitron', sans-serif; font-size:9px; font-weight:700; color:#00f0ff; text-transform:uppercase;">
+                    FILTRAR:
+                </span>
+                <div class="filter-pills-group" id="filter-cards-group">
+                    <button type="button" class="btn-filter-pill active" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); setCartasCategoryFilter('ALL', this);">TODAS</button>
+                    <button type="button" class="btn-filter-pill" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); setCartasCategoryFilter('monster', this);">MONSTRUOS</button>
+                    <button type="button" class="btn-filter-pill" onclick="if(window.SoundManager) window.SoundManager.playSFX('button'); setCartasCategoryFilter('spell_trap', this);">MÁGICAS Y TRAMPAS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (SCROLL INVISIBLE) -->
+        <div class="shop-scroll-content" style="padding:8px 5px 20px 5px !important;">
+            
+            <!-- GRID DINÁMICO DE CARTAS (SHARP CYBER CARDS) -->
+            <div id="shop-cartas-grid-container" class="shop-grid-container">
+                <!-- Se inyectan dinámicamente las cards -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAVBAR INFERIOR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/data/cartas-singles-data.js"></script>
+    <script src="../../js/views/shop-cartas.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('tienda');
+            if (window.SoundManager && typeof window.SoundManager.playBGM === 'function') {
+                window.SoundManager.playBGM('shop', true);
+            }
+        });
+    </script>
+</body>
+</html>

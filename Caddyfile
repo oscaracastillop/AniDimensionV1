@@ -1,0 +1,34 @@
+# ==============================================================================
+# ANI-DIMENSION: CADDY REVERSE PROXY & AUTOMATIC SSL (PORTS 80 & 443 -> 3006)
+# ==============================================================================
+# Sustituye "tudominio.com" por el dominio público apuntando a la IP de este servidor.
+# Si estás probando en red local sin dominio, puedes usar ":80" o "localhost".
+# ==============================================================================
+
+# Configuración Global
+{
+    email admin@anidimension.com
+    admin off
+}
+
+# Dominio de Producción con SSL Automático Let's Encrypt / ZeroSSL
+anidimension.online, www.anidimension.online {
+    # Compresión para acelerar descargas de audio, sprites y assets
+    encode zstd gzip
+
+    # Proxy inverso transparente hacia el servidor central Ani-Dimension (Node.js en puerto 3006)
+    # Incluye soporte nativo y automático para WebSockets de duelos y chat
+    reverse_proxy 127.0.0.1:3006 {
+        header_up Host {upstream_hostport}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Encabezados de seguridad recomendados
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}

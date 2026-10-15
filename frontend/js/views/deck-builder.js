@@ -557,12 +557,10 @@ async function showCardInfoFloating(cardOrId) {
                     </div>
                 ` : ''}
                 <div class="floating-desc-box">
-                    <div style="font-size:9px; font-weight:900; color:#94a3b8; margin-bottom:3px; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">🇺🇸 TEXTO EN INGLÉS:</div>
-                    <div class="floating-desc-text" style="color:#cbd5e1; font-size:11px; line-height:1.45; font-family:'Inter', sans-serif;">${descEn}</div>
+                    <div class="floating-desc-text" style="color:#cbd5e1; font-size:9.5px; font-weight:400; line-height:1.4; font-family:'Outfit', sans-serif;">${descEn}</div>
                     ${descEs && descEs !== descEn ? `
-                        <div class="floating-desc-divider" style="margin:8px 0; border-top:1px solid rgba(255,255,255,0.08);"></div>
-                        <div style="font-size:9px; font-weight:900; color:#00f0ff; margin-bottom:3px; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">🇪🇸 DESCRIPCIÓN OFICIAL (ESPAÑOL):</div>
-                        <div class="floating-desc-text" style="color:#cbd5e1; font-size:11px; line-height:1.45; font-family:'Inter', sans-serif;">${descEs}</div>
+                        <div class="floating-desc-divider" style="margin:6px 0; border-top:1px dashed rgba(0,240,255,0.2);"></div>
+                        <div class="floating-desc-text" style="color:#94a3b8; font-size:9.5px; font-weight:400; line-height:1.4; font-family:'Outfit', sans-serif;">${descEs}</div>
                     ` : ''}
                 </div>
             </div>

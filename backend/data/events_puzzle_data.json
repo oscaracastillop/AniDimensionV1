@@ -1,0 +1,113 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "title": "Ani Dimension y la Maga Oscura - Especial Halloween",
+      "description": "¡Reúne todas las fichas del rompecabezas mágico de Halloween tras tus duelos y sé uno de los 10 primeros en completarlo para ganar premios legendarios!",
+      "image_url": "/assets/images/events/halloween_maga_oscura.jpg",
+      "start_date": "2026-10-03T12:00:00.000Z",
+      "end_date": "2026-11-01T04:59:00.000Z",
+      "grid_rows": 4,
+      "grid_cols": 4,
+      "total_pieces": 16,
+      "payout_per_leftover_piece": 100,
+      "drop_rate_npc": 0.5,
+      "drop_rate_pvp": 0.5,
+      "prizes_config": [
+        {
+          "place": 1,
+          "title": "1° Lugar",
+          "starships": "100000",
+          "vip_days": "",
+          "avatar_code": "",
+          "badge": "TOP 1"
+        },
+        {
+          "place": 2,
+          "title": "2° Lugar",
+          "starships": "60000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 2"
+        },
+        {
+          "place": 3,
+          "title": "3° Lugar",
+          "starships": "40000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 3"
+        },
+        {
+          "place": 4,
+          "title": "4° Lugar",
+          "starships": "20000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 4"
+        },
+        {
+          "place": 5,
+          "title": "5° Lugar",
+          "starships": "10000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 5"
+        },
+        {
+          "place": 6,
+          "title": "6° Lugar",
+          "starships": "10000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 6"
+        },
+        {
+          "place": 7,
+          "title": "7° Lugar",
+          "starships": "10000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 7"
+        },
+        {
+          "place": 8,
+          "title": "8° Lugar",
+          "starships": "10000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 8"
+        },
+        {
+          "place": 9,
+          "title": "9° Lugar",
+          "starships": "10000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 9"
+        },
+        {
+          "place": 10,
+          "title": "10° Lugar",
+          "starships": "10000",
+          "vip_days": "0",
+          "avatar_code": "",
+          "badge": "TOP 10"
+        }
+      ],
+      "is_active": true,
+      "created_at": "2026-10-02T16:50:06.384Z"
+    }
+  ],
+  "user_pieces": {
+    "1_1": {
+      "4": 2,
+      "6": 1,
+      "14": 1
+    }
+  },
+  "winners": {
+    "1": []
+  },
+  "exchanges": {}
+}

@@ -12,8 +12,8 @@ router.get('/cards', cardsController.searchCards);
 router.get('/cards/search', cardsController.searchCards);
 router.get('/cards/:id', cardsController.getCardById);
 router.get('/countries', cardsController.getCountries);
-router.get('/duel/:roomId/gy/:player', cardsController.getGraveyard);
-router.post('/duel/test-inject-card', cardsController.testInjectCard);
+router.get('/cards/:id/image', cardsController.getCardImage);
+router.get('/cards/image/:id', cardsController.getCardImage);
 
 module.exports = router;
 

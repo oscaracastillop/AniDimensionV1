@@ -18,6 +18,7 @@ const {
 } = require('./ocg-engine');
 const { ocgCardReader } = require('../data/sql-card-reader');
 const { getRoomManifest } = require('./room-manifest');
+const { getCardEffect } = require('./card-registry');
 
 // =========================================================================
 // FUSIÓN Y RITUAL: Gestionados dinámicamente mediante RoomCardManifest y módulos nativos
@@ -122,19 +123,13 @@ async function executeNpcTurn(roomId) {
         console.log(`[NPC AI] 🧠 Iniciando Turno Táctico Maestro de ${npc.username} (Turno #${duelState.turnNumber})...`);
 
         // =====================================================================
-        // 1. STANDBY PHASE DEL NPC
-        // =====================================================================
-        duelState.phase = 'STANDBY';
-        emitDuelLog(roomId, `⏱️ [Rival] STANDBY PHASE.`, 'phase');
-        enrichDuelStateForBroadcast(duelState);
-        if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
-        await new Promise(r => setTimeout(r, 600));
-
-        // =====================================================================
-        // 2. MAIN PHASE 1 DEL NPC - COMBOS Y SECUENCIAS TÁCTICAS
+        // 1. MAIN PHASE 1 DEL NPC - COMBOS Y SECUENCIAS TÁCTICAS
+        // (Las fases DRAW y STANDBY ya fueron ejecutadas y notificadas reglamentariamente)
         // =====================================================================
         duelState.phase = 'MAIN_1';
         emitDuelLog(roomId, `⏱️ [Rival] MAIN PHASE 1.`, 'phase');
+        enrichDuelStateForBroadcast(duelState);
+        if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
 
         // 2.0 Invocación por Volteo / Cambio de Posición
         for (let i = 0; i < 5; i++) {
@@ -151,11 +146,22 @@ async function executeNpcTurn(roomId) {
                 m.hasChangedPosition = true;
                 if (wasFaceDown) {
                     emitDuelLog(roomId, `🔄⭐ [Invocación por Volteo Rival] ${npc.username} cambia a "${m.card_data.name}" a Modo de Ataque!`, 'position');
+                    duelState.pendingAction = {
+                        type: 'FLIP_SUMMON',
+                        summonType: 'FLIP',
+                        player: npcKey,
+                        slot_index: i,
+                        cardData: m.card_data
+                    };
+                    const hasTraps = player.spells.some(s => s && (s.faceDown || s.position === 'SET'));
+                    if (hasTraps) {
+                        await promptNpcChainWindowWithSafety(roomId, `¡${npc.username} realizó Invocación por Volteo de ${m.card_data.name}!`, m.card_data, player.username);
+                    }
                     const flipId = getCardId(m);
                     const isFlip = (m.card_data && m.card_data.type && typeof m.card_data.type === 'string' && m.card_data.type.includes('Flip')) 
                         || (m.card_data && (Number(m.card_data.type) & 0x200000)) 
                         || Boolean(manifest?.get(flipId)?.isFlip);
-                    if (isFlip) {
+                    if (isFlip && npc.monsters[i]) {
                         await executeCardEffect(roomId, m.card_data, npcKey, playerKey);
                     }
                 } else {
@@ -275,7 +281,15 @@ async function executeNpcTurn(roomId) {
                     await new Promise(r => setTimeout(r, 600));
                 } else {
                     // Smashing Ground o Nobleman of Crossout o Fissure
-                    let removalIdx = npc.hand.findIndex(c => Boolean(manifest?.get(getCardId(c))?.isMonsterRemoval));
+                    let removalIdx = npc.hand.findIndex(c => {
+                        const cid = getCardId(c);
+                        const mod = getCardEffect(cid);
+                        if (mod && typeof mod.canActivate === 'function') {
+                            const check = mod.canActivate({ duelState, playerKey: npcKey, opponentKey: playerKey });
+                            return check && check.canActivate !== false;
+                        }
+                        return Boolean(manifest?.get(cid)?.isMonsterRemoval);
+                    });
                     if (removalIdx !== -1) {
                         const remCard = npc.hand.splice(removalIdx, 1)[0];
                         emitDuelLog(roomId, `💥✨ ¡${npc.username} activa "${remCard.name}"!`, 'spell');
@@ -480,7 +494,9 @@ async function executeNpcTurn(roomId) {
         if (npc.monsters.some(m => m === null)) {
             let polyIdx = npc.hand.findIndex(c => Boolean(manifest?.get(getCardId(c))?.isPolymerization));
             if (polyIdx !== -1 && npc.extraDeck && npc.extraDeck.length > 0) {
-                const handCards = npc.hand.map((c, idx) => ({ id: getCardId(c), handIdx: idx, name: c.name }));
+                const handCards = npc.hand
+                    .map((c, idx) => ({ id: getCardId(c), handIdx: idx, name: c.name }))
+                    .filter((_, idx) => idx !== polyIdx);
                 const fieldCards = npc.monsters.map((m, idx) => m ? ({ id: getCardId(m), fieldSlot: idx, name: m.card_data.name }) : null).filter(Boolean);
 
                 let possibleFusion = null;
@@ -745,10 +761,10 @@ async function executeNpcTurn(roomId) {
             if (!m || m.hasUsedEffect) continue;
             const mId = getCardId(m);
             const mName = (m.card_data?.name || '').toLowerCase();
-            const cMeta = manifest.get(mId);
+            const cMeta = manifest ? manifest.get(mId) : null;
 
             // Relinquished: Absorción de monstruo
-            if ((cMeta.isRelinquished || mName.includes('relinquished') || mName.includes('renunciado')) && !m.absorbedMonster && player.monsters.some(pm => pm !== null)) {
+            if (((cMeta && cMeta.isRelinquished) || mName.includes('relinquished') || mName.includes('renunciado')) && !m.absorbedMonster && player.monsters.some(pm => pm !== null)) {
                 let targetSlot = -1;
                 let maxAtk = -1;
                 for (let pIdx = 0; pIdx < 5; pIdx++) {
@@ -979,6 +995,16 @@ async function executeNpcTurn(roomId) {
                             emitDuelLog(roomId, `⚔️ [Invocación Rival] ${npc.username} invoca a "${monCard.name}" en Modo ${isDef ? 'Defensa' : 'Ataque'}.`, 'summon');
                         }
 
+                        if (!isDef) {
+                            duelState.pendingAction = {
+                                type: 'SUMMON',
+                                summonType: 'NORMAL',
+                                player: npcKey,
+                                slot_index: summonSlot,
+                                cardData: monCard
+                            };
+                        }
+
                         enrichDuelStateForBroadcast(duelState);
                         if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
 
@@ -992,47 +1018,93 @@ async function executeNpcTurn(roomId) {
             }
         }
 
-        // 2.12 COMBO PASO L: MAGIAS DE EQUIPO INTELIGENTES
+        // 2.12 COMBO PASO L: MAGIAS DE EQUIPO INTELIGENTES CON VALIDACIÓN REGLAMENTARIA
         const equipSpellsInHand = npc.hand
             .map((c, idx) => ({ ...c, handIdx: idx }))
-            .filter(c => (c.type && c.type.includes('Equip')) || c.race === 'Equip');
+            .filter(c => (c.type && c.type.includes('Equip')) || c.race === 'Equip' || Boolean(manifest?.get(getCardId(c))?.isEquip));
 
         for (const eq of equipSpellsInHand) {
             const emptySpellSlot = npc.spells.findIndex(s => s === null);
-            let bestMonsterIdx = -1;
-            let maxAtk = -1;
-            for (let i = 0; i < 5; i++) {
-                const m = npc.monsters[i];
-                if (m && !m.faceDown) {
-                    const atk = m.currentAtk !== undefined ? m.currentAtk : (m.card_data ? m.card_data.atk : 0);
-                    if (atk > maxAtk) {
-                        maxAtk = atk;
-                        bestMonsterIdx = i;
+            if (emptySpellSlot === -1) break;
+
+            const eqId = getCardId(eq);
+            const eqMod = getCardEffect(eqId);
+            let validTargets = [];
+
+            if (eqMod && typeof eqMod.getValidTargets === 'function') {
+                validTargets = eqMod.getValidTargets({ duelState, playerKey: npcKey, opponentKey: playerKey });
+            } else if (eqMod && typeof eqMod.canEquip === 'function') {
+                [npcKey, playerKey].forEach(pk => {
+                    (duelState[pk]?.monsters || []).forEach((m, sIdx) => {
+                        if (m && !m.faceDown && eqMod.canEquip(m.card_data || m)) {
+                            validTargets.push({ playerKey: pk, slotIndex: sIdx });
+                        }
+                    });
+                });
+            } else {
+                const reqRace = (eqMod?.requiredRace || eq?.requiredRace || manifest?.get(eqId)?.requiredRace || '').toLowerCase();
+                const desc = (eq.desc || eq.card_data?.desc || eqMod?.desc || '').toLowerCase();
+                let raceFilter = reqRace;
+                if (!raceFilter) {
+                    const match = desc.match(/equip only to a ([a-z\s-]+)-type monster/i) || desc.match(/sólo puede equiparse a un monstruo de tipo ([a-z\s-]+)/i);
+                    if (match && match[1]) {
+                        raceFilter = match[1].trim().toLowerCase();
                     }
                 }
+                [npcKey, playerKey].forEach(pk => {
+                    (duelState[pk]?.monsters || []).forEach((m, sIdx) => {
+                        if (m && !m.faceDown) {
+                            const mData = m.card_data || m;
+                            const mRace = (mData.race || '').toLowerCase();
+                            if (!raceFilter || mRace.includes(raceFilter)) {
+                                validTargets.push({ playerKey: pk, slotIndex: sIdx });
+                            }
+                        }
+                    });
+                });
             }
 
-            if (emptySpellSlot !== -1 && bestMonsterIdx !== -1) {
-                const curIdx = npc.hand.findIndex(c => (c.id || c.card_id) === (eq.id || eq.card_id));
-                if (curIdx !== -1) {
-                    const eqCard = npc.hand.splice(curIdx, 1)[0];
-                    const targetMonster = npc.monsters[bestMonsterIdx];
-                    npc.spells[emptySpellSlot] = {
-                        card_id: eqCard.id || eqCard.card_id,
-                        position: 'ACT',
-                        faceDown: false,
-                        card_data: eqCard
-                    };
-                    const targetMonsterName = (targetMonster.card_data && targetMonster.card_data.name) || targetMonster.name || 'Monstruo';
-                    emitDuelLog(roomId, `🗡️ [Magia de Equipo Rival] ¡${npc.username} equipa "${eqCard.name}" a "${targetMonsterName}"!`, 'spell');
-                    await executeCardEffect(roomId, eqCard, npcKey, playerKey, {
-                        slot_index: bestMonsterIdx,
-                        target_player: npcKey
-                    });
-                    enrichDuelStateForBroadcast(duelState);
-                    if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
-                    await new Promise(r => setTimeout(r, 600));
-                }
+            if (!validTargets || validTargets.length === 0) {
+                // Ningún monstruo compatible en el campo; no activar la carta de equipo indebidamente
+                continue;
+            }
+
+            // Priorizar equipar a monstruos propios
+            const ownTargets = validTargets.filter(t => t.playerKey === npcKey);
+            const targetCandidates = ownTargets.length > 0 ? ownTargets : validTargets;
+
+            targetCandidates.sort((a, b) => {
+                const monA = duelState[a.playerKey]?.monsters[a.slotIndex];
+                const monB = duelState[b.playerKey]?.monsters[b.slotIndex];
+                const atkA = monA?.currentAtk !== undefined ? monA.currentAtk : (monA?.card_data?.atk || 0);
+                const atkB = monB?.currentAtk !== undefined ? monB.currentAtk : (monB?.card_data?.atk || 0);
+                return atkB - atkA;
+            });
+
+            const chosenTarget = targetCandidates[0];
+            const targetMonster = duelState[chosenTarget.playerKey]?.monsters[chosenTarget.slotIndex];
+            if (!targetMonster) continue;
+
+            const curIdx = npc.hand.findIndex(c => getCardId(c) === eqId);
+            if (curIdx !== -1) {
+                const eqCard = npc.hand.splice(curIdx, 1)[0];
+                npc.spells[emptySpellSlot] = {
+                    card_id: eqId,
+                    position: 'ACT',
+                    faceDown: false,
+                    card_data: eqCard,
+                    targetingMonster: { player: chosenTarget.playerKey, slot: chosenTarget.slotIndex }
+                };
+                const targetMonsterName = (targetMonster.card_data && targetMonster.card_data.name) || targetMonster.name || 'Monstruo';
+                emitDuelLog(roomId, `🗡️ [Magia de Equipo Rival] ¡${npc.username} equipa "${eqCard.name}" a "${targetMonsterName}"!`, 'spell');
+                await executeCardEffect(roomId, eqCard, npcKey, playerKey, {
+                    slot_index: chosenTarget.slotIndex,
+                    target_slot: chosenTarget.slotIndex,
+                    target_player: chosenTarget.playerKey
+                });
+                enrichDuelStateForBroadcast(duelState);
+                if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                await new Promise(r => setTimeout(r, 600));
             }
         }
 
@@ -1088,7 +1160,7 @@ async function executeNpcTurn(roomId) {
             emitDuelLog(roomId, `⚔️ [Rival] BATTLE PHASE.`, 'phase');
             enrichDuelStateForBroadcast(duelState);
             if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 1250)); // Permitir que el banner visual de Battle Phase concluya limpiamente
 
             const swordsActiveOnPlayer = player.spells && player.spells.some(s => s && manifest?.get(getCardId(s))?.isSwords && !s.faceDown);
             if (swordsActiveOnPlayer) {
@@ -1265,6 +1337,9 @@ async function executeNpcTurn(roomId) {
 
                                 if (wasFaceDown) {
                                     emitDuelLog(roomId, `🔄 [Volteo en Combate] ¡"${defenderName}" fue volteado boca arriba por el ataque de "${attackerName}"!`, 'position');
+                                    enrichDuelStateForBroadcast(duelState);
+                                    if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                                    await new Promise(r => setTimeout(r, 600));
                                 }
 
                                 if (wasFaceDown && defender.card_data) {
@@ -1335,7 +1410,7 @@ async function executeNpcTurn(roomId) {
         emitDuelLog(roomId, `⏳ [Rival] END PHASE.`, 'phase');
         enrichDuelStateForBroadcast(duelState);
         if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 1250)); // Permitir que el banner visual de End Phase concluya antes de ceder turno
 
         if (player.spells) {
             for (let i = 0; i < 5; i++) {
@@ -1419,11 +1494,18 @@ async function executeNpcTurn(roomId) {
                             global.restartDuelTimer(roomId);
                         }
                     }
-                }, 600);
+                }, 1200);
             }
-        }, 800);
+        }, 1300);
     } catch (err) {
         console.error('[NPC AI ERROR]', err);
+        // Mecanismo de seguridad para evitar que el duelo quede congelado en el turno del NPC
+        try {
+            emitDuelLog(roomId, `⚠️ [IA Oponente] Pasando de turno automáticamente por contingencia técnica.`, 'system');
+            finalizeTurnHandoffToRival(roomId);
+        } catch (fallbackErr) {
+            console.error('[NPC AI FALLBACK ERROR]', fallbackErr);
+        }
     }
 }
 
@@ -1522,10 +1604,10 @@ function finalizeTurnHandoffToRival(roomId) {
                             setTimeout(() => executeNpcTurn(roomId), 800);
                         }
                     }
-                }, 500);
+                }, 1200);
             }
-        }, 600);
-    }, 800);
+        }, 1300);
+    }, 1250); // Dar 1250ms para que el banner de END PHASE se muestre por completo sin cortes
 }
 
 function returnTemporaryControlledMonsters(duelState) {

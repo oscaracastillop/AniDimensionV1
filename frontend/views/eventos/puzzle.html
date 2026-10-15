@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Evento de Rompecabezas</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/puzzle.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+</head>
+<body>
+
+    <div class="puzzle-page-container">
+        <!-- HEADER SUPERIOR CONGELADO / FIJO DE LADO A LADO -->
+        <div class="puzzle-header">
+            <div class="puzzle-title-box">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo">
+                <div>
+                    <h1 class="puzzle-title" id="puzzle-event-title">EVENTO DE ROMPECABEZAS</h1>
+                    <div class="puzzle-subtitle" id="puzzle-event-desc">
+                        GANA DUELOS, REÚNE FICHAS Y ASEGURA TU PUESTO EN EL TOP 10
+                    </div>
+                </div>
+            </div>
+
+            <div class="puzzle-header-controls">
+                <div class="puzzle-timer-badge">
+                    <span>⏳ RESTANTE:</span>
+                    <span id="puzzle-countdown-timer">CALCULANDO...</span>
+                </div>
+
+                <a href="/views/eventos/eventos.html" class="btn-puzzle-back" title="Volver">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- SUB-BARRA DE REGLAS Y LIQUIDACIÓN -->
+        <div class="puzzle-info-bar">
+            <div>
+                ⭐ <b>Liquidación de Fichas:</b> <span id="puzzle-payout-rate" style="color:#ffd700; font-family:'Orbitron',sans-serif; font-weight:800;">50 Starships</span> por cada ficha sobrante al terminar el evento.
+            </div>
+            <div style="color:#38bdf8; font-size:10.5px;">
+                ℹ️ <i>Las probabilidades de obtención son equitativas tras ganar en Duelos vs NPC y PvP.</i>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (SCROLL INVISIBLE) -->
+        <div class="puzzle-scroll-content">
+            
+            <div class="puzzle-main-layout" id="puzzle-board-container">
+                
+                <!-- COLUMNA IZQUIERDA: MATRIZ Y CONTROLES -->
+                <div class="puzzle-board-card">
+                    
+                    <!-- Barra de Progreso de Fichas -->
+                    <div>
+                        <div class="puzzle-progress-info">
+                            <span>COLECCIÓN DE FICHAS:</span>
+                            <span><b id="puzzle-progress-text">0 / 16 Fichas</b> (<span id="puzzle-progress-percent">0%</span>)</span>
+                        </div>
+                        <div class="puzzle-progress-bar-container" style="margin-top:5px;">
+                            <div class="puzzle-progress-bar-fill" id="puzzle-progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- CUADRÍCULA VISUAL DINÁMICA -->
+                    <div class="puzzle-grid" id="puzzle-grid">
+                        <!-- Las fichas se inyectan dinámicamente desde eventos-puzzle.js -->
+                    </div>
+
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div class="puzzle-actions-bar">
+                        <button class="btn-puzzle-action btn-complete-puzzle" id="btn-complete-puzzle" onclick="onClaimPuzzleCompletion()" disabled>
+                            <span>🔒 COMPLETAR ROMPECABEZAS (0/16)</span>
+                        </button>
+                        
+                        <button class="btn-puzzle-action btn-exchange-pieces" id="btn-exchange-pieces" onclick="onExchangeLeftoverPieces()" disabled>
+                            <span>⏳ CANJEAR SOBRANTES</span>
+                        </button>
+                    </div>
+
+                    <!-- NOTA DE ENTREGA EN BUZÓN -->
+                    <div class="puzzle-disclaimer-card">
+                        <div class="puzzle-disclaimer-icon">📫</div>
+                        <div>
+                            <b>Entrega Oficial de Premios:</b> Los premios garantizados para los 10 primeros duelistas serán enviados directamente a sus <b>Buzones de Recompensas</b> una vez finalizado el evento y verificado el registro de ganadores.
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- COLUMNA DERECHA: TABLA TOP 10 GANADORES -->
+                <div class="puzzle-winners-card">
+                    <h3 class="puzzle-winners-title">
+                        <span>🏆 TOP 10 GANADORES OFICIALES</span>
+                        <span style="font-size:10px; color:#94a3b8; font-weight:700;">TIEMPO REAL</span>
+                    </h3>
+
+                    <div class="puzzle-winners-list" id="puzzle-winners-list">
+                        <!-- Renglones inyectados dinámicamente -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR FIJO -->
+    <div id="navbar-container"></div>
+
+    <!-- SCRIPTS CORE Y NAVBAR -->
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/eventos-puzzle.js?v=4.6"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('eventos');
+        });
+    </script>
+</body>
+</html>
+

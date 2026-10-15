@@ -34,6 +34,7 @@ const {
 } = require('../engine/duel-actions');
 
 const { progressionService } = require('../engine/progression-service');
+const duelBridge = require('../services/duel-engine-bridge');
 
 // Conectar ejecutor de turnos de IA en el motor OCG
 setNpcTurnExecutor(executeNpcTurn);
@@ -267,6 +268,7 @@ function initDuelSockets(io) {
     global.restartDuelTimer = (rId) => startDuelTurnTimer(rId, io);
 
     setOnDuelFinished((roomId) => {
+        try { duelBridge.endDuel(roomId); } catch(e) {}
         if (pvpRooms.has(roomId)) {
             const roomNum = pvpRooms.get(roomId).roomNumber || '';
             console.log(`[PVP] Duelo finalizado. Sala #${roomNum} (${roomId}) liberada.`);
@@ -653,6 +655,23 @@ function initDuelSockets(io) {
 
                     // Iniciar el temporizador reglamentario de 2 minutos (120s)
                     startDuelTurnTimer(roomId, io);
+
+                    // Secuencia reglamentaria sincronizada Turno 1: DRAW -> STANDBY -> MAIN_1
+                    setTimeout(() => {
+                        const current = duelRooms.get(roomId);
+                        if (!current || current.isGameOver || current.turnNumber !== 1 || current.phase !== 'DRAW') return;
+                        current.phase = 'STANDBY';
+                        enrichDuelStateForBroadcast(current);
+                        io.to(roomId).emit('DUEL_STATE_UPDATE', current);
+
+                        setTimeout(() => {
+                            const current2 = duelRooms.get(roomId);
+                            if (!current2 || current2.isGameOver || current2.turnNumber !== 1 || current2.phase !== 'STANDBY') return;
+                            current2.phase = 'MAIN_1';
+                            enrichDuelStateForBroadcast(current2);
+                            io.to(roomId).emit('DUEL_STATE_UPDATE', current2);
+                        }, 1200);
+                    }, 1300);
                 }, 3200);
             }
         });
@@ -836,106 +855,130 @@ function initDuelSockets(io) {
 
         // 3. Manejo Central de Acciones de Duelo
         socket.on('DUEL_ACTION', async (data) => {
-            await handleDuelAction(socket, data);
+            try {
+                await handleDuelAction(socket, data);
+            } catch (err) {
+                console.error('[DUEL_ACTION SOCKET ERROR]', err);
+                socket.emit('ACTION_ERROR', { message: err.message || 'Error procesando la jugada.' });
+            }
         });
 
         // 4. Respuestas del motor de Cadenas OCG
         socket.on('OCG_CHAIN_RESPONSE', async (data) => {
-            if (!data) return;
-            const roomId = data.room_id || 'ROOM_DEMO';
-            const duelState = duelRooms.get(roomId);
-            if (!duelState || duelState.isGameOver) return;
+            try {
+                if (!data) return;
+                const roomId = data.room_id || 'ROOM_DEMO';
+                const duelState = duelRooms.get(roomId);
+                if (!duelState || duelState.isGameOver) return;
 
-            if (roomChainTimers.has(roomId)) {
-                clearTimeout(roomChainTimers.get(roomId));
-                roomChainTimers.delete(roomId);
-            }
-
-            const chainPlayer = (socket.user && socket.user.username && socket.user.username !== 'Invitado') ? socket.user.username : (data.player_name || duelState.player1.username);
-            const isP2 = Boolean(duelState.player2 && duelState.player2.username && chainPlayer && chainPlayer.toLowerCase() === duelState.player2.username.toLowerCase());
-            const chainPlayerKey = isP2 ? 'player2' : 'player1';
-            const rivalPlayerKey = isP2 ? 'player1' : 'player2';
-
-            if (data.action === 'CHAIN' && data.card_id) {
-                const cardData = await fetchCardData(data.card_id);
-                const nextLink = duelState.activeChain.length + 1;
-
-                // Si la carta encadenada estaba en el campo, revelarla boca arriba
-                if (data.slot_index !== undefined && data.slot_index >= 0 && duelState[chainPlayerKey] && duelState[chainPlayerKey].spells && duelState[chainPlayerKey].spells[data.slot_index]) {
-                    duelState[chainPlayerKey].spells[data.slot_index].faceDown = false;
-                    duelState[chainPlayerKey].spells[data.slot_index].position = 'ACT';
+                if (roomChainTimers.has(roomId)) {
+                    clearTimeout(roomChainTimers.get(roomId));
+                    roomChainTimers.delete(roomId);
                 }
 
-                duelState.activeChain.push({
-                    chainLink: nextLink,
-                    player: chainPlayer,
-                    card_id: data.card_id,
-                    card_data: cardData,
-                    slot_index: data.slot_index,
-                    target_data: data.target_data || null,
-                    from_hand: data.from_hand || (data.card_id === 40640057)
-                });
+                const chainPlayer = (socket.user && socket.user.username && socket.user.username !== 'Invitado') ? socket.user.username : (data.player_name || duelState.player1.username);
+                const isP2 = Boolean(duelState.player2 && duelState.player2.username && chainPlayer && chainPlayer.toLowerCase() === duelState.player2.username.toLowerCase());
+                const chainPlayerKey = isP2 ? 'player2' : 'player1';
+                const rivalPlayerKey = isP2 ? 'player1' : 'player2';
 
-                emitDuelLog(roomId, `⛓️ [Cadena Eslabón ${nextLink}] ¡${chainPlayer} encadena "${cardData.name}"!`, 'chain');
-                io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                if (data.action === 'CHAIN' && data.card_id) {
+                    const cardData = await fetchCardData(data.card_id);
+                    const nextLink = duelState.activeChain.length + 1;
 
-                // Consultar al rival si encadena
-                const rivalPlayer = duelState[rivalPlayerKey];
-                const rivalName = (rivalPlayer && rivalPlayer.username) ? rivalPlayer.username : 'Oponente';
-                promptChainWindow(roomId, `${chainPlayer} encadenó ${cardData.name}`, cardData, rivalName);
-            } else {
-                emitDuelLog(roomId, `✋ ${chainPlayer} pasa su prioridad de respuesta.`, 'chain');
-                resolveActiveChain(roomId);
+                    // Si la carta encadenada estaba en el campo, revelarla boca arriba
+                    if (data.slot_index !== undefined && data.slot_index >= 0 && duelState[chainPlayerKey] && duelState[chainPlayerKey].spells && duelState[chainPlayerKey].spells[data.slot_index]) {
+                        duelState[chainPlayerKey].spells[data.slot_index].faceDown = false;
+                        duelState[chainPlayerKey].spells[data.slot_index].position = 'ACT';
+                    }
+
+                    duelState.activeChain.push({
+                        chainLink: nextLink,
+                        player: chainPlayer,
+                        card_id: data.card_id,
+                        card_data: cardData,
+                        slot_index: data.slot_index,
+                        target_data: data.target_data || null,
+                        from_hand: data.from_hand || (data.card_id === 40640057)
+                    });
+
+                    emitDuelLog(roomId, `⛓️ [Cadena Eslabón ${nextLink}] ¡${chainPlayer} encadena "${cardData.name}"!`, 'chain');
+                    enrichDuelStateForBroadcast(duelState);
+                    io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+
+                    // Consultar al rival si encadena
+                    const rivalPlayer = duelState[rivalPlayerKey];
+                    const rivalName = (rivalPlayer && rivalPlayer.username) ? rivalPlayer.username : 'Oponente';
+                    promptChainWindow(roomId, `${chainPlayer} encadenó ${cardData.name}`, cardData, rivalName);
+                } else {
+                    emitDuelLog(roomId, `✋ ${chainPlayer} pasa su prioridad de respuesta.`, 'chain');
+                    resolveActiveChain(roomId);
+                }
+            } catch (chainErr) {
+                console.error('[OCG_CHAIN_RESPONSE SOCKET ERROR]', chainErr);
             }
         });
 
         // 5. Respuesta de Selección de Tributos OCG
         socket.on('OCG_TRIBUTE_RESPONSE', async (data) => {
-            if (!data || !data.card_id) return;
-            const roomId = data.room_id || 'ROOM_DEMO';
-            const cardId = parseInt(data.card_id, 10);
-            const tributeSlots = data.tribute_slots || [];
-            const targetSlot = data.target_slot !== undefined ? data.target_slot : 0;
-            const position = data.position || 'ATK';
+            try {
+                if (!data || !data.card_id) return;
+                const roomId = data.room_id || 'ROOM_DEMO';
+                const cardId = parseInt(data.card_id, 10);
+                const tributeSlots = data.tribute_slots || [];
+                const targetSlot = data.target_slot !== undefined ? data.target_slot : 0;
+                const position = data.position || 'ATK';
 
-            await handleDuelAction(socket, {
-                room_id: roomId,
-                action_type: position === 'DEF' ? 'SET' : 'SUMMON',
-                card_id: cardId,
-                slot_index: targetSlot,
-                tribute_slots: tributeSlots,
-                position: position
-            });
+                await handleDuelAction(socket, {
+                    room_id: roomId,
+                    action_type: position === 'DEF' ? 'SET' : 'SUMMON',
+                    card_id: cardId,
+                    slot_index: targetSlot,
+                    tribute_slots: tributeSlots,
+                    position: position
+                });
+            } catch (tribErr) {
+                console.error('[OCG_TRIBUTE_RESPONSE SOCKET ERROR]', tribErr);
+                socket.emit('ACTION_ERROR', { message: 'Error procesando tributo.' });
+            }
         });
 
         // 6. Descarte por límite de mano (End Phase > 6 cartas)
         socket.on('OCG_HAND_DISCARD_RESPONSE', async (data) => {
-            if (!data || !Array.isArray(data.discard_indices)) return;
-            const roomId = data.room_id || 'ROOM_DEMO';
-            const duelState = duelRooms.get(roomId);
-            if (!duelState || duelState.turnPlayer !== duelState.player1.username) return;
+            try {
+                if (!data || !Array.isArray(data.discard_indices)) return;
+                const roomId = data.room_id || 'ROOM_DEMO';
+                const duelState = duelRooms.get(roomId);
+                if (!duelState || duelState.turnPlayer !== duelState.player1.username) return;
 
-            const p1 = duelState.player1;
-            const sortedIndices = [...new Set(data.discard_indices)].sort((a, b) => b - a);
-            sortedIndices.forEach(idx => {
-                if (idx >= 0 && idx < p1.hand.length) {
-                    const disc = p1.hand.splice(idx, 1)[0];
-                    sendCardToGraveyard(duelState, disc, 'player1');
-                }
-            });
+                const p1 = duelState.player1;
+                const sortedIndices = [...new Set(data.discard_indices)].sort((a, b) => b - a);
+                sortedIndices.forEach(idx => {
+                    if (idx >= 0 && idx < p1.hand.length) {
+                        const disc = p1.hand.splice(idx, 1)[0];
+                        sendCardToGraveyard(duelState, disc, 'player1');
+                    }
+                });
 
-            emitDuelLog(roomId, `📦 [Regla de Mano] ${p1.username} descartó ${sortedIndices.length} carta(s) al Cementerio por límite de 6 cartas.`, 'phase');
-            enrichDuelStateForBroadcast(duelState);
-            io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                emitDuelLog(roomId, `📦 [Regla de Mano] ${p1.username} descartó ${sortedIndices.length} carta(s) al Cementerio por límite de 6 cartas.`, 'phase');
+                enrichDuelStateForBroadcast(duelState);
+                io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
 
-            finalizeTurnHandoffToRival(roomId);
+                finalizeTurnHandoffToRival(roomId);
+            } catch (discErr) {
+                console.error('[OCG_HAND_DISCARD_RESPONSE SOCKET ERROR]', discErr);
+            }
         });
 
         // 7. Activación directa de cartas
         socket.on('OCG_ACTIVATE_CARD', async (data) => {
-            if (!data || !data.card_id) return;
-            data.action_type = 'ACTIVATE';
-            await handleDuelAction(socket, data);
+            try {
+                if (!data || !data.card_id) return;
+                data.action_type = 'ACTIVATE';
+                await handleDuelAction(socket, data);
+            } catch (actErr) {
+                console.error('[OCG_ACTIVATE_CARD SOCKET ERROR]', actErr);
+                socket.emit('ACTION_ERROR', { message: actErr.message || 'Error activando carta.' });
+            }
         });
 
         // 8. Alias de acciones de cliente
@@ -1420,6 +1463,29 @@ function initDuelSockets(io) {
             duelRooms.set(roomId, duelState);
             socket.join(roomId);
 
+            // Registrar e inicializar en el Árbitro Oficial Project Ignis (puerto 7001)
+            try {
+                const p0DeckCodes = (playerDeckToUse && playerDeckToUse.mainDeck) ? playerDeckToUse.mainDeck : [];
+                const p1DeckCodes = (customOpponentDeck && customOpponentDeck.mainDeck) ? customOpponentDeck.mainDeck : [];
+                duelBridge.createDuel({
+                    duelId: roomId,
+                    player0Deck: p0DeckCodes,
+                    player1Deck: p1DeckCodes,
+                    lp: 8000
+                }).then(officialRes => {
+                    console.log(`[PROJECT IGNIS ARBITRO] Sala ${roomId} sincronizada y activa en el motor oficial ocgcore.`);
+                    duelState.officialIgnisSession = {
+                        active: true,
+                        duelId: roomId,
+                        initialEvents: officialRes.events
+                    };
+                }).catch(err => {
+                    console.warn(`[PROJECT IGNIS ARBITRO NOTICE] Fallback a árbitro local: ${err.message}`);
+                });
+            } catch (bridgeErr) {
+                console.warn('[PROJECT IGNIS ARBITRO NOTICE]', bridgeErr.message);
+            }
+
             console.log(`[CAMPO REGLAMENTARIO] Duelo iniciado en sala: ${roomId} contra ${opponentName} (NPC #${npcId || 'N/A'})`);
             enrichDuelStateForBroadcast(duelState);
             io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
@@ -1428,13 +1494,30 @@ function initDuelSockets(io) {
             // Iniciar temporizador de 120s para el turno inicial
             startDuelTurnTimer(roomId, io);
 
-            // Si el rival (NPC) inicia de primeras en el Turno 1, activar su IA automáticamente
-            if (isNpcOpponent(duelState.player2) && duelState.turnPlayer === duelState.player2.username) {
-                console.log(`[NPC AI] Turno 1 asignado al NPC (${duelState.turnPlayer}). Programando turno de IA en 1400ms...`);
+            // Secuencia reglamentaria sincronizada Turno 1: DRAW -> STANDBY -> MAIN_1
+            setTimeout(() => {
+                const current = duelRooms.get(roomId);
+                if (!current || current.isGameOver || current.turnNumber !== 1 || current.phase !== 'DRAW') return;
+                current.phase = 'STANDBY';
+                enrichDuelStateForBroadcast(current);
+                io.to(roomId).emit('DUEL_STATE_UPDATE', current);
+
                 setTimeout(() => {
-                    executeNpcTurn(roomId);
-                }, 1400);
-            }
+                    const current2 = duelRooms.get(roomId);
+                    if (!current2 || current2.isGameOver || current2.turnNumber !== 1 || current2.phase !== 'STANDBY') return;
+                    current2.phase = 'MAIN_1';
+                    enrichDuelStateForBroadcast(current2);
+                    io.to(roomId).emit('DUEL_STATE_UPDATE', current2);
+
+                    // Si el rival (NPC) inicia de primeras en el Turno 1, activar su IA automáticamente una vez en MAIN_1
+                    if (isNpcOpponent(current2.player2) && current2.turnPlayer === current2.player2.username) {
+                        console.log(`[NPC AI] Turno 1 asignado al NPC (${current2.turnPlayer}). Iniciando en MAIN_1 en 800ms...`);
+                        setTimeout(() => {
+                            executeNpcTurn(roomId);
+                        }, 800);
+                    }
+                }, 1200);
+            }, 1300);
         });
 
         // 12. Desconexión de socket (Lobby y Duelo Activo)
@@ -1548,64 +1631,73 @@ function initDuelSockets(io) {
 
         // 14. Inyección de Error y Reporte Rápido de Bugs en Vivo
         socket.on('REPORT_DUEL_BUG', (data) => {
-            if (!data || !data.room_id) return;
-            const roomId = data.room_id;
-            const duelState = duelRooms.get(roomId);
-            const reporter = (socket.user && socket.user.username) || data.player_name || 'Jugador';
-            const userNote = data.description || data.note || 'Error reportado durante la jugada';
-            const cardName = data.card_name ? ` (Carta: ${data.card_name})` : '';
-
-            const logMsg = `🚨 [ERROR REPORTADO] @${reporter}: "${userNote}"${cardName} | Turno: #${duelState ? duelState.turnNumber : '?'}, Fase: ${duelState ? duelState.phase : '?'}, TurnPlayer: ${duelState ? duelState.turnPlayer : '?'}`;
-            console.warn(`\n========================================\n[REPORTED DUEL BUG] ${logMsg}\n========================================\n`);
-
-            emitDuelLog(roomId, logMsg, 'error', {
-                reporter,
-                note: userNote,
-                cardName: data.card_name || null,
-                timestamp: new Date().toISOString()
-            });
-
-            // Guardar en archivo persistente de errores para auditoría y disparar Agente IA
             try {
-                const fs = require('fs');
-                const path = require('path');
-                const logDir = path.join(__dirname, '../../logs');
-                if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-                const logFilePath = path.join(logDir, 'reported_duel_bugs.log');
-                const entry = `[${new Date().toISOString()}] [ROOM: ${roomId}] ${logMsg}\n`;
-                fs.appendFileSync(logFilePath, entry);
+                if (!data || !data.room_id) return;
+                const roomId = data.room_id;
+                const duelState = duelRooms.get(roomId);
+                const reporter = (socket.user && socket.user.username) || data.player_name || 'Jugador';
+                const userNote = data.description || data.note || 'Error reportado durante la jugada';
+                const cardName = data.card_name ? ` (Carta: ${data.card_name})` : '';
 
-                // Disparar Agente IA para generar propuesta de corrección en el Panel
-                let cardIdToFix = data.card_id || data.cardId || (duelState && duelState.lastPlayedCard ? duelState.lastPlayedCard.id : null);
-                let detectedName = data.card_name || null;
+                const logMsg = `🚨 [ERROR REPORTADO] @${reporter}: "${userNote}"${cardName} | Turno: #${duelState ? duelState.turnNumber : '?'}, Fase: ${duelState ? duelState.phase : '?'}, TurnPlayer: ${duelState ? duelState.turnPlayer : '?'}`;
+                console.warn(`\n========================================\n[REPORTED DUEL BUG] ${logMsg}\n========================================\n`);
 
-                if (!cardIdToFix && duelState) {
-                    const p = duelState[socket.user && socket.user.username === duelState.player2.username ? 'player2' : 'player1'];
-                    if (p) {
-                        const allActiveCards = [...(p.spells || []), ...(p.monsters || []), ...(p.hand || [])].filter(c => c !== null);
-                        if (allActiveCards.length > 0) {
-                            const lastCard = allActiveCards[0];
-                            cardIdToFix = lastCard.card_id || (lastCard.card_data ? lastCard.card_data.id : null);
-                            detectedName = lastCard.card_data ? lastCard.card_data.name : null;
+                emitDuelLog(roomId, logMsg, 'error', {
+                    reporter,
+                    note: userNote,
+                    cardName: data.card_name || null,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Guardar en archivo persistente de errores para auditoría y disparar Agente IA
+                try {
+                    const fs = require('fs');
+                    const path = require('path');
+                    const logDir = path.resolve(__dirname, '../../logs');
+                    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+                    const logFilePath = path.resolve(logDir, 'reported_duel_bugs.log');
+                    const entry = `[${new Date().toISOString()}] [ROOM: ${roomId}] ${logMsg}\n`;
+                    fs.appendFile(logFilePath, entry, 'utf8', () => {});
+
+                    // Disparar Agente IA para generar propuesta de corrección en el Panel
+                    let cardIdToFix = data.card_id || data.cardId || (duelState && duelState.lastPlayedCard ? duelState.lastPlayedCard.id : null);
+                    let detectedName = data.card_name || null;
+
+                    if (!cardIdToFix && duelState) {
+                        const isPlayer2 = socket.user && duelState.player2 && socket.user.username === duelState.player2.username;
+                        const p = duelState[isPlayer2 ? 'player2' : 'player1'];
+                        if (p) {
+                            const allActiveCards = [...(p.spells || []), ...(p.monsters || []), ...(p.hand || [])].filter(c => c !== null);
+                            if (allActiveCards.length > 0) {
+                                const lastCard = allActiveCards[0];
+                                cardIdToFix = lastCard.card_id || (lastCard.card_data ? lastCard.card_data.id : null);
+                                detectedName = lastCard.card_data ? lastCard.card_data.name : null;
+                            }
                         }
                     }
+
+                    // Notificar al duelo que el reporte fue registrado exitosamente para revisión
+                    if (duelState) {
+                        duelState.duelLogs.push({
+                            text: `📋 [SISTEMA] Incidencia registrada en la sala para análisis técnico.`,
+                            type: 'system',
+                            timestamp: new Date().toLocaleTimeString()
+                        });
+                    }
+                } catch (err) {
+                    console.error('[BUG LOGGER ERROR]', err);
                 }
 
-                // Notificar al duelo que el reporte fue registrado exitosamente para revisión
                 if (duelState) {
-                    duelState.duelLogs.push({
-                        text: `📋 [SISTEMA] Incidencia registrada en la sala para análisis técnico.`,
-                        type: 'system',
-                        timestamp: new Date().toLocaleTimeString()
-                    });
+                    try {
+                        enrichDuelStateForBroadcast(duelState);
+                        io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                    } catch (broadcastErr) {
+                        console.error('[REPORT_DUEL_BUG BROADCAST ERROR]', broadcastErr);
+                    }
                 }
-            } catch (err) {
-                console.error('[BUG LOGGER ERROR]', err);
-            }
-
-            if (duelState) {
-                enrichDuelStateForBroadcast(duelState);
-                io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+            } catch (outerErr) {
+                console.error('[REPORT_DUEL_BUG FATAL ERROR]', outerErr);
             }
         });
     });

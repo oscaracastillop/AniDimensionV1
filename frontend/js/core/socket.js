@@ -68,7 +68,7 @@
                 reconnectionAttempts: Infinity,
                 reconnectionDelay: 1000,
                 reconnectionDelayMax: 4000,
-                timeout: 10000,
+                timeout: 60000,
                 transports: ['websocket', 'polling']
             });
 

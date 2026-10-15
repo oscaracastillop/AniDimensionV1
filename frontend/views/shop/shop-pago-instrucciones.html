@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Instrucciones de Pago y Entrega</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="shop.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <style>
+        .pago-item-card {
+            background: linear-gradient(135deg, rgba(14, 23, 42, 0.95), rgba(6, 10, 20, 0.98)) !important;
+            border: 1.5px solid #22c55e !important;
+            border-radius: 0 !important;
+            padding: 10px 14px !important;
+            box-shadow: 0 0 18px rgba(34, 197, 94, 0.2) !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            flex-wrap: wrap !important;
+            gap: 10px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .pago-info-card {
+            background: rgba(14, 23, 42, 0.9) !important;
+            border: 1.2px solid rgba(0, 240, 255, 0.3) !important;
+            border-radius: 0 !important;
+            padding: 10px 14px !important;
+            box-sizing: border-box !important;
+            width: 100% !important;
+        }
+
+        .shop-pago-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .shop-pago-grid {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+            .pago-item-card {
+                padding: 8px 10px !important;
+            }
+            #pago-pot-name {
+                font-size: 12px !important;
+            }
+            #pago-pot-price-usd {
+                font-size: 14px !important;
+            }
+            #pago-pot-price-cop {
+                font-size: 13px !important;
+            }
+            .shop-title {
+                font-size: 12px !important;
+            }
+            .shop-subtitle {
+                font-size: 8px !important;
+            }
+        }
+
+        @media (max-width: 932px) and (orientation: landscape) {
+            .shop-header {
+                padding: 4px 10px !important;
+            }
+            .pago-item-card {
+                padding: 6px 12px !important;
+            }
+            .pago-info-card {
+                padding: 8px 10px !important;
+            }
+            #pago-pot-name {
+                font-size: 12px !important;
+            }
+            #pago-pot-price-usd {
+                font-size: 14px !important;
+            }
+            #pago-pot-price-cop {
+                font-size: 13px !important;
+            }
+            .shop-title {
+                font-size: 12px !important;
+            }
+            .shop-subtitle {
+                font-size: 8px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="shop-page-container">
+        
+        <!-- HEADER FIJO (ESTÁNDAR TIENDA) -->
+        <div class="shop-header">
+            <div class="shop-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
+                <div>
+                    <h1 class="shop-title">INSTRUCCIONES DE PAGO Y ADQUISICIÓN</h1>
+                    <div class="shop-subtitle">CANALES OFICIALES DE CONSIGNACIÓN, VALIDACIÓN Y ENTREGA EN BUZÓN</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <a href="shop-potenciadores.html" class="btn-shop-back" title="Volver" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR DESLIZABLE CENTRAL (100% ANCHO, 5px MÁRGENES LATERALES) -->
+        <div class="shop-scroll-content" style="padding:8px 5px 20px 5px !important;">
+            
+            <div style="width:100% !important; max-width:100% !important; margin:0 !important; display:flex; flex-direction:column; gap:10px; box-sizing:border-box;">
+                
+                <!-- TARJETA DEL ÍTEM SELECCIONADO CON VALOR EN USD Y COP (TRM) -->
+                <div class="pago-item-card">
+                    <div>
+                        <div style="font-family:'Orbitron', sans-serif; font-size:8.5px; font-weight:800; color:#22c55e; letter-spacing:0.5px;">
+                            ÍTEM SELECCIONADO PARA ADQUIRIR
+                        </div>
+                        <div id="pago-pot-name" style="font-family:'Orbitron', sans-serif; font-size:14px; font-weight:900; color:#fff; margin-top:2px;">
+                            Cargando información...
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; margin-top:3px;">
+                            <span id="pago-pot-code" style="font-family:'Orbitron', sans-serif; font-size:9px; font-weight:800; color:var(--accent-cyan); background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.3); padding:2px 6px;">POT-000</span>
+                            <span id="pago-pot-boost" style="font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:800; color:#ffd700;">+0.0%</span>
+                        </div>
+                    </div>
+
+                    <div style="text-align:right;">
+                        <div style="font-size:8px; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">VALOR TOTAL A CONSIGNAR</div>
+                        <div style="display:flex; align-items:baseline; justify-content:flex-end; gap:8px; margin-top:2px;">
+                            <span id="pago-pot-price-usd" style="font-family:'Orbitron', sans-serif; font-size:16px; font-weight:900; color:#22c55e; text-shadow:0 0 10px rgba(34,197,94,0.4);">
+                                $ 0.00 USD
+                            </span>
+                            <span style="color:#64748b; font-size:11px;">•</span>
+                            <span id="pago-pot-price-cop" style="font-family:'Orbitron', sans-serif; font-size:15px; font-weight:900; color:#ffd700; text-shadow:0 0 10px rgba(255,215,0,0.4);">
+                                ≈ $ 0 COP
+                            </span>
+                        </div>
+                        <div id="pago-trm-rate-info" style="font-size:8px; color:#38bdf8; margin-top:2px; font-family:'Orbitron', sans-serif;">
+                            🔄 Consultando TRM oficial en tiempo real...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAJA DE INFORMACIÓN DINÁMICA DE PERSONALIZACIÓN DE AVATAR -->
+                <div id="pago-avatar-custom-note" style="display:none; background:linear-gradient(135deg, rgba(30, 27, 75, 0.95), rgba(15, 23, 42, 0.98)); border:1.5px solid #a855f7; box-shadow:0 0 20px rgba(168,85,247,0.3); padding:10px 14px; border-radius:0; width:100%; box-sizing:border-box;">
+                    <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:900; color:#c084fc; display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                        <span>🎨</span>
+                        <span>PERSONALIZACIÓN TOTAL DE APARIENCIA DEL AVATAR</span>
+                    </div>
+                    <div style="font-size:9.5px; color:#e2e8f0; line-height:1.4;">
+                        Al adquirir un paquete exclusivo de avatar en dólares, <b>no estás atado a una imagen fija</b>. Puedes elegir la apariencia de <b>cualquier avatar de la galería oficial (AVA-001 a AVA-350+)</b> para que luzca en tu perfil con estas estadísticas máximas.<br>
+                        👉 Simplemente indica en el correo de soporte el <b>código del avatar que deseas (ej. AVA-050, AVA-220, etc.)</b> y la administración personalizará tu cuenta con esa imagen y los potenciadores adquiridos.
+                    </div>
+                </div>
+
+                <!-- PASO A PASO DE PAGO Y POLÍTICAS (2 COLUMNAS AL 100%) -->
+                <div class="shop-pago-grid">
+                    
+                    <!-- COLUMNA 1: CANALES DE PAGO -->
+                    <div class="pago-info-card">
+                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:800; color:var(--accent-cyan); border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:4px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                            <span>🏦 1. CANALES DE CONSIGNACIÓN Y PAGO</span>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:8px; font-size:10px; color:#cbd5e1;">
+                            
+                            <!-- LLAVE BREVE (COLOMBIA / TODAS LAS ENTIDADES BANCARIAS, NEQUI, DAVIPLATA) -->
+                            <div style="background:rgba(0,0,0,0.5); border:1.2px solid #00f0ff; padding:8px 10px; box-shadow:0 0 10px rgba(0,240,255,0.15);">
+                                <div style="font-weight:800; color:#fff; font-size:10.5px; display:flex; align-items:center; justify-content:space-between;">
+                                    <span>⚡ Llave Breve (Colombia - Transferencia Inmediata)</span>
+                                    <span style="font-size:7px; color:#00f0ff; background:rgba(0,240,255,0.15); border:1px solid #00f0ff; padding:1px 4px; font-family:'Orbitron', sans-serif;">RECOMENDADO</span>
+                                </div>
+                                <div style="font-size:11.5px; color:#38bdf8; margin-top:3px; font-family:'Orbitron', sans-serif; font-weight:900;">
+                                    Llave Breve: <b style="color:#00f0ff; font-size:12px; letter-spacing:0.5px;">@3150014586</b>
+                                </div>
+                                <div style="font-size:8px; color:#94a3b8; margin-top:2px; line-height:1.25;">
+                                    Válido desde Nequi, Daviplata, Bancolombia o cualquier entidad bancaria por el sistema <b>Breve</b>. Consigna el valor equivalente en <b>Pesos Colombianos (COP)</b>.
+                                </div>
+                            </div>
+
+                            <!-- PAYPAL (INTERNACIONAL) -->
+                            <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.08); padding:8px 10px;">
+                                <div style="font-weight:700; color:#fff; font-size:10.5px; display:flex; align-items:center; gap:6px;">
+                                    <span>🌐 PayPal / Tarjeta Internacional (USD)</span>
+                                </div>
+                                <div style="font-size:9.5px; color:#38bdf8; margin-top:2px;">
+                                    Cuenta: <b>oscaracastillop@gmail.com</b>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- COLUMNA 2: ENVÍO DE COMPROBANTE Y ENTREGA -->
+                    <div class="pago-info-card">
+                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:800; color:#ffd700; border-bottom:1px solid rgba(255,215,0,0.2); padding-bottom:4px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                            <span>📧 2. ENVÍO DE SOPORTE Y ENTREGA</span>
+                        </div>
+
+                        <div style="font-size:9.5px; color:#cbd5e1; line-height:1.4;">
+                            Una vez realizada la transferencia, envía un correo electrónico con el soporte de pago a:
+                            <div style="background:rgba(0,0,0,0.6); border:1px solid #ffd700; padding:5px 8px; margin:6px 0; text-align:center; font-family:'Orbitron', sans-serif; font-size:10.5px; font-weight:800; color:#ffd700;">
+                                oscaracastillop@gmail.com
+                            </div>
+
+                            <div style="font-weight:700; color:#fff; margin-top:4px;">En el cuerpo del mensaje debes incluir:</div>
+                            <ul style="margin:3px 0 6px 14px; padding:0; font-size:9px; color:#94a3b8; line-height:1.35;">
+                                <li><b>Código del Ítem:</b> <span id="pago-pot-code-copy" style="color:#00f0ff; font-weight:700;">POT-XXX</span></li>
+                                <li id="pago-avatar-choice-li" style="display:none;"><b>Código del Avatar deseado:</b> <span style="color:#c084fc; font-weight:700;">(Ej. AVA-050)</span></li>
+                                <li><b>Nombre de Usuario / Nick:</b> <span id="pago-user-nick" style="color:#fff; font-weight:700;">Duelista</span></li>
+                                <li><b>Comprobante de Pago adjunto</b> (captura de pantalla o recibo).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- POLÍTICAS Y TIEMPO DE ENTREGA -->
+                <div style="background:rgba(14, 23, 42, 0.9); border:1.2px solid rgba(16,185,129,0.35); border-radius:0; padding:10px 14px; font-size:9.5px; color:#cbd5e1; line-height:1.4; width:100%; box-sizing:border-box;">
+                    <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:800; color:#10b981; margin-bottom:5px; display:flex; align-items:center; gap:6px;">
+                        <span>🛡️ 3. POLÍTICAS DE VALIDACIÓN, SEGURIDAD Y TIEMPO DE ENTREGA</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:3px;">
+                        <div>
+                            • <b>Tiempo de Entrega:</b> Tu compra será validada y procesada en un plazo de <b>4 horas a 24 horas</b>, una vez sea confirmado el ingreso efectivo del pago en las cuentas oficiales de la administración.
+                        </div>
+                        <div>
+                            • <b>Deslinde de Responsabilidad:</b> La administración de Ani-Dimension <b>NO se responsabiliza</b> por compras o giros realizados a personas, números o cuentas no oficiales ajenas a las publicadas en este panel oficial.
+                        </div>
+                        <div>
+                            • <b>Verificación de Datos Obligatoria:</b> La administración <b>NO se hace responsable</b> por dineros enviados erróneamente a otras cuentas por equivocación del usuario. Por ende, debes verificar cuidadosamente los datos antes de emitir el giro.
+                        </div>
+                        <div>
+                            • <b>Garantía Oficial:</b> Todas las transacciones enviadas a nuestras cuentas oficiales verificadas cuentan con garantía directa de entrega y soporte oficial.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTÓN VOLVER INFERIOR -->
+                <div style="display:flex; justify-content:center; align-items:center; margin-top:4px;">
+                    <a href="shop-potenciadores.html" class="btn-shop-back-bottom" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#fff; border-radius:0; padding:6px 18px; font-family:'Orbitron', sans-serif; font-size:9px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 0 10px rgba(0,0,0,0.5);" onclick="if(window.SoundManager) window.SoundManager.playSFX('button');">
+                        <span>« VOLVER AL CATÁLOGO</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVBAR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../js/core/sound-manager.js"></script>
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/data/potenciadores-data.js"></script>
+    <script src="../../js/data/avatars-data.js"></script>
+    <script src="../../js/data/vip-data.js"></script>
+    <script src="../../js/data/estrellas-data.js"></script>
+    <script src="../../js/data/cartas-singles-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.AppNavbar) window.AppNavbar.init('tienda');
+            if (window.SoundManager && typeof window.SoundManager.playBGM === 'function') {
+                window.SoundManager.playBGM('shop', true);
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('codigo') || urlParams.get('code') || 'CARD-SING-07';
+            const reqType = (urlParams.get('type') || '').toLowerCase();
+
+            const user = window.Session ? window.Session.getUser() : null;
+            const username = user?.username || 'Duelista';
+
+            let item = null;
+            let itemType = 'potenciador'; // 'potenciador', 'avatar', 'vip', 'estrellas', 'carta'
+
+            if (reqType === 'carta' || code.startsWith('CARD-')) {
+                if (window.CartasSinglesData && typeof window.CartasSinglesData.getItemByCode === 'function') {
+                    item = window.CartasSinglesData.getItemByCode(code);
+                } else if (window.CartasSinglesManager && typeof window.CartasSinglesManager.getItemByCode === 'function') {
+                    item = window.CartasSinglesManager.getItemByCode(code);
+                }
+                itemType = 'carta';
+            } else if (reqType === 'estrellas' || code.startsWith('PACK-STAR-')) {
+                if (window.EstrellasManager) item = window.EstrellasManager.getPackageByCode(code);
+                itemType = 'estrellas';
+            } else if (reqType === 'vip' || code.startsWith('VIP-')) {
+                if (window.VipManager) item = window.VipManager.getVipPassByCode(code);
+                itemType = 'vip';
+            } else if (reqType === 'avatar' || code.startsWith('AVA-')) {
+                if (window.AvatarsManager) item = window.AvatarsManager.getAvatarByCode(code);
+                itemType = 'avatar';
+            } else if (window.PotenciadoresManager) {
+                item = window.PotenciadoresManager.getPotenciadorByCode(code);
+                itemType = 'potenciador';
+            }
+
+            // Fallbacks inteligentes por tipo
+            if (!item && itemType === 'carta') {
+                item = {
+                    code: code,
+                    name: 'Carta Legendaria',
+                    price: 2.49,
+                    description: 'Carta reglamentaria oficial directa a tu inventario.'
+                };
+            } else if (!item && itemType === 'estrellas') {
+                item = {
+                    code: code,
+                    name: 'Paquete de StarShips',
+                    price: 2.99,
+                    starships: 35000
+                };
+            } else if (!item) {
+                item = {
+                    code: code,
+                    name: 'Potenciador Cósmico de Avatar',
+                    boost_value: 10.0,
+                    type: 'EXP',
+                    price: 1.99
+                };
+                itemType = 'potenciador';
+            }
+
+            // Configurar botones de regreso
+            const backBtn = document.querySelector('.btn-shop-back');
+            const bottomBackBtn = document.querySelector('.btn-shop-back-bottom');
+            const customAvatarNote = document.getElementById('pago-avatar-custom-note');
+            const customAvatarLi = document.getElementById('pago-avatar-choice-li');
+
+            if (itemType === 'estrellas') {
+                if (backBtn) {
+                    backBtn.href = 'shop-estrellas.html';
+                    backBtn.title = 'Volver a la Recarga de StarShips';
+                }
+                if (bottomBackBtn) {
+                    bottomBackBtn.href = 'shop-estrellas.html';
+                    bottomBackBtn.innerHTML = '<span>« VOLVER A RECARGA STARSHIPS</span>';
+                }
+            } else if (itemType === 'carta') {
+                if (backBtn) {
+                    backBtn.href = 'shop-cartas.html';
+                    backBtn.title = 'Volver a Cartas Singles';
+                }
+                if (bottomBackBtn) {
+                    bottomBackBtn.href = 'shop-cartas.html';
+                    bottomBackBtn.innerHTML = '<span>« VOLVER A CARTAS SINGLES</span>';
+                }
+            } else if (itemType === 'vip') {
+                if (backBtn) {
+                    backBtn.href = 'shop-vip.html';
+                    backBtn.title = 'Volver a la Tienda de Pases VIP';
+                }
+                if (bottomBackBtn) {
+                    bottomBackBtn.href = 'shop-vip.html';
+                    bottomBackBtn.innerHTML = '<span>« VOLVER A PASES VIP</span>';
+                }
+            } else if (itemType === 'avatar') {
+                if (backBtn) {
+                    backBtn.href = 'shop-avatares.html';
+                    backBtn.title = 'Volver a la Tienda de Avatares';
+                }
+                if (bottomBackBtn) {
+                    bottomBackBtn.href = 'shop-avatares.html';
+                    bottomBackBtn.innerHTML = '<span>« VOLVER A AVATARES</span>';
+                }
+                if (customAvatarNote) customAvatarNote.style.display = 'block';
+                if (customAvatarLi) customAvatarLi.style.display = 'list-item';
+            }
+
+            document.getElementById('pago-pot-name').textContent = item.name || item.nombre || item.code;
+            document.getElementById('pago-pot-code').textContent = item.code || item.codigo || code;
+            document.getElementById('pago-pot-code-copy').textContent = item.code || item.codigo || code;
+            
+            let statsText = '';
+            if (itemType === 'estrellas') {
+                const starVal = parseInt(item.starships || 0, 10).toLocaleString();
+                statsText = `⭐ ${starVal} STARSHIPS DIRECTAS A TU CUENTA`;
+                document.getElementById('pago-pot-boost').textContent = statsText;
+            } else if (itemType === 'carta') {
+                statsText = `🎴 CARTA REGLAMENTARIA OFICIAL DIRECTA A TU INVENTARIO`;
+                document.getElementById('pago-pot-boost').textContent = statsText;
+            } else if (itemType === 'vip') {
+                const expVal = parseFloat(item.exp_boost || 0).toFixed(1);
+                const starVal = parseFloat(item.starships_boost || 0).toFixed(1);
+                const luckVal = parseFloat(item.luck_boost || 0).toFixed(1);
+                statsText = `+${expVal}% EXP | +${starVal}% STAR | +${luckVal}% LUCK (⏳ ${item.days || 7} Días)`;
+                document.getElementById('pago-pot-boost').textContent = statsText;
+            } else if (itemType === 'avatar') {
+                const expVal = parseFloat(item.exp_boost || 0).toFixed(1);
+                const starVal = parseFloat(item.starships_boost || 0).toFixed(1);
+                const luckVal = parseFloat(item.luck_boost !== undefined ? item.luck_boost : (item.suerte_boost || 0)).toFixed(1);
+                statsText = `+${expVal}% EXP | +${starVal}% STAR | +${luckVal}% LUCK`;
+                document.getElementById('pago-pot-boost').textContent = statsText;
+            } else {
+                statsText = `+${parseFloat(item.boost_value || 0).toFixed(1)}% ${item.type || 'BOOST'}`;
+                document.getElementById('pago-pot-boost').textContent = statsText;
+            }
+
+            const finalPrice = parseFloat(item.price !== undefined ? item.price : (item.precio_usd !== undefined ? item.precio_usd : 1.99));
+            document.getElementById('pago-pot-price-usd').textContent = `$ ${finalPrice.toFixed(2)} USD`;
+            document.getElementById('pago-user-nick').textContent = username;
+
+            // Obtener TRM Oficial en tiempo real
+            let currentTrm = 4150;
+            const trmInfoEl = document.getElementById('pago-trm-rate-info');
+            const copPriceEl = document.getElementById('pago-pot-price-cop');
+
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.rates && data.rates.COP) {
+                        currentTrm = Math.round(data.rates.COP);
+                        if (trmInfoEl) {
+                            trmInfoEl.textContent = `📊 TRM Oficial en vivo: $ ${currentTrm.toLocaleString('es-CO')} COP/USD`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Usando TRM de contingencia:', e);
+                if (trmInfoEl) {
+                    trmInfoEl.textContent = `📊 TRM Estimada: $ ${currentTrm.toLocaleString('es-CO')} COP/USD`;
+                }
+            }
+
+            const totalCop = Math.round(finalPrice * currentTrm);
+            if (copPriceEl) {
+                copPriceEl.textContent = `≈ $ ${totalCop.toLocaleString('es-CO')} COP`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -86,7 +86,7 @@
                 race: obj.race || base.race || '',
                 desc: obj.desc || base.desc || '',
                 ownedCount: obj.quantity || obj.ownedCount || 1,
-                image_url: obj.image_url || base.image_url || `https://images.ygoprodeck.com/images/cards_small/${cardId}.jpg`
+                image_url: `/api/cards/${cardId}/image`
             };
         },
 

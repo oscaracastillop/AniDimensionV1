@@ -1,0 +1,292 @@
+/* ==========================================================================
+   ANI-DIMENSION: ESTILOS DEL MÓDULO DE ADMINISTRACIÓN DE EVENTOS & ROMPECABEZAS
+   VISTA DEDICADA DE EDICIÓN & CATÁLOGO INTEGRAL (RESPONSIVE MULTI-MEDIA)
+   ========================================================================== */
+
+/* CONTENEDOR PRINCIPAL DEL EDITOR */
+.admin-editor-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    gap: 8px;
+}
+
+/* CONTENEDOR DE LOS 3 PANELES */
+.admin-editor-panels-scroll {
+    display: grid;
+    grid-template-columns: 280px 1.05fr 1.35fr;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    align-items: stretch;
+}
+
+/* PANEL INDIVIDUAL */
+.admin-editor-panel {
+    margin: 0 !important;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #0e172a 0%, #060a14 100%) !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    border-radius: 0 !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22), 0 0 12px rgba(0, 240, 255, 0.12);
+}
+
+.panel-artwork-preview {
+    width: 100%;
+    height: 135px;
+    background: #000;
+    border: 1.2px solid rgba(0, 240, 255, 0.45);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.panel-artwork-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* FILA INFERIOR DE ACCIONES (EN UNA SOLA LÍNEA DE DERECHA A IZQUIERDA) */
+.admin-editor-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.admin-editor-actions-row::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.admin-editor-actions-row .btn-act-sm {
+    height: 28px;
+    padding: 0 14px;
+    font-size: 9.5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    white-space: nowrap;
+    border-radius: 0 !important;
+}
+
+/* TABLA DE PREMIACIÓN EDITABLE TOP 10 */
+.admin-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5px;
+    background: rgba(6, 11, 20, 0.6);
+}
+
+.admin-data-table th {
+    background: rgba(9, 17, 34, 0.95);
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 3px 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    color: #00f0ff;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-data-table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 1px 4px;
+    background: rgba(10, 16, 30, 0.45);
+    vertical-align: middle;
+}
+
+.admin-data-table tr:hover td {
+    background: rgba(0, 240, 255, 0.06);
+}
+
+.admin-data-table input {
+    background: rgba(4, 8, 16, 0.85) !important;
+    border: 1.2px solid rgba(0, 240, 255, 0.25) !important;
+    color: #fff !important;
+    padding: 2px 6px !important;
+    font-size: 9.5px !important;
+    height: 22px !important;
+    font-family: 'Outfit', sans-serif !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+.admin-data-table input:focus {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 6px rgba(0, 240, 255, 0.5) !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (@MEDIA)
+   ========================================================================== */
+
+/* 1. TABLETS / PANTALLAS MEDIANAS (933px a 1180px) */
+@media (min-width: 933px) and (max-width: 1180px) {
+    .admin-editor-panels-scroll {
+        grid-template-columns: 240px 1fr 1.25fr;
+        gap: 6px;
+    }
+    .admin-editor-panel {
+        padding: 8px 10px;
+    }
+    .panel-artwork-preview {
+        height: 120px;
+    }
+}
+
+/* 2. MÓVIL HORIZONTAL / COMPACTO (HASTA 932px LANDSCAPE O PANTALLAS CON ALTURA MENOR A 550px) */
+@media (max-width: 932px) and (orientation: landscape), (max-height: 550px) and (orientation: landscape) {
+    .admin-scroll-content {
+        padding: 6px 6px 12px 6px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    .admin-editor-panels-scroll {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-bottom: 2px !important;
+    }
+
+    .admin-editor-panels-scroll::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    /* Anchos mínimos fijos para que cada panel se lea impecable sin apretarse */
+    .panel-artwork {
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .panel-data {
+        width: 320px !important;
+        min-width: 320px !important;
+        max-width: 320px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .panel-prizes {
+        width: 440px !important;
+        min-width: 440px !important;
+        max-width: 440px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .panel-artwork-preview {
+        height: 110px !important;
+    }
+
+    .admin-editor-panel {
+        padding: 6px 8px !important;
+        gap: 4px !important;
+    }
+
+    .admin-data-table th {
+        font-size: 7.5px;
+        padding: 2px 4px;
+    }
+
+    .admin-data-table td {
+        padding: 1px 2px;
+    }
+
+    .admin-data-table input {
+        font-size: 8.5px !important;
+        height: 19px !important;
+        padding: 1px 3px !important;
+    }
+
+    .admin-header {
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 10px !important;
+    }
+
+    .admin-title {
+        font-size: 11px !important;
+    }
+
+    .admin-subtitle {
+        font-size: 7.5px !important;
+    }
+
+    .admin-editor-actions-row {
+        margin-top: 4px !important;
+        gap: 6px !important;
+    }
+
+    .admin-editor-actions-row .btn-act-sm {
+        height: 24px !important;
+        padding: 0 10px !important;
+        font-size: 8px !important;
+    }
+}
+
+/* 3. MÓVIL VERTICAL (PORTRAIT, MAX 600px) */
+@media (max-width: 600px) and (orientation: portrait) {
+    .admin-editor-panels-scroll {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .panel-artwork,
+    .panel-data,
+    .panel-prizes {
+        width: 100% !important;
+        min-width: 100% !important;
+        flex-shrink: 0 !important;
+    }
+
+    .admin-editor-actions-row {
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        gap: 6px !important;
+    }
+}

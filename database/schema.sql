@@ -109,6 +109,37 @@ BEGIN
 END
 GO
 
+-- 6. Tabla: UserMailbox (Buzón de Regalos y Recompensas Avanzado)
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserMailbox]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[UserMailbox] (
+        [Id] INT IDENTITY(1,1) PRIMARY KEY,
+        [UsuarioId] INT NULL, -- NULL = Regalo Global para todos
+        [GiftType] NVARCHAR(50) NOT NULL, -- 'STARSHIPS', 'CARD', 'POTENCIADOR', 'AVATAR'
+        [Title] NVARCHAR(150) NOT NULL,
+        [Description] NVARCHAR(500) NULL,
+        [PayloadJson] NVARCHAR(MAX) NOT NULL,
+        [IsClaimed] BIT NOT NULL DEFAULT 0,
+        [ClaimedAt] DATETIME NULL,
+        [CreatedAt] DATETIME NOT NULL DEFAULT GETDATE(),
+        [Sender] NVARCHAR(100) NOT NULL DEFAULT 'Administración Ani-Dimension'
+    );
+END
+GO
+
+-- 7. Tabla: UserMailboxGlobalClaims (Reclamos de Regalos Globales)
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserMailboxGlobalClaims]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[UserMailboxGlobalClaims] (
+        [Id] INT IDENTITY(1,1) PRIMARY KEY,
+        [MailboxGiftId] INT NOT NULL,
+        [UsuarioId] INT NOT NULL,
+        [ClaimedAt] DATETIME NOT NULL DEFAULT GETDATE(),
+        CONSTRAINT [UQ_Gift_User] UNIQUE ([MailboxGiftId], [UsuarioId])
+    );
+END
+GO
+
 -- ============================================================================
 -- INSERCIÓN AUTOMÁTICA DE CUENTA ADMINISTRADOR OBLIGATORIA
 -- Usuario: Admin
@@ -121,8 +152,8 @@ BEGIN
     BEGIN TRY
         DECLARE @AdminId INT;
 
-        INSERT INTO [dbo].[Usuarios] ([Username], [PasswordHash], [Nivel], [Experiencia], [Starships], [IsAdmin])
-        VALUES ('Admin', '$2b$10$DXjH277uRSi.Fq0H63czG.54zthR3PWF/GRANLaOu7Wgc8C2KyDRu', 100, 0, 999999, 1);
+        INSERT INTO [dbo].[Usuarios] ([Username], [PasswordHash], [Email], [CountryIsoCode], [Nivel], [Experiencia], [Starships], [IsAdmin], [IsActive], [AvatarActivoId], [MatActivoId], [FundaActivaId])
+        VALUES ('Admin', '$2b$10$DXjH277uRSi.Fq0H63czG.54zthR3PWF/GRANLaOu7Wgc8C2KyDRu', 'admin@anidimension.com', 'CO', 100, 0, 999999, 1, 1, 'AVA-001', 'MAT-001', 'SLV-001');
 
         SET @AdminId = SCOPE_IDENTITY();
 
@@ -138,3 +169,116 @@ BEGIN
     END CATCH
 END
 GO
+
+-- 8. Tabla: BoosterPackCards (Cartas de Sobres y Expansiones)
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'BoosterPackCards')
+BEGIN
+    CREATE TABLE dbo.BoosterPackCards (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        PackId NVARCHAR(50) NOT NULL,
+        CardId INT NOT NULL,
+        CardNumber NVARCHAR(50) NULL,
+        CardName NVARCHAR(255) NULL,
+        CardType NVARCHAR(100) NULL,
+        Atk INT NULL,
+        Def INT NULL,
+        [Level] INT NULL,
+        Attribute NVARCHAR(50) NULL,
+        Race NVARCHAR(50) NULL,
+        Description NVARCHAR(MAX) NULL,
+        Rarity NVARCHAR(50) NOT NULL DEFAULT 'COMMON',
+        IsActive BIT NOT NULL DEFAULT 1,
+        PackDrop BIT NOT NULL DEFAULT 1,
+        DeckUsable BIT NOT NULL DEFAULT 1,
+        NpcDrop BIT NOT NULL DEFAULT 1,
+        CreatedAt DATETIME DEFAULT GETDATE(),
+        CONSTRAINT UQ_BoosterPackCards UNIQUE (PackId, CardId)
+    );
+    CREATE NONCLUSTERED INDEX IX_BoosterPackCards_PackId ON dbo.BoosterPackCards(PackId);
+    CREATE NONCLUSTERED INDEX IX_BoosterPackCards_CardId ON dbo.BoosterPackCards(CardId);
+END
+GO
+
+-- 9. Procedimiento: dbo.sp_ObtenerCartasDeSobres (Con traducción al español desde dbo.texts)
+CREATE OR ALTER PROCEDURE dbo.sp_ObtenerCartasDeSobres
+    @PackId NVARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT 
+        bpc.Id,
+        bpc.PackId,
+        bpc.CardId,
+        bpc.CardNumber,
+        bpc.CardName,
+        ISNULL(t.name_es, bpc.CardName) AS CardNameEs,
+        bpc.CardType,
+        bpc.Atk,
+        bpc.Def,
+        bpc.[Level],
+        bpc.Attribute,
+        bpc.Race,
+        bpc.Description,
+        ISNULL(t.desc_es, bpc.Description) AS DescriptionEs,
+        bpc.Rarity,
+        bpc.IsActive,
+        bpc.PackDrop,
+        bpc.DeckUsable,
+        bpc.NpcDrop,
+        CONCAT('https://images.ygoprodeck.com/images/cards_small/', bpc.CardId, '.jpg') AS ImageUrl,
+        CONCAT('https://images.ygoprodeck.com/images/cards/', bpc.CardId, '.jpg') AS ImageLargeUrl
+    FROM dbo.BoosterPackCards bpc
+    LEFT JOIN dbo.texts t ON bpc.CardId = t.id
+    WHERE (@PackId IS NULL OR bpc.PackId = @PackId)
+    ORDER BY bpc.PackId, bpc.Id ASC;
+END
+GO
+
+-- 10. Procedimiento: dbo.sp_ObtenerCatalogoSobresYCartas
+CREATE OR ALTER PROCEDURE dbo.sp_ObtenerCatalogoSobresYCartas
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Recordset 1: Sobres
+    SELECT 
+        PackId, Name, Code, Series, Price, OfferText, Image, Description, CardsPerPack, IsActive, IsVisible
+    FROM dbo.BoosterPacks
+    ORDER BY 
+        CASE Series 
+            WHEN 'DM' THEN 1 
+            WHEN 'GX' THEN 2 
+            WHEN '5D' THEN 3 
+            ELSE 4 
+        END,
+        Price ASC;
+
+    -- Recordset 2: Cartas de los sobres
+    SELECT 
+        bpc.Id,
+        bpc.PackId,
+        bpc.CardId,
+        bpc.CardNumber,
+        bpc.CardName,
+        ISNULL(t.name_es, bpc.CardName) AS CardNameEs,
+        bpc.CardType,
+        bpc.Atk,
+        bpc.Def,
+        bpc.[Level],
+        bpc.Attribute,
+        bpc.Race,
+        bpc.Description,
+        ISNULL(t.desc_es, bpc.Description) AS DescriptionEs,
+        bpc.Rarity,
+        bpc.IsActive,
+        bpc.PackDrop,
+        bpc.DeckUsable,
+        bpc.NpcDrop,
+        CONCAT('https://images.ygoprodeck.com/images/cards_small/', bpc.CardId, '.jpg') AS ImageUrl,
+        CONCAT('https://images.ygoprodeck.com/images/cards/', bpc.CardId, '.jpg') AS ImageLargeUrl
+    FROM dbo.BoosterPackCards bpc
+    LEFT JOIN dbo.texts t ON bpc.CardId = t.id
+    ORDER BY bpc.PackId, bpc.Id ASC;
+END
+GO
+

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Chat Global & Mensajería</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/shop.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+    <link rel="stylesheet" href="../../css/chat.css?v=3.1">
+
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <div class="chat-page-container">
+
+        <!-- HEADER FIJO (MISMO ESQUEMA Y ESTILO DE TIENDA) -->
+        <div class="shop-header">
+            <div class="shop-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo"
+                    style="height:40px; width:auto; object-fit:contain; filter:drop-shadow(0 0 10px rgba(0,240,255,0.65));">
+                <div>
+                    <h1 class="shop-title">COMUNIDAD & CHAT EN VIVO</h1>
+                    <div class="shop-subtitle">CANAL GLOBAL Y MENSAJERÍA PRIVADA DIRECTA</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <!-- Botones Admin Panel Flotantes Independientes -->
+                <div id="admin-header-actions" style="display:none; align-items:center; gap:8px;">
+                    <button type="button" id="btn-admin-launch-event" class="btn-chat-admin-panel"
+                        onclick="toggleFloatingWidget('floating-event-launcher')"
+                        title="Abrir ventana para lanzar eventos en vivo">
+                        LANZAR EVENTO
+                    </button>
+                    <button type="button" id="btn-admin-pinned-panel" class="btn-chat-admin-panel"
+                        onclick="toggleFloatingWidget('floating-pinned-manager')"
+                        title="Configurar y fijar hasta 3 mensajes">
+                        FIJAR MENSAJES
+                    </button>
+                    <button type="button" id="btn-admin-prizes-history" class="btn-chat-admin-panel"
+                        onclick="toggleFloatingWidget('floating-prizes-history')"
+                        title="Ver historial de eventos y entrega de premios">
+                        HISTORIAL PREMIOS
+                    </button>
+                </div>
+
+                <!-- Estado del Chat (Clickeable por Admin para bloquear / activar directamente) -->
+                <div class="chat-status-pill" id="chat-status-pill" onclick="onHeaderStatusPillClick()"
+                    title="Estado del Chat">
+                    <div class="chat-status-dot" id="chat-status-dot"></div>
+                    <span id="chat-status-label">EN VIVO</span>
+                </div>
+
+                <!-- Botón Volver -->
+                <a href="../../views/menu/menu.html" class="btn-shop-back" title="Volver al Menú Principal">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR PRINCIPAL ESTILO WHATSAPP (2 COLUMNAS) -->
+        <div class="chat-main-layout">
+
+            <!-- COLUMNA IZQUIERDA: PANEL DE USUARIOS ONLINE & CANALES -->
+            <aside class="chat-sidebar">
+                <!-- Buscador de usuarios -->
+                <div class="chat-search-box">
+                    <input type="text" id="chat-user-search-input" class="chat-search-input"
+                        placeholder="Buscar jugador o chat..." oninput="filterOnlineUsers(this.value)">
+                </div>
+
+                <!-- Lista de conversaciones y usuarios -->
+                <div class="chat-contacts-list" id="chat-contacts-list">
+
+                    <!-- CANAL GLOBAL -->
+                    <div class="chat-contact-item active" id="channel-global-item" onclick="selectChatTarget(null)">
+                        <div class="chat-contact-avatar-box">
+                            <div class="chat-contact-avatar-icon"
+                                style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:900; color:#00f0ff;">
+                                ANI</div>
+                            <div class="chat-online-badge"></div>
+                        </div>
+                        <div class="chat-contact-info">
+                            <div class="chat-contact-top">
+                                <span class="chat-contact-name">Chat Global</span>
+                                <span class="chat-contact-time" id="global-last-time">Ahora</span>
+                            </div>
+                            <div class="chat-contact-preview" id="global-last-msg">Canal público de la comunidad</div>
+                        </div>
+                        <span class="chat-unread-badge" id="global-unread-badge" style="display:none;">0</span>
+                    </div>
+
+                    <div class="chat-section-divider">
+                        <span>JUGADORES EN LÍNEA (<b id="online-users-count">0</b>)</span>
+                    </div>
+
+                    <!-- Lista dinámica de usuarios online -->
+                    <div id="dynamic-online-users-container">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- COLUMNA DERECHA: CONVERSACIÓN ACTIVA (WHATSAPP FEED) -->
+            <section class="chat-conversation-panel">
+
+                <!-- CABECERA DE LA CONVERSACIÓN ACTIVA -->
+                <header class="chat-active-header">
+                    <div class="chat-active-user-info" id="active-chat-header-info"
+                        onclick="inspectCurrentChatUserProfile()" style="cursor:pointer;"
+                        title="Ver perfil del duelista">
+                        <div class="chat-active-avatar-wrap">
+                            <img id="active-chat-avatar" src="/assets/images/avatars/ava-002.png" alt="Avatar">
+                            <div class="chat-active-status-dot" id="active-chat-status-dot"></div>
+                        </div>
+                        <div>
+                            <div class="chat-active-title" id="active-chat-title">Chat Global</div>
+                            <div class="chat-active-status" id="active-chat-subtitle">Canal público oficial • Todos los
+                                duelistas</div>
+                        </div>
+                    </div>
+
+                    <div class="chat-active-actions">
+                        <button type="button" class="btn-chat-header-action" onclick="clearCurrentChatConversation()"
+                            title="Limpiar conversación actual">
+                            LIMPIAR
+                        </button>
+                    </div>
+                </header>
+
+                <!-- BANNER DE MENSAJES FIJADOS (PINNED ANNOUNCEMENTS) -->
+                <div class="chat-pinned-banner" id="chat-pinned-banner" style="display:none;">
+                    <div class="chat-pinned-inline-row" id="chat-pinned-container">
+                        <!-- Inyectado dinámicamente: hasta 3 mensajes en 1 sola línea, sin iconos, sin negrita -->
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE EVENTOS EN VIVO (CUENTA REGRESIVA / DESAFÍO / GANADOR) -->
+                <div id="chat-live-event-container" style="display:none;"></div>
+
+                <!-- FEED DE MENSAJES (BURBUJAS WHATSAPP) -->
+                <main class="chat-messages-container" id="chat-messages-feed"></main>
+
+                <!-- BARRA DE ENTRADA INFERIOR -->
+                <footer class="chat-input-area">
+                    <input type="text" id="chat-input-text" class="chat-input-field" placeholder="Escribe un mensaje..."
+                        maxlength="400" autocomplete="off">
+                    <button type="button" id="btn-chat-send" class="btn-chat-send" onclick="sendChatMessage()">
+                        ENVIAR
+                    </button>
+                </footer>
+            </section>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         VENTANA FLOTANTE 1: LANZAR EVENTO EN VIVO (NO MODAL / DRAGGABLE)
+         ==================================================================== -->
+    <div class="admin-floating-window" id="floating-event-launcher" style="display:none; width:480px;">
+        <div class="admin-floating-header" id="drag-header-launcher">
+            <div class="admin-floating-title">
+                CONTROL DE EVENTOS EN VIVO
+            </div>
+            <div class="admin-floating-controls">
+                <button type="button" class="btn-floating-control btn-close"
+                    onclick="toggleFloatingWidget('floating-event-launcher')" title="Cerrar">✕</button>
+            </div>
+        </div>
+
+        <div class="admin-floating-body" id="body-floating-event-launcher">
+            <div class="admin-field-group">
+                <label class="admin-field-label">TIPO DE EVENTO EN VIVO</label>
+                <select id="admin-event-type" class="admin-select" onchange="onAdminEventTypeChange()">
+                    <option value="WORD_COMPLETION">Adivina la Palabra o Frase</option>
+                    <option value="TRIVIA">Trivia</option>
+                </select>
+            </div>
+
+            <!-- Campo Específico para Adivina la Palabra o Frase -->
+            <div id="admin-group-guess-word">
+                <div class="admin-field-group">
+                    <label class="admin-field-label">RESPUESTA EXACTA A ADIVINAR (PALABRA O FRASE)</label>
+                    <input type="text" id="admin-event-answer" class="admin-input"
+                        placeholder="Ej: Oscar Castillo o Dragón Blanco de Ojos Azules"
+                        oninput="updateHangmanPreview()">
+                </div>
+
+                <div class="admin-field-group">
+                    <label class="admin-field-label">PREVISUALIZACIÓN DE LA PALABRA O FRASE</label>
+                    <div class="admin-preview-box" id="admin-hangman-preview">_ _ _ _ _ _ _ _ _ _ _ _</div>
+                </div>
+            </div>
+
+            <!-- Campo Específico para Trivia -->
+            <div id="admin-group-trivia" style="display:none;">
+                <div class="admin-field-group">
+                    <label class="admin-field-label">PREGUNTA DE LA TRIVIA</label>
+                    <textarea id="admin-event-question" class="admin-textarea" rows="2"
+                        placeholder="Redacta la pregunta que aparecerá en el banner del chat..."></textarea>
+                </div>
+                <div class="admin-field-group">
+                    <label class="admin-field-label">RESPUESTA CORRECTA</label>
+                    <input type="text" id="admin-trivia-answer" class="admin-input" placeholder="Ej: Mago Oscuro">
+                </div>
+            </div>
+
+            <!-- PREMIO DEL EVENTO EN CAJA DE TEXTO LIBRE -->
+            <div class="admin-field-group">
+                <label class="admin-field-label">PREMIO DEL EVENTO (TEXTO)</label>
+                <input type="text" id="admin-event-prize-text" class="admin-input"
+                    placeholder="Ej: 5,000 Starships + 2,500 EXP + Dragón Blanco" value="5,000 Starships + 2,500 EXP">
+            </div>
+
+            <div class="admin-field-group">
+                <label class="admin-field-label">CONTEO REGRESIVO PREVIO (SEGUNDOS)</label>
+                <input type="number" id="admin-event-countdown" class="admin-input" value="5" min="3" max="30">
+            </div>
+
+            <div class="admin-action-row" style="margin-top:14px;">
+                <button type="button" class="btn-admin-action primary" onclick="launchLiveEventAdmin()">
+                    LANZAR EVENTO
+                </button>
+                <button type="button" class="btn-admin-action danger" onclick="cancelLiveEventAdmin()">
+                    CANCELAR ACTIVO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         VENTANA FLOTANTE 2: FIJAR MENSAJES (HASTA 3 CON COLOR PERSONALIZADO)
+         ==================================================================== -->
+    <div class="admin-floating-window" id="floating-pinned-manager" style="display:none; width:480px;">
+        <div class="admin-floating-header" id="drag-header-pinned">
+            <div class="admin-floating-title">
+                FIJAR MENSAJES (MÁXIMO 3)
+            </div>
+            <div class="admin-floating-controls">
+                <button type="button" class="btn-floating-control btn-close"
+                    onclick="toggleFloatingWidget('floating-pinned-manager')" title="Cerrar">✕</button>
+            </div>
+        </div>
+
+        <div class="admin-floating-body" id="body-floating-pinned-manager">
+            <!-- SLOT 1 -->
+            <div class="admin-pinned-slot">
+                <div class="admin-pinned-slot-header">
+                    <span class="admin-field-label" style="margin-bottom:0;">MENSAJE 1</span>
+                    <div class="admin-slot-palette" id="pin-color-palette-1">
+                        <div class="color-dot active" style="background:#00F0FF;" data-color="#00F0FF"
+                            onclick="selectSlotColor(1, '#00F0FF', this)" title="Cyan"></div>
+                        <div class="color-dot" style="background:#FFD700;" data-color="#FFD700"
+                            onclick="selectSlotColor(1, '#FFD700', this)" title="Dorado"></div>
+                        <div class="color-dot" style="background:#00FF88;" data-color="#00FF88"
+                            onclick="selectSlotColor(1, '#00FF88', this)" title="Verde"></div>
+                        <div class="color-dot" style="background:#FF0055;" data-color="#FF0055"
+                            onclick="selectSlotColor(1, '#FF0055', this)" title="Rosa"></div>
+                        <div class="color-dot" style="background:#B026FF;" data-color="#B026FF"
+                            onclick="selectSlotColor(1, '#B026FF', this)" title="Púrpura"></div>
+                        <div class="color-dot" style="background:#FF8800;" data-color="#FF8800"
+                            onclick="selectSlotColor(1, '#FF8800', this)" title="Naranja"></div>
+                        <div class="color-dot" style="background:#FFFFFF;" data-color="#FFFFFF"
+                            onclick="selectSlotColor(1, '#FFFFFF', this)" title="Blanco"></div>
+                    </div>
+                </div>
+                <input type="text" id="admin-pin-input-1" class="admin-input" placeholder="Primer mensaje fijado..."
+                    maxlength="120">
+            </div>
+
+            <!-- SLOT 2 -->
+            <div class="admin-pinned-slot" style="margin-top:10px;">
+                <div class="admin-pinned-slot-header">
+                    <span class="admin-field-label" style="margin-bottom:0;">MENSAJE 2 (OPCIONAL)</span>
+                    <div class="admin-slot-palette" id="pin-color-palette-2">
+                        <div class="color-dot" style="background:#00F0FF;" data-color="#00F0FF"
+                            onclick="selectSlotColor(2, '#00F0FF', this)" title="Cyan"></div>
+                        <div class="color-dot active" style="background:#FFD700;" data-color="#FFD700"
+                            onclick="selectSlotColor(2, '#FFD700', this)" title="Dorado"></div>
+                        <div class="color-dot" style="background:#00FF88;" data-color="#00FF88"
+                            onclick="selectSlotColor(2, '#00FF88', this)" title="Verde"></div>
+                        <div class="color-dot" style="background:#FF0055;" data-color="#FF0055"
+                            onclick="selectSlotColor(2, '#FF0055', this)" title="Rosa"></div>
+                        <div class="color-dot" style="background:#B026FF;" data-color="#B026FF"
+                            onclick="selectSlotColor(2, '#B026FF', this)" title="Púrpura"></div>
+                        <div class="color-dot" style="background:#FF8800;" data-color="#FF8800"
+                            onclick="selectSlotColor(2, '#FF8800', this)" title="Naranja"></div>
+                        <div class="color-dot" style="background:#FFFFFF;" data-color="#FFFFFF"
+                            onclick="selectSlotColor(2, '#FFFFFF', this)" title="Blanco"></div>
+                    </div>
+                </div>
+                <input type="text" id="admin-pin-input-2" class="admin-input" placeholder="Segundo mensaje fijado..."
+                    maxlength="120">
+            </div>
+
+            <!-- SLOT 3 -->
+            <div class="admin-pinned-slot" style="margin-top:10px;">
+                <div class="admin-pinned-slot-header">
+                    <span class="admin-field-label" style="margin-bottom:0;">MENSAJE 3 (OPCIONAL)</span>
+                    <div class="admin-slot-palette" id="pin-color-palette-3">
+                        <div class="color-dot" style="background:#00F0FF;" data-color="#00F0FF"
+                            onclick="selectSlotColor(3, '#00F0FF', this)" title="Cyan"></div>
+                        <div class="color-dot" style="background:#FFD700;" data-color="#FFD700"
+                            onclick="selectSlotColor(3, '#FFD700', this)" title="Dorado"></div>
+                        <div class="color-dot active" style="background:#00FF88;" data-color="#00FF88"
+                            onclick="selectSlotColor(3, '#00FF88', this)" title="Verde"></div>
+                        <div class="color-dot" style="background:#FF0055;" data-color="#FF0055"
+                            onclick="selectSlotColor(3, '#FF0055', this)" title="Rosa"></div>
+                        <div class="color-dot" style="background:#B026FF;" data-color="#B026FF"
+                            onclick="selectSlotColor(3, '#B026FF', this)" title="Púrpura"></div>
+                        <div class="color-dot" style="background:#FF8800;" data-color="#FF8800"
+                            onclick="selectSlotColor(3, '#FF8800', this)" title="Naranja"></div>
+                        <div class="color-dot" style="background:#FFFFFF;" data-color="#FFFFFF"
+                            onclick="selectSlotColor(3, '#FFFFFF', this)" title="Blanco"></div>
+                    </div>
+                </div>
+                <input type="text" id="admin-pin-input-3" class="admin-input" placeholder="Tercer mensaje fijado..."
+                    maxlength="120">
+            </div>
+
+            <div class="admin-action-row" style="margin-top:14px;">
+                <button type="button" class="btn-admin-action primary" onclick="savePinnedMessagesAdmin()">
+                    GUARDAR FIJADOS
+                </button>
+                <button type="button" class="btn-admin-action secondary" onclick="clearPinnedMessagesAdmin()">
+                    QUITAR TODOS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         VENTANA FLOTANTE 3: HISTORIAL DE PREMIOS (NO MODAL / DRAGGABLE)
+         ==================================================================== -->
+    <div class="admin-floating-window" id="floating-prizes-history" style="display:none; width:820px; max-width:95vw;">
+        <div class="admin-floating-header" id="drag-header-prizes">
+            <div class="admin-floating-title">
+                HISTORIAL DE PREMIOS DE EVENTOS
+            </div>
+            <div class="admin-floating-controls">
+                <button type="button" class="btn-floating-control" onclick="loadEventsHistoryAdmin()"
+                    title="Recargar historial"
+                    style="font-size:10px; font-weight:600; width:auto; padding:0 8px;">RECARGAR</button>
+                <button type="button" class="btn-floating-control btn-close"
+                    onclick="toggleFloatingWidget('floating-prizes-history')" title="Cerrar">✕</button>
+            </div>
+        </div>
+
+        <div class="admin-floating-body" id="body-floating-prizes-history" style="padding:10px 14px;">
+            <div class="admin-table-wrapper">
+                <table class="admin-prizes-table">
+                    <thead>
+                        <tr>
+                            <th style="width:140px;">Fecha</th>
+                            <th>Desafío / Evento</th>
+                            <th style="width:130px;">Ganador</th>
+                            <th style="width:180px;">Premio Otorgado</th>
+                            <th style="width:110px; text-align:center;">Estado</th>
+                            <th style="width:110px; text-align:center;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-prizes-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:18px; color:#94a3b8;">Cargando historial
+                                de premios...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TARJETA FLOTANTE DE PERFIL DE JUGADOR (NO MODAL / DRAGGABLE) -->
+    <div id="chat-user-floating-widget" class="chat-user-floating-card" style="display:none; width:340px;">
+        <div class="chat-user-card-header" id="chat-user-card-drag-header">
+            <div class="chat-user-card-title">
+                FICHA DE JUGADOR
+            </div>
+            <button type="button" onclick="closeChatUserProfile()" class="btn-widget-close" title="Cerrar">✕</button>
+        </div>
+
+        <div class="chat-user-card-body">
+            <div class="chat-user-avatar-wrap">
+                <img id="cup-avatar-img" src="/assets/images/avatars/ava-002.png" class="chat-user-avatar-frame"
+                    alt="Avatar">
+                <div id="cup-online-dot" class="chat-user-status-dot"></div>
+            </div>
+
+            <div class="chat-user-name-box">
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <span id="cup-username"
+                        style="font-family:'Outfit', sans-serif; font-size:16px; font-weight:700; color:#fff;">Duelista</span>
+                    <img id="cup-country-flag-img" src="" alt="Bandera"
+                        style="width:20px; height:14px; object-fit:cover; border-radius:2px; vertical-align:middle; border:1px solid rgba(255,255,255,0.25); display:none; box-shadow:0 0 6px rgba(0,0,0,0.5);">
+                </div>
+                <div id="cup-country-name" style="font-size:11px; color:#94a3b8; margin-top:1px;">Internacional</div>
+                <div id="cup-badges-row" style="display:flex; justify-content:center; gap:6px; margin-top:6px;">
+                    <span id="cup-level-badge" class="chat-user-badge">Nv. 1</span>
+                    <span id="cup-vip-badge" class="chat-user-badge gold" style="display:none;">VIP ORO</span>
+                    <span id="cup-admin-badge" class="chat-user-badge admin" style="display:none;">ADMIN</span>
+                </div>
+            </div>
+
+            <!-- BARRA ELEGANTE DE PROGRESIÓN DE EXPERIENCIA -->
+            <div class="cup-exp-container">
+                <div class="cup-exp-label-row">
+                    <span>EXPERIENCIA</span>
+                    <span id="cup-exp-text">0 / 100 EXP</span>
+                </div>
+                <div class="cup-exp-bar-wrap">
+                    <div class="cup-exp-bar-fill" id="cup-exp-fill" style="width:0%;"></div>
+                </div>
+            </div>
+
+            <!-- ECONOMÍA Y STARSHIPS -->
+            <div class="cup-economy-row">
+                <span class="cup-economy-lbl">STARSHIPS</span>
+                <span id="cup-stat-starships" class="cup-economy-val">0 ★</span>
+            </div>
+
+            <!-- TABLA DE ESTADÍSTICAS DE DUELOS (NPC & PVP) -->
+            <div class="cup-duels-table-wrap">
+                <div class="cup-duels-header">ESTADÍSTICAS DE DUELOS</div>
+                <div class="cup-duels-grid">
+                    <div class="cup-duels-col">
+                        <div class="cup-duels-col-title">MODO AVENTURA (NPC)</div>
+                        <div class="cup-stat-item"><span>Duelos:</span> <b id="cup-npc-duels">0</b></div>
+                        <div class="cup-stat-item"><span>Victorias:</span> <b id="cup-npc-wins"
+                                style="color:#00ff88;">0</b></div>
+                        <div class="cup-stat-item"><span>Derrotas:</span> <b id="cup-npc-losses"
+                                style="color:#ff0055;">0</b></div>
+                        <div class="cup-stat-item"><span>Win Rate:</span> <b id="cup-npc-wr"
+                                style="color:#ffd700;">0.0%</b></div>
+                    </div>
+                    <div class="cup-duels-col">
+                        <div class="cup-duels-col-title">MODO PVP (JUGADORES)</div>
+                        <div class="cup-stat-item"><span>Duelos:</span> <b id="cup-pvp-duels">0</b></div>
+                        <div class="cup-stat-item"><span>Victorias:</span> <b id="cup-pvp-wins"
+                                style="color:#00ff88;">0</b></div>
+                        <div class="cup-stat-item"><span>Derrotas:</span> <b id="cup-pvp-losses"
+                                style="color:#ff0055;">0</b></div>
+                        <div class="cup-stat-item"><span>Win Rate:</span> <b id="cup-pvp-wr"
+                                style="color:#ffd700;">0.0%</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BONIFICACIONES DEL AVATAR ACTIVO -->
+            <div class="cup-boosts-wrap">
+                <div class="cup-boosts-title">BONIFICACIONES ACTIVAS</div>
+                <div class="cup-boosts-row">
+                    <div class="cup-boost-pill"><span>Epx:</span> <b id="cup-boost-exp">+0%</b></div>
+                    <div class="cup-boost-pill"><span>Star:</span> <b id="cup-boost-star">+0%</b></div>
+                    <div class="cup-boost-pill"><span>Suerte:</span> <b id="cup-boost-luck">+0%</b></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR FIJO -->
+    <div id="navbar-container"></div>
+    <script src="../../js/core/navbar.js?v=4.5"></script>
+
+    <!-- JS de Inicialización -->
+    <script src="../../js/views/chat.js?v=3.1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initChatView === 'function') {
+                initChatView();
+            }
+        });
+    </script>
+</body>
+
+</html>

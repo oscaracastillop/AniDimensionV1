@@ -35,9 +35,23 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        try {
+            if (getBridge() != null && getBridge().getWebView() != null) {
+                getBridge().getWebView().clearCache(true);
+                getBridge().getWebView().getSettings().setCacheMode(android.webkit.WebSettings.LOAD_NO_CACHE);
+            }
+        } catch (Throwable t) {}
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         try {
+            if (getBridge() != null && getBridge().getWebView() != null) {
+                getBridge().getWebView().getSettings().setCacheMode(android.webkit.WebSettings.LOAD_NO_CACHE);
+            }
             applyEdgeToEdgeCutout();
             enableImmersiveMode();
         } catch (Throwable t) {

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Envíos y Recompensas (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=4.6">
+    <link rel="stylesheet" href="../../../css/admin.css?v=4.6">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=4.6">
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <style>
+        .gift-tab-btn {
+            padding: 7px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            cursor: pointer;
+            border-radius: 0;
+            transition: all 0.2s ease;
+        }
+        .gift-tab-btn.active {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(245, 158, 11, 0.45));
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.35);
+        }
+        .gift-type-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.2px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 0;
+        }
+        .gift-type-card:hover {
+            border-color: rgba(0, 240, 255, 0.6);
+            background: rgba(15, 23, 42, 1);
+        }
+        .gift-type-card.active {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.18), rgba(15, 23, 42, 0.95));
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
+        }
+        .admin-form-input, .admin-form-select, .admin-form-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1.2px solid rgba(0, 240, 255, 0.3);
+            color: #fff;
+            padding: 8px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            box-sizing: border-box;
+            border-radius: 0;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .admin-form-input:focus, .admin-form-select:focus, .admin-form-textarea:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+        .user-search-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 10.5px;
+            transition: background 0.15s ease;
+        }
+        .user-search-item:hover {
+            background: rgba(0, 240, 255, 0.15);
+            color: #00f0ff;
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container">
+        
+        <!-- HEADER FIJO -->
+        <div class="admin-header">
+            <div class="admin-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 class="admin-title">ENVÍO DE REGALOS & RECOMPENSAS</h1>
+                    <div class="admin-subtitle">GESTIÓN DE BUZÓN GLOBAL E INDIVIDUAL (ESTRELLAS, CARTAS, POTENCIADORES Y AVATARES)</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="btn-act-sm btn-act-activate" id="tab-btn-create" onclick="switchGiftTab('CREATE')" style="height:28px; padding:0 12px; font-size:9.5px;">
+                    CREAR REGALO
+                </button>
+                <button type="button" class="btn-act-sm btn-act-edit" id="tab-btn-history" onclick="switchGiftTab('HISTORY')" style="height:28px; padding:0 12px; font-size:9.5px;">
+                    HISTORIAL DE ENVÍOS
+                </button>
+                <a href="../admin.html" class="btn-shop-back" title="Volver a la Consola Principal Admin">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE -->
+        <div class="admin-scroll-content">
+            
+            <!-- ====================================================================== -->
+            <!-- VISTA 1: CREAR Y ENVIAR REGALO -->
+            <!-- ====================================================================== -->
+            <div id="view-create-gift" style="max-width:960px; margin:0 auto;">
+                
+                <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:16px;">
+                    
+                    <!-- COLUMNA IZQUIERDA: FORMULARIO DE PARAMETRIZACIÓN -->
+                    <div style="background:rgba(15, 23, 42, 0.8); border:1.2px solid rgba(0, 240, 255, 0.25); padding:16px;">
+                        
+                        <!-- 1. SELECCIÓN DE DESTINATARIO -->
+                        <div style="margin-bottom:14px;">
+                            <label style="font-family:'Orbitron', sans-serif; font-size:9.5px; color:#ffd700; display:block; margin-bottom:6px; letter-spacing:0.5px;">
+                                1. DESTINATARIO DEL REGALO:
+                            </label>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                                <button type="button" id="btn-target-all" class="gift-tab-btn active" style="width:100%; text-align:center;" onclick="setGiftTarget('ALL')">
+                                    🌐 TODOS LOS USUARIOS (GLOBAL)
+                                </button>
+                                <button type="button" id="btn-target-single" class="gift-tab-btn" style="width:100%; text-align:center;" onclick="setGiftTarget('SINGLE')">
+                                    👤 UN USUARIO ESPECÍFICO
+                                </button>
+                            </div>
+
+                            <!-- BUSCADOR DE USUARIO ESPECÍFICO (OCULTO POR DEFECTO) -->
+                            <div id="single-user-selector-box" style="display:none; margin-top:10px; position:relative;">
+                                <input type="text" id="input-search-user" name="gift_recipient_search_box" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="admin-form-input" placeholder="Escribe el nombre o Nick del usuario para buscar..." oninput="onSearchUserInput(this.value)">
+                                <div id="user-search-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:#0b1329; border:1px solid #00f0ff; max-height:180px; overflow-y:auto; z-index:100; box-shadow:0 6px 20px rgba(0,0,0,0.8);">
+                                    <!-- Dinámico -->
+                                </div>
+                                <div id="selected-user-chip" style="display:none; margin-top:6px; background:rgba(0, 240, 255, 0.15); border:1px solid #00f0ff; padding:6px 10px; font-size:10px; justify-content:space-between; align-items:center;">
+                                    <span>Destinatario seleccionado: <b id="selected-user-name" style="color:#ffd700;">-</b> (ID: <span id="selected-user-id">-</span>)</span>
+                                    <button type="button" onclick="clearSelectedUser()" style="background:transparent; border:none; color:#ef4444; font-size:12px; cursor:pointer; font-weight:bold;">✕</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. TIPO DE REGALO -->
+                        <div style="margin-bottom:14px;">
+                            <label style="font-family:'Orbitron', sans-serif; font-size:9.5px; color:#ffd700; display:block; margin-bottom:6px; letter-spacing:0.5px;">
+                                2. SELECCIONA EL TIPO DE REGALO:
+                            </label>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
+                                <div class="gift-type-card active" id="card-type-starships" onclick="selectGiftType('STARSHIPS')">
+                                    <div style="font-size:22px;">⭐</div>
+                                    <div>
+                                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700; color:#ffd700;">STARSHIPS</div>
+                                        <div style="font-size:8px; color:#94a3b8;">Monedas del juego</div>
+                                    </div>
+                                </div>
+                                <div class="gift-type-card" id="card-type-card" onclick="selectGiftType('CARD')">
+                                    <div style="font-size:22px;">🎴</div>
+                                    <div>
+                                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700; color:#c084fc;">CARTA</div>
+                                        <div style="font-size:8px; color:#94a3b8;">Carta para el mazo</div>
+                                    </div>
+                                </div>
+                                <div class="gift-type-card" id="card-type-potenciador" onclick="selectGiftType('POTENCIADOR')">
+                                    <div style="font-size:22px;">⚡</div>
+                                    <div>
+                                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700; color:#00f0ff;">POTENCIADOR</div>
+                                        <div style="font-size:8px; color:#94a3b8;">Boost EXP/Star/Suerte</div>
+                                    </div>
+                                </div>
+                                <div class="gift-type-card" id="card-type-avatar" onclick="selectGiftType('AVATAR')">
+                                    <div style="font-size:22px;">👤</div>
+                                    <div>
+                                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700; color:#10b981;">AVATAR</div>
+                                        <div style="font-size:8px; color:#94a3b8;">Icono desbloqueable</div>
+                                    </div>
+                                </div>
+                                <div class="gift-type-card" id="card-type-vip" onclick="selectGiftType('VIP')">
+                                    <div style="font-size:22px;">👑</div>
+                                    <div>
+                                        <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700; color:#ffd700;">MEMBRESÍA VIP</div>
+                                        <div style="font-size:8px; color:#94a3b8;">Pase / Días VIP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. PARAMETRIZACIÓN DINÁMICA SEGÚN EL TIPO -->
+                        <div id="gift-dynamic-params-container" style="background:rgba(0,0,0,0.4); border:1px dashed rgba(255,255,255,0.15); padding:12px; margin-bottom:14px;">
+                            
+                            <!-- PARÁMETROS STARSHIPS -->
+                            <div id="param-box-starships">
+                                <label style="font-size:9px; color:#cbd5e1; display:block; margin-bottom:4px;">CANTIDAD DE STARSHIPS A ENVIAR (⭐):</label>
+                                <input type="number" id="input-starships-amount" class="admin-form-input" placeholder="Ejemplo: 10000" value="10000" min="1" oninput="updateLivePreview()">
+                            </div>
+
+                            <!-- PARÁMETROS MEMBRESÍA VIP -->
+                            <div id="param-box-vip" style="display:none;">
+                                <div style="margin-bottom:8px;">
+                                    <label style="font-size:9px; color:#cbd5e1; display:block; margin-bottom:4px;">SELECCIONAR PASE VIP DEL CATÁLOGO:</label>
+                                    <select id="select-vip-catalog" class="admin-form-select" onchange="onSelectVipCatalogChange(this.value)">
+                                        <!-- Dinámico -->
+                                    </select>
+                                </div>
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:8px;">
+                                    <div>
+                                        <label style="font-size:8.5px; color:#ffd700; display:block; margin-bottom:2px;">DURACIÓN EN DÍAS:</label>
+                                        <input type="number" id="input-vip-days" class="admin-form-input" min="1" max="365" value="30" oninput="updateLivePreview()">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:8.5px; color:#cbd5e1; display:block; margin-bottom:2px;">NOMBRE DEL PASE:</label>
+                                        <input type="text" id="input-vip-name" class="admin-form-input" value="Pase VIP Oro" oninput="updateLivePreview()">
+                                    </div>
+                                </div>
+                                <div style="background:rgba(255, 215, 0, 0.05); border:1px solid rgba(255, 215, 0, 0.25); padding:8px;">
+                                    <div style="font-family:'Orbitron', sans-serif; font-size:8px; color:#ffd700; margin-bottom:6px;">BONIFICADORES DEL PASE VIP:</div>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                                        <div>
+                                            <label style="font-size:8px; color:#00f0ff; display:block; margin-bottom:2px;">EXP (%):</label>
+                                            <input type="number" id="input-vip-exp" class="admin-form-input" min="0" max="300" step="0.1" value="100.0" oninput="updateLivePreview()">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:8px; color:#ffd700; display:block; margin-bottom:2px;">⭐ ESTRELLAS (%):</label>
+                                            <input type="number" id="input-vip-star" class="admin-form-input" min="0" max="300" step="0.1" value="100.0" oninput="updateLivePreview()">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:8px; color:#10b981; display:block; margin-bottom:2px;">🍀 SUERTE (%):</label>
+                                            <input type="number" id="input-vip-luck" class="admin-form-input" min="0" max="100" step="0.1" value="15.0" oninput="updateLivePreview()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PARÁMETROS CARTA OCG (BÚSQUEDA POR PASSCODE) -->
+                            <div id="param-box-card" style="display:none;">
+                                <div style="display:grid; grid-template-columns: 1fr 110px; gap:10px; margin-bottom:8px;">
+                                    <div>
+                                        <label style="font-size:9px; color:#cbd5e1; display:block; margin-bottom:4px;">CÓDIGO PASSCODE DE LA CARTA (8 DÍGITOS):</label>
+                                        <input type="text" id="input-card-passcode" class="admin-form-input" placeholder="Ej: 89631139 (Blue-Eyes), 46986414 (Dark Magician)..." oninput="onPasscodeCardInput(this.value)">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:9px; color:#cbd5e1; display:block; margin-bottom:4px;">COPIAS (1 A 3):</label>
+                                        <input type="number" id="input-card-copies" class="admin-form-input" value="1" min="1" max="3" oninput="updateLivePreview()">
+                                    </div>
+                                </div>
+
+                                <!-- CAMPOS READONLY TRAÍDOS AUTOMÁTICAMENTE -->
+                                <div style="display:grid; grid-template-columns: 1fr 140px; gap:10px; margin-bottom:6px;">
+                                    <div>
+                                        <label style="font-size:8.5px; color:#94a3b8; display:block; margin-bottom:2px;">NOMBRE DE LA CARTA (AUTOMÁTICO):</label>
+                                        <input type="text" id="input-card-name-readonly" class="admin-form-input" readonly placeholder="Detectado por passcode..." style="background:rgba(0,0,0,0.4); color:#00f0ff; border-color:rgba(0,240,255,0.25); cursor:not-allowed;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:8.5px; color:#94a3b8; display:block; margin-bottom:2px;">RAREZA (AUTOMÁTICA):</label>
+                                        <input type="text" id="input-card-rarity-readonly" class="admin-form-input" readonly placeholder="Detectada..." style="background:rgba(0,0,0,0.4); color:#ffd700; border-color:rgba(255,215,0,0.25); cursor:not-allowed;">
+                                    </div>
+                                </div>
+
+                                <div id="card-passcode-status" style="font-size:8.5px; color:#64748b; padding:2px 4px;">
+                                    Ingresa el código Passcode oficial de la carta para verificarla.
+                                </div>
+                            </div>
+
+                            <!-- PARÁMETROS POTENCIADOR -->
+                            <div id="param-box-potenciador" style="display:none;">
+                                <label style="font-size:9px; color:#cbd5e1; display:block; margin-bottom:4px;">SELECCIONAR POTENCIADOR DEL CATÁLOGO:</label>
+                                <select id="select-potenciador-catalog" class="admin-form-select" onchange="onSelectPotenciadorChange(this.value)">
+                                    <!-- Dinámico -->
+                                </select>
+                            </div>
+
+                            <!-- PARÁMETROS AVATAR (PERSONALIZACIÓN COMPLETA) -->
+                            <div id="param-box-avatar" style="display:none;">
+                                
+                                <!-- 1. NOMBRE DEL AVATAR -->
+                                <div style="margin-bottom:8px;">
+                                    <label style="font-size:8.5px; color:#cbd5e1; display:block; margin-bottom:2px;">NOMBRE DEL AVATAR DE REGALO:</label>
+                                    <input type="text" id="input-avatar-name" class="admin-form-input" placeholder="Ej: Guerrero Cósmico Dragón" value="Avatar Especial de Torneo" oninput="updateLivePreview()">
+                                </div>
+
+                                <!-- 2. SELECCIÓN DE IMAGEN DE LA GALERÍA -->
+                                <div style="margin-bottom:10px;">
+                                    <label style="font-size:8.5px; color:#cbd5e1; display:block; margin-bottom:2px;">SELECCIONAR IMAGEN DEL AVATAR (GALERÍA 350+):</label>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div style="width:44px; height:44px; flex-shrink:0; background:#020617; border:1px solid #10b981; padding:2px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                                            <img id="preview-avatar-chosen-img" src="../../../assets/images/avatars/AVA-003.png" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='../../../assets/images/avatars/AVA-002.png';">
+                                        </div>
+                                        <div style="flex:1;">
+                                            <select id="select-avatar-img-code" class="admin-form-select" onchange="onAvatarImageChange(this.value)" style="margin-bottom:4px;">
+                                                <!-- Llenado dinámicamente con las 350 imágenes disponibles -->
+                                            </select>
+                                            <div style="font-size:7.5px; color:#94a3b8;">Imagen base seleccionada de la galería de duelistas.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 3. ESTADÍSTICAS / BOOSTS PERSONALIZADOS (EXP, ESTRELLAS, SUERTE) -->
+                                <div style="background:rgba(0, 240, 255, 0.05); border:1px solid rgba(0, 240, 255, 0.2); padding:8px; margin-bottom:8px;">
+                                    <div style="font-family:'Orbitron', sans-serif; font-size:8px; color:#00f0ff; margin-bottom:6px;">ESTADÍSTICAS PERSONALIZADAS (TOPES MÁXIMOS PERMITIDOS):</div>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                                        <div>
+                                            <label style="font-size:8px; color:#00f0ff; display:block; margin-bottom:2px;">EXP (%) <span style="color:#ffd700;">(Máx 300.0%)</span>:</label>
+                                            <input type="number" id="input-avatar-exp" class="admin-form-input" min="0" max="300" step="0.1" value="5.0" placeholder="0.0 - 300.0" oninput="validateAvatarBoostLimits(this, 0, 300, 'EXP')">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:8px; color:#ffd700; display:block; margin-bottom:2px;">⭐ ESTRELLAS (%) <span style="color:#ffd700;">(Máx 300.0%)</span>:</label>
+                                            <input type="number" id="input-avatar-star" class="admin-form-input" min="0" max="300" step="0.1" value="5.0" placeholder="0.0 - 300.0" oninput="validateAvatarBoostLimits(this, 0, 300, 'StarShips')">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:8px; color:#10b981; display:block; margin-bottom:2px;">🍀 SUERTE (%) <span style="color:#ffd700;">(Máx 100.0%)</span>:</label>
+                                            <input type="number" id="input-avatar-luck" class="admin-form-input" min="0" max="100" step="0.1" value="2.0" placeholder="0.0 - 100.0" oninput="validateAvatarBoostLimits(this, 0, 100, 'Suerte')">
+                                        </div>
+                                    </div>
+                                    <div id="avatar-boost-warning" style="display:none; margin-top:6px; font-size:8px; color:#ef4444; background:rgba(239,68,68,0.15); border:1px solid #ef4444; padding:3px 6px;"></div>
+                                </div>
+
+                                <div style="font-size:7.5px; color:#38bdf8; line-height:1.3;">
+                                    🔒 Este avatar personalizado se creará con un <b>ID único vinculado al destinatario</b> al redimirse en su buzón. <b>No estará disponible para la venta en la tienda</b>.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- 4. MENSAJES Y METADATOS OBLIGATORIOS -->
+                        <div style="margin-bottom:10px;">
+                            <label style="font-family:'Orbitron', sans-serif; font-size:9.5px; color:#ffd700; display:block; margin-bottom:4px; letter-spacing:0.5px;">
+                                3. TÍTULO / ASUNTO DEL REGALO:
+                            </label>
+                            <input type="text" id="input-gift-title" class="admin-form-input" placeholder="Ejemplo: Compensación por Mantenimiento" value="Compensación Especial de Mantenimiento" oninput="updateLivePreview()">
+                        </div>
+
+                        <div style="margin-bottom:14px;">
+                            <label style="font-family:'Orbitron', sans-serif; font-size:9.5px; color:#ffd700; display:block; margin-bottom:4px; letter-spacing:0.5px;">
+                                4. MENSAJE / MOTIVO DEL REGALO:
+                            </label>
+                            <textarea id="input-gift-description" class="admin-form-textarea" rows="3" placeholder="Ejemplo: Agradecemos tu paciencia durante el mantenimiento programado. ¡Disfruta de esta recompensa en tus próximos duelos!" oninput="updateLivePreview()">Agradecemos tu paciencia durante el mantenimiento del servidor. ¡Disfruta de esta recompensa para potenciar tus cartas y avatares!</textarea>
+                        </div>
+
+                        <!-- BOTÓN DE ENVÍO -->
+                        <button type="button" id="btn-send-gift-action" onclick="submitSendGift()" style="width:100%; padding:10px; background:linear-gradient(135deg, #ffd700 0%, #f59e0b 100%); border:1px solid #ffd700; color:#000; font-family:'Orbitron', sans-serif; font-size:11px; font-weight:500; cursor:pointer; box-shadow:0 0 16px rgba(255,215,0,0.5); border-radius:0;">
+                            ENVIAR REGALO AHORA 🎁
+                        </button>
+
+                    </div>
+
+                    <!-- COLUMNA DERECHA: VISTA PREVIA EN VIVO DE CÓMO SE VERÁ EN EL BUZÓN -->
+                    <div>
+                        <div style="background:rgba(15, 23, 42, 0.8); border:1.2px solid rgba(255, 215, 0, 0.35); padding:14px; position:sticky; top:10px;">
+                            
+                            <div style="font-family:'Orbitron', sans-serif; font-size:10.5px; font-weight:800; color:#ffd700; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                                <span>👁️ VISTA PREVIA DEL REGALO EN EL BUZÓN</span>
+                            </div>
+
+                            <div style="font-size:9px; color:#94a3b8; margin-bottom:12px;">
+                                Así se visualizará este registro en el Buzón de Recompensas del duelista:
+                            </div>
+
+                            <!-- CARD DE REGISTRO PREVIA -->
+                            <div id="live-preview-row" style="background:linear-gradient(90deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 14, 28, 0.98) 100%); border:1px solid rgba(0, 240, 255, 0.35); border-left:3.5px solid #ffd700; padding:10px 12px; box-shadow:0 2px 12px rgba(0,0,0,0.5);">
+                                
+                                <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:8px;">
+                                    <div id="preview-icon-box" style="width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:16px; background:rgba(0,0,0,0.6); border:1px solid #ffd700; flex-shrink:0;">
+                                        ⭐
+                                    </div>
+                                    <div style="flex:1; min-width:0;">
+                                        <div id="preview-title" style="font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; color:#fff;">
+                                            Compensación Especial de Mantenimiento
+                                        </div>
+                                        <div style="margin-top:2px;">
+                                            <span id="preview-badge" style="font-family:'Orbitron', sans-serif; font-size:8px; font-weight:500; padding:1px 6px; background:rgba(255,215,0,0.15); border:1px solid #ffd700; color:#ffd700;">
+                                                ⭐ 10,000 STARSHIPS
+                                            </span>
+                                            <span style="font-size:8px; color:#64748b; margin-left:4px;">• Administración AD</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="preview-desc" style="font-size:9px; color:#cbd5e1; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.06); padding:6px 8px; line-height:1.4; margin-bottom:8px;">
+                                    Agradecemos tu paciencia durante el mantenimiento del servidor. ¡Disfruta de esta recompensa para potenciar tus cartas y avatares!
+                                </div>
+
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span id="preview-target-badge" style="font-size:8px; color:#38bdf8;">
+                                        🌐 Destinatario: TODOS LOS USUARIOS
+                                    </span>
+                                    <button type="button" style="padding:4px 12px; background:linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(56, 189, 248, 0.4)); border:1.2px solid #00f0ff; color:#00f0ff; font-family:'Orbitron', sans-serif; font-size:8px; font-weight:500; cursor:default;">
+                                        RECLAMAR 🎁
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ====================================================================== -->
+            <!-- VISTA 2: HISTORIAL DE ENVÍOS (AUDITORÍA) -->
+            <!-- ====================================================================== -->
+            <div id="view-history-gifts" style="display:none; max-width:960px; margin:0 auto;">
+                <div style="background:rgba(15, 23, 42, 0.8); border:1.2px solid rgba(0, 240, 255, 0.25); padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <h2 style="font-family:'Orbitron', sans-serif; font-size:12px; font-weight:800; color:#00f0ff; margin:0;">
+                            📋 HISTORIAL DE REGALOS Y RECOMPENSAS ENVIADAS (ÚLTIMOS 50 REGISTROS)
+                        </h2>
+                        <button type="button" onclick="loadGiftsHistory()" style="padding:4px 10px; background:rgba(255,255,255,0.08); border:1px solid #00f0ff; color:#00f0ff; font-family:'Orbitron', sans-serif; font-size:8.5px; font-weight:700; cursor:pointer;">
+                            🔄 ACTUALIZAR
+                        </button>
+                    </div>
+
+                    <div id="gifts-history-container" style="display:flex; flex-direction:column; gap:8px;">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL DE NOTIFICACIÓN ADMIN -->
+    <div id="admin-gift-notice-modal" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#070d1b; border:1.5px solid #00f0ff; box-shadow:0 0 35px rgba(0,240,255,0.35); width:100%; max-width:420px; padding:22px 20px; text-align:center; color:#fff;">
+            <div id="admin-gift-notice-icon" style="font-size:36px; margin-bottom:6px;">🎁</div>
+            <div id="admin-gift-notice-title" style="font-family:'Orbitron', sans-serif; font-size:13px; font-weight:800; color:#00f0ff; margin-bottom:8px;">¡REGALO ENVIADO!</div>
+            <div id="admin-gift-notice-msg" style="background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.25); padding:10px; margin-bottom:16px; font-size:10.5px; color:#cbd5e1; line-height:1.4;"></div>
+            <button type="button" onclick="closeGiftNoticeModal()" style="padding:7px 20px; background:linear-gradient(135deg, rgba(0,240,255,0.3), rgba(0,180,216,0.6)); border:1px solid var(--accent-cyan); color:#fff; font-family:'Orbitron',sans-serif; font-size:9.5px; font-weight:800; cursor:pointer;">
+                ACEPTAR
+            </button>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/views/admin-regalos.js?v=db_v4"></script>
+</body>
+</html>

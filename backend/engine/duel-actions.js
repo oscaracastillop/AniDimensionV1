@@ -135,6 +135,20 @@ function triggerOnSummonHooks(duelState, summonedCardData, summonType = 'NORMAL'
                 }
             });
         }
+        if (pObj && pObj.fieldSpell) {
+            const fs = pObj.fieldSpell;
+            if (fs && !fs.faceDown && fs.position !== 'SET') {
+                const fsId = Number(fs.card_id || (fs.card_data && fs.card_data.id) || 0);
+                const fsMeta = manifest ? manifest.get(fsId) : null;
+                if (fsMeta && fsMeta.module && typeof fsMeta.module.onMonsterSummoned === 'function') {
+                    fsMeta.module.onMonsterSummoned({ duelState, playerKey: pKey, summonedMeta: cardMeta, summonType, spellSlot: fs });
+                } else if (isSixSamurai && (fsMeta?.name?.toLowerCase().includes('temple') || fsMeta?.name?.toLowerCase().includes('templo') || fsMeta?.name?.toLowerCase().includes('six samurai') || fsMeta?.name?.toLowerCase().includes('seis samur'))) {
+                    fs.bushidoCounters = (fs.bushidoCounters || 0) + 1;
+                    emitDuelLog(duelState.roomId, `🏯 [${fsMeta?.name || 'Templo'}] ¡Coloca 1 Contador Bushido! (Total en carta: ${fs.bushidoCounters})`, 'spell');
+                    recalculateAllFieldMonstersStats(duelState);
+                }
+            }
+        }
     });
 
     // Ejecutar trigger modular al ser invocado
@@ -181,9 +195,10 @@ function triggerOnSpellActivationHooks(duelState, spellCardData, actingKey = 'pl
 }
 
 async function handleDuelAction(socket, data) {
-        if (!data) return;
+    if (!data) return;
 
-        const roomId = data.room_id || socket.currentDuelRoomId || socket.currentPvpRoomId || 'ROOM_DEMO';
+    const roomId = data.room_id || socket.currentDuelRoomId || socket.currentPvpRoomId || 'ROOM_DEMO';
+    try {
         const actionType = data.action_type || 'SUMMON';
         let slotIndex = data.slot_index !== undefined ? parseInt(data.slot_index, 10) : 0;
         const cardId = parseInt(data.card_id || 0, 10);
@@ -276,6 +291,9 @@ async function handleDuelAction(socket, data) {
             const cardModule = cardMeta ? cardMeta.module : null;
             const { effectUtils } = require('./card-registry');
 
+            let canDoSpecial = false;
+            let specialMsg = `⚔️✨ [Invocación Especial] ¡${p1.username} invoca de Modo Especial a ${cardData.name}!`;
+
             if (cardModule && typeof cardModule.canSpecialSummon === 'function') {
                 const check = cardModule.canSpecialSummon({ duelState, playerKey: actingKey, handIndex: slotIndex });
                 if (!check || !check.canSummon) {
@@ -286,14 +304,116 @@ async function handleDuelAction(socket, data) {
                 if (typeof cardModule.executeSpecialSummon === 'function') {
                     cardModule.executeSpecialSummon({ duelState, playerKey: actingKey, effectUtils });
                 }
-                emitDuelLog(roomId, `⚔️✨ [Invocación Especial] ¡${p1.username} invoca de Modo Especial a ${cardData.name}!`, 'summon');
+                canDoSpecial = true;
             } else if (cardMeta?.canSpecialSummonSelf || cardData.canSpecialSummonSelf) {
-                emitDuelLog(roomId, `⚔️✨ [Invocación Especial] ¡${p1.username} invoca de Modo Especial a ${cardData.name}!`, 'summon');
+                canDoSpecial = true;
             } else {
-                return socket.emit('ACTION_ERROR', {
-                    message: `⚠️ [Regla Oficial Konami] "${cardData.name}" no cumple las condiciones para ser Invocado de Modo Especial desde la mano.`
-                });
+                // Validación de condiciones reglamentarias inherentes OCG
+                const desc = (cardData.desc || cardData.description || '').toLowerCase();
+                const myMonsters = p1.monsters.filter(m => m !== null);
+                const rivalMonsters = p2.monsters.filter(m => m !== null);
+                const myGy = p1.graveyard || [];
+
+                // 1. Elder of the Six Samurai (61737116) / Cyber Dragon (70095154) / The Fiend Megacyber
+                if (numCardId === 61737116 || numCardId === 70095154 || desc.includes('opponent controls a monster and you control no monsters') || desc.includes('adversario controla un monstruo y tú no controlas ninguno')) {
+                    if (rivalMonsters.length >= 1 && myMonsters.length === 0) {
+                        canDoSpecial = true;
+                        specialMsg = numCardId === 61737116 
+                            ? `⚔️🌸 [Seis Samuráis] ¡${p1.username} invoca de Modo Especial a Anciano de los Seis Samuráis!` 
+                            : `⚔️⚡ [Ciber Dragón] ¡${p1.username} invoca de Modo Especial a Ciber Dragón!`;
+                    } else {
+                        return socket.emit('ACTION_ERROR', {
+                            message: `⚠️ [Condición No Cumplida] "${cardData.name}" solo puede Invocarse de Modo Especial si tu rival controla al menos 1 monstruo y tú no controlas ninguno (Rival: ${rivalMonsters.length}, Tú: ${myMonsters.length}).`
+                        });
+                    }
+                }
+                // 2. Great Shogun Shien (63176202): 2 o más Seis Samuráis en tu campo
+                else if (numCardId === 63176202 || (desc.includes('six samurai') && (desc.includes('control 2 or more') || desc.includes('controlas 2 o más')))) {
+                    const sixSamCount = myMonsters.filter(m => {
+                        const mName = (m.card_data?.name || '').toLowerCase();
+                        return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown;
+                    }).length;
+                    if (sixSamCount >= 2) {
+                        canDoSpecial = true;
+                        specialMsg = `⚔️🔥 [Gran Shogun Shien] ¡${p1.username} lidera a los Seis Samuráis e invoca de Modo Especial al Gran Shogun Shien!`;
+                    } else {
+                        return socket.emit('ACTION_ERROR', {
+                            message: `⚠️ [Condición No Cumplida] "${cardData.name}" requiere controlar 2 o más monstruos "Seis Samuráis" boca arriba en el campo (actuales: ${sixSamCount}).`
+                        });
+                    }
+                }
+                // 3. Grandmaster of the Six Samurai (83039727 / 83039729): 1 o más Seis Samuráis y no controlar otro Gran Maestro
+                else if (numCardId === 83039727 || numCardId === 83039729) {
+                    const hasSixSam = myMonsters.some(m => {
+                        const mName = (m.card_data?.name || '').toLowerCase();
+                        return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown;
+                    });
+                    const alreadyHasGrandmaster = myMonsters.some(m => Number(m.card_id || m.card_data?.id) === 83039727 || Number(m.card_id || m.card_data?.id) === 83039729);
+                    if (hasSixSam && !alreadyHasGrandmaster) {
+                        canDoSpecial = true;
+                        specialMsg = `⚔️🏯 [Gran Maestro] ¡${p1.username} invoca de Modo Especial a Gran Maestro de los Seis Samuráis!`;
+                    } else {
+                        return socket.emit('ACTION_ERROR', {
+                            message: alreadyHasGrandmaster
+                                ? `⚠️ [Regla Oficial] Solo puedes controlar 1 "Gran Maestro de los Seis Samuráis" boca arriba a la vez.`
+                                : `⚠️ [Condición No Cumplida] "Gran Maestro de los Seis Samuráis" requiere controlar al menos 1 monstruo "Seis Samuráis" boca arriba en el campo.`
+                        });
+                    }
+                }
+                // 4. Legendary Six Samurai - Kizan (49721904): Otro Seis Samurái boca arriba con nombre distinto
+                else if (numCardId === 49721904) {
+                    const hasOtherSixSam = myMonsters.some(m => {
+                        const mName = (m.card_data?.name || '').toLowerCase();
+                        return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown && Number(m.card_id || m.card_data?.id) !== 49721904;
+                    });
+                    if (hasOtherSixSam) {
+                        canDoSpecial = true;
+                        specialMsg = `⚔️⚡ [Kizan] ¡${p1.username} invoca de Modo Especial a Seis Samuráis Legendarios - Kizan!`;
+                    } else {
+                        return socket.emit('ACTION_ERROR', {
+                            message: `⚠️ [Condición No Cumplida] "Seis Samuráis Legendarios - Kizan" requiere controlar otro monstruo "Seis Samuráis" boca arriba.`
+                        });
+                    }
+                }
+                // 5. Monstruos Caos (BLS 72989439 / Chaos Sorcerer 99188141): Desterrar 1 LUZ + 1 OSCURIDAD del Cementerio
+                else if ([72989439, 99188141].includes(numCardId)) {
+                    const lightIdx = myGy.findIndex(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'LIGHT');
+                    const darkIdx = myGy.findIndex(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'DARK');
+                    if (lightIdx !== -1 && darkIdx !== -1 && lightIdx !== darkIdx) {
+                        const firstIdx = Math.max(lightIdx, darkIdx);
+                        const secIdx = Math.min(lightIdx, darkIdx);
+                        const c1 = myGy.splice(firstIdx, 1)[0];
+                        const c2 = myGy.splice(secIdx, 1)[0];
+                        p1.banished.push(c1, c2);
+                        canDoSpecial = true;
+                        specialMsg = `🌌✨ [Invocación Caos] ¡${p1.username} destierra 1 LUZ y 1 OSCURIDAD del Cementerio e invoca a ${cardData.name}!`;
+                    } else {
+                        return socket.emit('ACTION_ERROR', {
+                            message: `⚠️ [Condición No Cumplida] "${cardData.name}" requiere desterrar 1 monstruo LUZ y 1 OSCURIDAD de tu Cementerio.`
+                        });
+                    }
+                }
+                // 6. Dragón Armado Oscuro (65192027): Exactamente 3 monstruos OSCURIDAD en el Cementerio
+                else if (numCardId === 65192027) {
+                    const darkCount = myGy.filter(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'DARK').length;
+                    if (darkCount === 3) {
+                        canDoSpecial = true;
+                        specialMsg = `🐉✨ [Dragón Armado Oscuro] ¡${p1.username} invoca de Modo Especial a Dragón Armado Oscuro!`;
+                    } else {
+                        return socket.emit('ACTION_ERROR', {
+                            message: `⚠️ [Condición No Cumplida] "Dragón Armado Oscuro" requiere exactamente 3 monstruos de OSCURIDAD en tu Cementerio (actuales: ${darkCount}).`
+                        });
+                    }
+                }
+                // 7. Genéricos con texto de Invocación Especial inherente o tipo Efecto
+                else if (desc.includes('special summon this card') || desc.includes('invocar esta carta de modo especial') || desc.includes('special summon') || desc.includes('invocación especial')) {
+                    canDoSpecial = true;
+                } else {
+                    canDoSpecial = true;
+                }
             }
+
+            emitDuelLog(roomId, specialMsg, 'summon');
 
             p1.monsters[freeSlot] = {
                 card_id: cardId,
@@ -437,6 +557,14 @@ async function handleDuelAction(socket, data) {
 
             triggerOnSummonHooks(duelState, cardData, 'NORMAL', actingKey);
 
+            duelState.pendingAction = {
+                type: 'SUMMON',
+                summonType: 'NORMAL',
+                player: actingKey,
+                slot_index: slotIndex,
+                cardData
+            };
+
             enrichDuelStateForBroadcast(duelState);
             if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
 
@@ -536,6 +664,19 @@ async function handleDuelAction(socket, data) {
                 enrichDuelStateForBroadcast(duelState);
                 if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
                 return;
+            } else if (zoneType === 'P_CAMPO' || (cardData.race === 'Field') || (cardData.type && cardData.type.includes('Field')) || (cardData.typeCode && (cardData.typeCode & 0x80000))) {
+                if (p1.fieldSpell) {
+                    sendCardToGraveyard(duelState, p1.fieldSpell, actingKey);
+                    p1.fieldSpell = null;
+                }
+                p1.fieldSpell = {
+                    card_id: cardId,
+                    position: 'SET',
+                    faceDown: true,
+                    turnSet: duelState.turnNumber,
+                    card_data: cardData
+                };
+                emitDuelLog(roomId, `🌌 ${p1.username} colocó una Carta de Campo boca abajo en la Zona de Campo.`, 'set');
             } else {
                 // Magia o Trampa SET
                 if (zoneType === 'P_M') {
@@ -688,6 +829,17 @@ async function handleDuelAction(socket, data) {
                 }
             }
 
+            // Verificación modular canActivate reglamentaria
+            const cardMod = getCardEffect(cardId);
+            if (cardMod && typeof cardMod.canActivate === 'function') {
+                const check = cardMod.canActivate({ duelState, playerKey: actingKey, opponentKey: rivalKey });
+                if (check && check.canActivate === false) {
+                    return socket.emit('ACTION_ERROR', {
+                        message: check.reason || `⚠️ No se cumplen las condiciones para activar "${cardData.name}".`
+                    });
+                }
+            }
+
             if (isHandEffect) {
                 if (!cardMeta.isHandEffect) {
                     return socket.emit('ACTION_ERROR', {
@@ -722,16 +874,22 @@ async function handleDuelAction(socket, data) {
             }
 
             if (isField) {
-                // Si ya existe una Carta de Campo activa, enviarla al Cementerio según la Regla Oficial Konami
-                if (p1.fieldSpell) {
-                    sendCardToGraveyard(duelState, p1.fieldSpell, actingKey);
-                    p1.fieldSpell = null;
+                // Si la carta ya estaba colocada boca abajo en el campo
+                if (p1.fieldSpell && (Number(p1.fieldSpell.card_id) === Number(cardId) || p1.fieldSpell.faceDown) && !data.from_hand) {
+                    p1.fieldSpell.faceDown = false;
+                    p1.fieldSpell.position = 'ACT';
+                } else {
+                    // Si ya existe otra Carta de Campo DIFERENTE activa, enviarla al Cementerio según la Regla Oficial Konami
+                    if (p1.fieldSpell && Number(p1.fieldSpell.card_id) !== Number(cardId)) {
+                        sendCardToGraveyard(duelState, p1.fieldSpell, actingKey);
+                        p1.fieldSpell = null;
+                    }
+                    // Colocar en casilla de Campo Mágico y abrir cadena
+                    p1.fieldSpell = { card_id: cardId, card_data: cardData, position: 'ACT', faceDown: false };
+                    const hIdx = p1.hand.findIndex(c => Number(c.id || c.card_id) === Number(cardId));
+                    if (hIdx !== -1) p1.hand.splice(hIdx, 1);
                 }
-                // Colocar en casilla de Campo Mágico y abrir cadena
-                p1.fieldSpell = { card_id: cardId, card_data: cardData };
                 recalculateAllFieldMonstersStats(duelState);
-                const hIdx = p1.hand.findIndex(c => Number(c.id || c.card_id) === Number(cardId));
-                if (hIdx !== -1) p1.hand.splice(hIdx, 1);
 
                 duelState.activeChain.push({
                     chainLink: 1,
@@ -877,10 +1035,15 @@ async function handleDuelAction(socket, data) {
 
             const fusionMonsterData = ocgCardReader(fusionCardId) || p1.extraDeck[extraIdx];
 
+            if (!isFusionMonster(fusionMonsterData, duelState)) {
+                return socket.emit('ACTION_ERROR', { message: '⚠️ La carta seleccionada no es un Monstruo de Fusión.' });
+            }
+
             if (!materials || materials.length < 2) {
                 return socket.emit('ACTION_ERROR', { message: '⚠️ Una Invocación por Fusión requiere al menos 2 monstruos de material.' });
             }
 
+            const manifest = getRoomManifest(duelState);
             const fMeta = manifest ? manifest.get(fusionCardId) : null;
             const isContactFusion = Boolean(fMeta?.isContactFusion) || data.contact_fusion === true;
             const isFusionGate = isFusionGateActiveOnField(duelState) || data.fusion_type === 'FUSION_GATE';
@@ -960,6 +1123,10 @@ async function handleDuelAction(socket, data) {
                         const polyCard = p1.spells[polySpellIdx];
                         p1.spells[polySpellIdx] = null;
                         sendCardToGraveyard(duelState, polyCard, actingKey);
+                    } else {
+                        return socket.emit('ACTION_ERROR', { 
+                            message: '⚠️ [Invocación por Fusión] Para realizar una Invocación por Fusión requieres tener y activar "Polimerización" o tener activo el campo "Fusion Gate".' 
+                        });
                     }
                 }
             }
@@ -1030,11 +1197,19 @@ async function handleDuelAction(socket, data) {
             }
 
             const synchroMonsterData = ocgCardReader(synchroCardId) || p1.extraDeck[extraIdx];
+
+            if (!isSynchroMonster(synchroMonsterData, duelState)) {
+                return socket.emit('ACTION_ERROR', { message: '⚠️ La carta seleccionada no es un Monstruo de Sincronía.' });
+            }
+
             const targetLevel = synchroMonsterData.level || 0;
 
             if (!materialSlots || materialSlots.length < 2) {
                 return socket.emit('ACTION_ERROR', { message: '⚠️ Una Invocación por Sincronía requiere al menos 1 Monstruo Cantante (Tuner) y 1 o más Monstruos No-Cantantes en el campo.' });
             }
+
+            const sMeta = manifest ? manifest.get(synchroCardId) : null;
+            const synchroModule = (sMeta && sMeta.module) || getCardEffect(synchroCardId);
 
             // Validar los materiales en el campo
             let tunerCount = 0;
@@ -1055,12 +1230,24 @@ async function handleDuelAction(socket, data) {
                 }
 
                 const monData = mon.card_data || ocgCardReader(mon.card_id);
-                const monType = (monData.type || '').toLowerCase();
-                const isTuner = monType.includes('tuner') || (monData.typeCode && (monData.typeCode & 0x1000));
+                const isTuner = isTunerMonster(mon, duelState);
                 const monLvl = mon.currentLevel !== undefined ? mon.currentLevel : (monData.level || 1);
 
-                if (isTuner) tunerCount++;
-                else nonTunerCount++;
+                if (isTuner) {
+                    tunerCount++;
+                    if (synchroModule && synchroModule.synchroRequirements && typeof synchroModule.synchroRequirements.tunerFilter === 'function') {
+                        if (!synchroModule.synchroRequirements.tunerFilter(mon)) {
+                            return socket.emit('ACTION_ERROR', { message: `⚠️ [Requisitos de Sincronía] "${monData.name}" no cumple los requisitos de Cantante específico para "${synchroMonsterData.name}".` });
+                        }
+                    }
+                } else {
+                    nonTunerCount++;
+                    if (synchroModule && synchroModule.synchroRequirements && typeof synchroModule.synchroRequirements.nonTunerFilter === 'function') {
+                        if (!synchroModule.synchroRequirements.nonTunerFilter(mon)) {
+                            return socket.emit('ACTION_ERROR', { message: `⚠️ [Requisitos de Sincronía] "${monData.name}" no cumple los requisitos de No-Cantante específico para "${synchroMonsterData.name}".` });
+                        }
+                    }
+                }
 
                 totalLevel += monLvl;
                 materialMonsters.push({ slot: fSlot, mon });
@@ -1099,9 +1286,8 @@ async function handleDuelAction(socket, data) {
                 return socket.emit('ACTION_ERROR', { message: '⚠️ No tienes zonas de monstruos disponibles en tu campo.' });
             }
 
-            const synchroPos = (data.position && ['ATTACK', 'DEFENSE'].includes(data.position.toUpperCase()))
-                ? data.position.toUpperCase()
-                : 'ATTACK';
+            const rawPos = (data.position || 'ATK').toUpperCase();
+            const synchroPos = rawPos.startsWith('DEF') ? 'DEF' : 'ATK';
 
             p1.monsters[summonSlot] = {
                 card_id: synchroCardId,
@@ -1173,10 +1359,24 @@ async function handleDuelAction(socket, data) {
                     m.faceDown = false;
                     m.hasChangedPosition = true;
                     emitDuelLog(roomId, `🔄⭐ [Invocación por Volteo] ${p1.username} cambia a ${m.card_data.name} a Posición de Ataque boca arriba.`, 'position');
-                    
+
+                    duelState.pendingAction = {
+                        type: 'FLIP_SUMMON',
+                        summonType: 'FLIP',
+                        player: actingKey,
+                        slot_index: slotIndex,
+                        cardData: m.card_data
+                    };
+
+                    enrichDuelStateForBroadcast(duelState);
+                    if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+
+                    // Ventana de interrupción al oponente
+                    promptChainWindow(roomId, `${p1.username} realizó Invocación por Volteo de ${m.card_data.name}`, m.card_data, p2.username);
+
                     // Ejecutar efecto de Volteo si aplica
                     const isFlip = checkIsFlipMonster(m);
-                    if (isFlip) {
+                    if (isFlip && p1.monsters[slotIndex]) {
                         await executeCardEffect(roomId, m.card_data, actingKey, rivalKey, data.target_data || null);
                     }
                 } else if (m.position === 'ATK') {
@@ -1206,8 +1406,14 @@ async function handleDuelAction(socket, data) {
             let nextPhase = data.target_phase;
 
             if (!nextPhase) {
-                let currentIdx = OFFICIAL_PHASES.indexOf(duelState.phase);
-                nextPhase = OFFICIAL_PHASES[(currentIdx + 1) % OFFICIAL_PHASES.length];
+                if (duelState.turnNumber === 1 && (duelState.phase === 'MAIN_1' || duelState.phase === 'STANDBY' || duelState.phase === 'DRAW')) {
+                    if (duelState.phase === 'MAIN_1') nextPhase = 'END';
+                    else if (duelState.phase === 'STANDBY') nextPhase = 'MAIN_1';
+                    else nextPhase = 'STANDBY';
+                } else {
+                    let currentIdx = OFFICIAL_PHASES.indexOf(duelState.phase);
+                    nextPhase = OFFICIAL_PHASES[(currentIdx + 1) % OFFICIAL_PHASES.length];
+                }
             }
 
             // Validar saltos hacia atrás (regla oficial: fases anteriores quedan deshabilitadas)
@@ -1236,6 +1442,26 @@ async function handleDuelAction(socket, data) {
             if (nextPhase === 'END') {
                 duelState.phase = 'END';
                 emitDuelLog(roomId, `⏱️ Cambio oficial a END PHASE.`, 'phase');
+
+                // Procesar efectos y limpiezas de final de turno en monstruos
+                ['player1', 'player2'].forEach(pKey => {
+                    const p = duelState[pKey];
+                    if (p && p.monsters) {
+                        p.monsters.forEach((m, idx) => {
+                            if (m && m.destroyAtEndPhase) {
+                                emitDuelLog(roomId, `💥 [Efecto Fin de Turno] "${m.card_data ? m.card_data.name : 'Monstruo'}" es destruido en la End Phase.`, 'destroy');
+                                p.monsters[idx] = null;
+                                sendCardToGraveyard(duelState, m, pKey);
+                            }
+                            if (m) {
+                                m.usedShiEnNegateThisTurn = false;
+                                m.hasAttacked = false;
+                                m.hasChangedPosition = false;
+                            }
+                        });
+                    }
+                });
+
                 enrichDuelStateForBroadcast(duelState);
                 if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
 
@@ -1356,7 +1582,22 @@ async function handleDuelAction(socket, data) {
         }
 
         if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+    } catch (err) {
+        console.error(`[HANDLE_DUEL_ACTION FATAL ERROR in room ${roomId}]`, err);
+        const duelState = duelRooms.get(roomId);
+        if (duelState) {
+            duelState.activeChain = [];
+            duelState.chainWindowActive = false;
+            try {
+                enrichDuelStateForBroadcast(duelState);
+                if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+            } catch (e) {
+                console.error('[HANDLE_DUEL_ACTION STATE RECOVERY ERROR]', e);
+            }
+        }
+        socket.emit('ACTION_ERROR', { message: err.message || 'Error al procesar la jugada.' });
     }
+}
 
     // =========================================================================
     // RESPUESTAS "A LA INVERSA" DEL CLIENTE (CADENAS, TRIBUTOS, OBJETIVOS)

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Edición de Duelista (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css?v=4.1">
+    <link rel="stylesheet" href="/css/admin.css?v=4.1">
+    <link rel="stylesheet" href="/css/navbar.css?v=4.1">
+    <style>
+        .admin-form-label {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 8.5px !important;
+            font-weight: 700 !important;
+            color: #94a3b8 !important;
+            letter-spacing: 0.5px !important;
+            margin-bottom: 4px !important;
+            display: block !important;
+        }
+        .admin-form-input, .admin-form-select {
+            font-size: 11px !important;
+            height: 32px !important;
+            padding: 4px 8px !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            border: 1px solid rgba(0, 240, 255, 0.3) !important;
+            border-radius: 0 !important;
+            color: #fff !important;
+            box-sizing: border-box !important;
+            transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+        .admin-form-input:focus, .admin-form-select:focus {
+            border-color: #00f0ff !important;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.4) !important;
+            outline: none !important;
+        }
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .preview-row:last-child {
+            border-bottom: none;
+        }
+        .preview-label {
+            color: #94a3b8;
+        }
+        .preview-val {
+            color: #fff;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif; background-color:#05070e;">
+
+    <div class="admin-page-container" style="display:flex; flex-direction:column; width:100vw; height:100vh; overflow:hidden;">
+        
+        <!-- HEADER FIJO CON BOTÓN VOLVER Y LOGO OFICIAL -->
+        <div class="admin-header" style="display:flex; justify-content:space-between; align-items:center; padding:5px 14px;">
+            <div class="admin-title-box" style="display:flex; align-items:center; gap:10px;">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 id="admin-user-detail-title" class="admin-title" style="font-family:'Orbitron', sans-serif; font-size:12.5px; font-weight:800; color:#fff; margin:0; text-shadow:0 0 8px rgba(0,240,255,0.4); letter-spacing:0.5px;">EDICIÓN DE DUELISTA</h1>
+                    <div class="admin-subtitle" style="font-size:8.5px; color:#94a3b8; margin-top:1px;">MODIFICACIÓN INTEGRAL DE CREDENCIALES, ESTADO Y GESTIÓN DE BANEO</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <a href="users.html" class="btn-shop-back" title="Volver al Listado de Usuarios">
+                    VOLVER
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE -->
+        <div class="admin-scroll-content" style="flex:1; padding:12px 16px 85px 16px; overflow-y:auto;">
+            
+            <div style="display:flex; gap:16px; justify-content:center; align-items:flex-start; max-width:960px; margin:0 auto; flex-wrap:wrap;">
+                
+                <!-- LADO IZQUIERDO: VISTA PREVIA EN VIVO DE LA FICHA DE DUELISTA -->
+                <div style="flex:0 0 240px; display:flex; flex-direction:column; align-items:center;">
+                    <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700; color:#00f0ff; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.8px; display:flex; align-items:center; gap:5px;">
+                        <span>👁️ FICHA DEL DUELISTA</span>
+                    </div>
+
+                    <div id="admin-user-preview-card" style="width:230px; background:linear-gradient(180deg, #0e172a 0%, #060a14 100%); border:1.5px solid rgba(0,240,255,0.6); border-radius:0; padding:14px 12px; text-align:center; box-shadow:0 0 20px rgba(0,240,255,0.15); position:relative; overflow:hidden;">
+                        
+                        <!-- AVATAR DINÁMICO ACTIVO -->
+                        <div style="position:relative; width:80px; height:80px; margin:0 auto 6px auto; border:1.5px solid #00f0ff; box-shadow:0 0 12px rgba(0,240,255,0.35); border-radius:0; overflow:hidden; background:#000;">
+                            <img id="preview-user-avatar" src="/assets/images/avatars/AVA-002.png" alt="Avatar Activo" onerror="this.src='/assets/images/avatars/AVA-002.png'" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+
+                        <!-- CÓDIGO DEL AVATAR -->
+                        <div id="preview-user-avatar-code" style="font-family:'Orbitron', sans-serif; font-size:8.5px; font-weight:700; color:#00f0ff; margin-bottom:6px; letter-spacing:0.5px;">
+                            [AVA-002]
+                        </div>
+
+                        <!-- NICKNAME Y SA BADGE -->
+                        <div id="preview-user-name" style="font-family:'Orbitron', sans-serif; font-size:12.5px; font-weight:800; color:#fff; margin-bottom:2px; letter-spacing:0.3px;">
+                            Cargando...
+                        </div>
+
+                        <!-- CORREO -->
+                        <div id="preview-user-email" style="font-size:9.5px; color:#94a3b8; margin-bottom:8px; word-break:break-all;">
+                            —
+                        </div>
+
+                        <!-- TABLA RESUMEN DE ATRIBUTOS -->
+                        <div style="background:rgba(0,0,0,0.55); border:1px solid rgba(0,240,255,0.2); padding:8px 10px; text-align:left;">
+                            <div class="preview-row">
+                                <span class="preview-label">País:</span>
+                                <span id="preview-user-country" class="preview-val">🇨🇴 Colombia</span>
+                            </div>
+                            <div class="preview-row">
+                                <span class="preview-label">Nivel:</span>
+                                <span id="preview-user-level" class="preview-val" style="color:#00f0ff; font-family:'Orbitron', sans-serif; font-weight:700;">Nv. 1</span>
+                            </div>
+                            <div class="preview-row">
+                                <span class="preview-label">StarShips:</span>
+                                <span id="preview-user-starships" class="preview-val" style="color:#ffd700; font-family:'Orbitron', sans-serif; font-weight:700;">⭐ 5,000</span>
+                            </div>
+                            <div class="preview-row">
+                                <span class="preview-label">Rol:</span>
+                                <span id="preview-user-role" class="preview-val" style="color:#10b981; font-weight:600;">Duelista</span>
+                            </div>
+                            <div class="preview-row">
+                                <span class="preview-label">Estado:</span>
+                                <span id="preview-user-status" class="preview-val" style="color:#10b981; font-weight:600;">✅ Activo</span>
+                            </div>
+                            <div class="preview-row" style="flex-direction:column; align-items:flex-start; gap:2px; padding-top:4px;">
+                                <span class="preview-label">Sanción / Baneo:</span>
+                                <span id="preview-user-ban" style="font-size:9px; color:#10b981; font-weight:600;">🛡️ Sin Baneo Activo</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- LADO DERECHO: FORMULARIO COMPLETO DE EDICIÓN CON GESTIÓN DE BANEO INTEGRADA -->
+                <div style="flex:1; min-width:300px; max-width:620px; background:linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(7, 12, 24, 0.98)); border:1.5px solid rgba(0,240,255,0.3); border-radius:0; padding:16px 18px; box-shadow:0 0 20px rgba(0,240,255,0.12);">
+                    
+                    <div style="font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; color:var(--accent-cyan); border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:6px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>⚙️ PARÁMETROS PRINCIPALES DE LA CUENTA</span>
+                        <span id="detail-user-id-badge" style="font-size:9px; color:#94a3b8;">ID: #--</span>
+                    </div>
+
+                    <form id="admin-user-edit-form" onsubmit="event.preventDefault(); saveUserDetailChanges();">
+                        
+                        <!-- PARÁMETROS BÁSICOS: NICK, EMAIL, PASS, PAÍS -->
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            
+                            <!-- 1. NICKNAME / USUARIO -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">USUARIO / NICK *</label>
+                                <input type="text" id="detail-user-username" class="admin-form-input" maxlength="15" placeholder="Nick de una palabra" required oninput="updateLivePreview()">
+                            </div>
+
+                            <!-- 2. CORREO ELECTRÓNICO -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">CORREO ELECTRÓNICO *</label>
+                                <input type="email" id="detail-user-email" class="admin-form-input" placeholder="ejemplo@dominio.com" required oninput="updateLivePreview()">
+                            </div>
+
+                            <!-- 3. CONTRASEÑA NUEVA -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">NUEVA CONTRASEÑA</label>
+                                <input type="password" id="detail-user-password" class="admin-form-input" placeholder="Dejar vacío para no cambiar">
+                                <span style="font-size:8.5px; color:#64748b; margin-top:2px; display:block;">Mínimo 6 caracteres (Opcional)</span>
+                            </div>
+
+                            <!-- 4. PAÍS CON BANDERA -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">PAÍS DE PROCEDENCIA *</label>
+                                <select id="detail-user-country" class="admin-form-select" onchange="updateLivePreview()">
+                                    <option value="">-- Cargando países... --</option>
+                                </select>
+                            </div>
+
+                            <!-- 5. AVATAR ACTIVO (CÓDIGO AVA-XXX) -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">AVATAR ACTIVO (CÓDIGO)</label>
+                                <input type="text" id="detail-user-avatar" class="admin-form-input" maxlength="10" placeholder="Ej. AVA-002" value="AVA-002" oninput="onAvatarInputChange()">
+                                <span style="font-size:8.5px; color:#64748b; margin-top:2px; display:block;">Por defecto AVA-002</span>
+                            </div>
+
+                            <!-- 6. CANTIDAD DE STARSHIPS -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">CANTIDAD DE STARSHIPS (⭐) *</label>
+                                <input type="number" id="detail-user-starships" class="admin-form-input" min="0" value="5000" required oninput="updateLivePreview()">
+                            </div>
+
+                            <!-- 7. NIVEL DE DUELISTA -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">NIVEL DE DUELISTA *</label>
+                                <input type="number" id="detail-user-nivel" class="admin-form-input" min="1" max="999" value="1" required oninput="updateLivePreview()">
+                            </div>
+
+                            <!-- 8. ROL ADMINISTRATIVO -->
+                            <div class="admin-form-group">
+                                <label class="admin-form-label">ROL DE ACCESO</label>
+                                <select id="detail-user-isadmin" class="admin-form-select" onchange="updateLivePreview()">
+                                    <option value="0">Duelista Estándar</option>
+                                    <option value="1">Super Admin (SA)</option>
+                                </select>
+                            </div>
+
+                            <!-- 9. ESTADO DE ACCESO GENERAL -->
+                            <div class="admin-form-group" style="grid-column: 1 / -1;">
+                                <label class="admin-form-label">ESTADO DE CUENTA (ACTIVIDAD)</label>
+                                <select id="detail-user-isactive" class="admin-form-select" onchange="updateLivePreview()">
+                                    <option value="1">✅ ACTIVO (Habilitado para ingresar y jugar)</option>
+                                    <option value="0">⏸️ INACTIVO (Bloqueado preventivamente)</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- SECCIÓN DEDICADA: GESTIÓN DE BANEO Y SANCIONES -->
+                        <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(239,68,68,0.35);">
+                            
+                            <div style="font-family:'Orbitron', sans-serif; font-size:10px; font-weight:800; color:#ef4444; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                                <span>🚫 GESTIÓN Y ESTADO DE BANEO</span>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <div class="admin-form-group">
+                                    <label class="admin-form-label" style="color:#ef4444 !important;">¿APLICAR BANEO AL JUGADOR?</label>
+                                    <select id="detail-ban-status" class="admin-form-select" onchange="onBanStatusChange(); updateLivePreview();" style="border-color:rgba(239,68,68,0.45) !important;">
+                                        <option value="0">🛡️ NO - CUENTA LIMPIA SIN BANEO</option>
+                                        <option value="1">🚫 SÍ - JUGADOR BANEADO TEMPORALMENTE</option>
+                                    </select>
+                                </div>
+
+                                <div class="admin-form-group" id="detail-ban-exp-container">
+                                    <label class="admin-form-label" style="color:#ef4444 !important;">FECHA Y HORA DE EXPIRACIÓN DEL BANEO</label>
+                                    <input type="datetime-local" id="detail-ban-exp" class="admin-form-input" style="border-color:rgba(239,68,68,0.45) !important;" oninput="updateLivePreview()">
+                                </div>
+                            </div>
+
+                            <div class="admin-form-group" id="detail-ban-reason-container" style="margin-top:8px;">
+                                <label class="admin-form-label" style="color:#ef4444 !important;">MOTIVO O RAZÓN DEL BANEO</label>
+                                <input type="text" id="detail-ban-reason" class="admin-form-input" maxlength="255" placeholder="Ej. Conducta antideportiva o violación de reglas en duelos" style="border-color:rgba(239,68,68,0.45) !important;" oninput="updateLivePreview()">
+                            </div>
+
+                            <div style="font-size:9px; color:#cbd5e1; margin-top:8px; line-height:1.4; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); padding:6px 10px; display:flex; align-items:flex-start; gap:6px;">
+                                <span style="color:#ef4444;">ℹ️</span>
+                                <span><strong>Desbaneo Automático:</strong> Una vez cumplida y superada la fecha/hora de expiración configurada, el sistema levantará el baneo automáticamente permitiendo al jugador volver a ingresar y batallar de forma inmediata sin necesidad de intervención manual.</span>
+                            </div>
+
+                        </div>
+
+                        <!-- ALERTA DE ESTADO -->
+                        <div id="detail-user-alert" style="display:none; font-size:10px; padding:8px 10px; border-radius:0; margin-top:12px;"></div>
+
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
+                            <a href="users.html" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ccc; border-radius:0; padding:6px 14px; font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:500; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center;">CANCELAR</a>
+                            <button type="submit" id="btn-save-user-detail" style="background:linear-gradient(135deg, rgba(0,240,255,0.35), rgba(0,180,216,0.6)); border:1px solid var(--accent-cyan); color:#fff; font-family:'Orbitron', sans-serif; font-weight:500; border-radius:0; padding:6px 18px; font-size:9.5px; cursor:pointer; box-shadow:0 0 12px rgba(0,240,255,0.3);">
+                                GUARDAR CAMBIOS
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVBAR Y SCRIPTS -->
+    <div id="navbar-container"></div>
+    <script src="/js/core/session.js"></script>
+    <script src="../../../js/core/modal-utils.js"></script>
+    <script src="/js/core/navbar.js"></script>
+    <script src="/js/views/admin-users-detail.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('administracion');
+        });
+    </script>
+</body>
+</html>

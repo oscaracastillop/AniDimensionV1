@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Centro de Eventos & Retos</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/global.css?v=4.5">
+    <link rel="stylesheet" href="../../css/eventos.css?v=4.5">
+    <link rel="stylesheet" href="../../css/navbar.css?v=4.5">
+</head>
+<body>
+
+    <div class="events-page-container">
+        <!-- HEADER SUPERIOR CONGELADO / FIJO -->
+        <div class="events-header">
+            <div class="events-title-box">
+                <img src="../../assets/images/logo.png" alt="Ani-Dimension Logo">
+                <div>
+                    <h1 class="events-title">CENTRO DE EVENTOS & RETOS</h1>
+                    <div class="events-subtitle">COMPETICIONES ESPECIALES, ROMPECABEZAS Y RECOMPENSAS EXCLUSIVAS</div>
+                </div>
+            </div>
+
+            <div class="events-header-badge" id="events-user-coins">
+                ⭐ ---
+            </div>
+        </div>
+
+        <!-- BARRA DE FILTROS Y CATEGORÍAS (TIPO Y ESTADO) -->
+        <div class="events-filter-bar">
+            <div class="filter-pills-group">
+                <button class="btn-filter-pill active" onclick="setEventsFilter('ALL', this)">Todos los Eventos</button>
+                <button class="btn-filter-pill" onclick="setEventsFilter('ACTIVE', this)">🔥 En Curso</button>
+                <button class="btn-filter-pill" onclick="setEventsFilter('FINISHED', this)">⏳ Finalizados / Canjes</button>
+                <button class="btn-filter-pill" onclick="setEventsFilter('TOURNAMENTS', this)">🏆 Torneos</button>
+            </div>
+
+            <div style="font-size:10px; color:#94a3b8; font-family:'Orbitron',sans-serif; letter-spacing:0.5px;">
+                TEMPORADA 2026
+            </div>
+        </div>
+
+        <!-- CONTENEDOR CENTRAL DESLIZABLE (FULL VIEW REAL ESTATE) -->
+        <div class="events-scroll-content">
+            <div class="events-grid-container" id="events-grid-container">
+                <!-- Se inyecta dinámicamente con eventos-hub.js en orden cronológico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR FIJO -->
+    <div id="navbar-container"></div>
+
+    <!-- SCRIPTS CORE Y NAVBAR -->
+    <script src="../../js/core/session.js"></script>
+    <script src="../../js/core/modal-utils.js"></script>
+    <script src="../../js/core/navbar.js"></script>
+    <script src="../../js/views/eventos-hub.js?v=4.5"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppNavbar) window.AppNavbar.init('eventos');
+        });
+    </script>
+</body>
+</html>
+

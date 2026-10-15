@@ -18,6 +18,7 @@ const {
 } = require('./duel-state');
 
 const { ocgCardReader } = require('../data/sql-card-reader');
+const { getCardEffect, hasCardEffect, executeNativeCardEffect } = require('./card-registry');
 
 let executeNpcTurnRef = () => {};
 function setNpcTurnExecutor(fn) {
@@ -308,7 +309,6 @@ function isDragonJarActiveOnField(duelState) {
     });
 }
 
-const { getCardEffect, hasCardEffect, executeNativeCardEffect } = require('./card-registry');
 
 async function executeCardEffect(roomId, cardData, playerKey, opponentKey, targetData = null, link = null) {
     const duelState = duelRooms.get(roomId);
@@ -663,11 +663,12 @@ async function executeCardEffect(roomId, cardData, playerKey, opponentKey, targe
     const isContinuousTrap = (typeStr.includes('continuous') || raceStr.includes('continuous') || ((typeCode & 0x20000) !== 0)) && typeStr.includes('trap');
 
     if (isField) {
-        if (player.fieldSpell) {
+        // Solo enviar al cementerio si ya existía OTRO Campo anterior diferente
+        if (player.fieldSpell && Number(player.fieldSpell.card_id) !== Number(cardId)) {
             sendCardToGraveyard(duelState, player.fieldSpell, playerKey);
             player.fieldSpell = null;
         }
-        player.fieldSpell = { card_id: cardId, card_data: fullDbData || cardData };
+        player.fieldSpell = { card_id: cardId, card_data: fullDbData || cardData, position: 'ACT', faceDown: false };
         recalculateAllFieldMonstersStats(duelState);
         emitDuelLog(roomId, `🌌 [Campo Mágico] ${player.username} activa el Campo "${cardData.name}".`, 'field');
     } else if (isEquip) {
@@ -781,16 +782,17 @@ async function resolveActiveChain(roomId) {
                 const typeStr = (fullCardData.type || link.card_data?.type || '').toString().toLowerCase();
                 const raceStr = (fullCardData.race || link.card_data?.race || '').toString().toLowerCase();
                 const typeCode = Number(fullCardData.typeCode || link.card_data?.typeCode || 0);
+                const cardMod = getCardEffect(numCardId);
                 const cardMeta = manifest ? manifest.get(numCardId) : null;
+                const isFieldSpellOnField = Boolean(duelState[playerKey]?.fieldSpell && Number(duelState[playerKey].fieldSpell.card_id || duelState[playerKey].fieldSpell.id) === numCardId);
+                const isField = Boolean(isFieldSpellOnField || cardMod?.isField || (cardMod?.type && cardMod.type.includes('Field')) || cardMeta?.isField || typeStr.includes('field') || raceStr.includes('field') || ((typeCode & 0x80000) !== 0));
+                const isEquip = Boolean(cardMod?.isEquip || (cardMod?.type && cardMod.type.includes('Equip')) || cardMeta?.isEquip || typeStr.includes('equip') || raceStr.includes('equip') || ((typeCode & 0x40000) !== 0));
+                const isSwords = Boolean(cardMod?.isSwords || cardMeta?.isSwords);
+                const isDragonJar = Boolean(cardMod?.isDragonTrap || cardMeta?.isDragonTrap || numCardId === 50045299);
+                const isContinuous = Boolean(cardMod?.isContinuous || (cardMod?.type && cardMod.type.includes('Continuous')) || cardMeta?.isContinuous || typeStr.includes('continuous') || raceStr.includes('continuous') || ((typeCode & 0x20000) !== 0));
+                const remainsOnField = Boolean(isField || isContinuous || isEquip || isSwords || isDragonJar || cardMod?.remainsOnField || cardMeta?.remainsOnField);
 
-                const isField = Boolean(cardMeta?.isField || typeStr.includes('field') || raceStr.includes('field') || ((typeCode & 0x80000) !== 0));
-                const isEquip = Boolean(cardMeta?.isEquip || typeStr.includes('equip') || raceStr.includes('equip') || ((typeCode & 0x40000) !== 0));
-                const isSwords = Boolean(cardMeta?.isSwords);
-                const isDragonJar = Boolean(cardMeta?.isDragonTrap);
-                const isContinuous = Boolean(cardMeta?.isContinuous || typeStr.includes('continuous') || raceStr.includes('continuous') || ((typeCode & 0x20000) !== 0));
-                const remainsOnField = Boolean(cardMeta?.remainsOnField || isContinuous || isEquip || isSwords || isDragonJar);
-
-                if (cardMeta?.isHandTrap) {
+                if (cardMeta?.isHandTrap || cardMod?.isHandTrap) {
                     // Hand trap descartada al GY
                     sendCardToGraveyard(duelState, link.card_data, playerKey);
                 } else if (!isField && !remainsOnField && !link.is_monster_effect) {
@@ -1286,6 +1288,14 @@ async function proceedWithAttackExecution(roomId, attackerSlot, targetSlot, pend
             // Defender en DEF
             const wasFaceDown = defender.faceDown;
             defender.faceDown = false;
+
+            if (wasFaceDown) {
+                const defName = defender.card_data ? defender.card_data.name : 'Monstruo Defensor';
+                emitDuelLog(roomId, `🔄 [Volteo en Combate] ¡"${defName}" fue volteado boca arriba por el ataque!`, 'position');
+                enrichDuelStateForBroadcast(duelState);
+                if (getIo()) getIo().to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                await new Promise(r => setTimeout(r, 600));
+            }
 
             // Ejecutar efecto de Volteo si el monstruo estaba boca abajo
             if (wasFaceDown && defender.card_data) {

@@ -1,0 +1,760 @@
+/**
+ * ANI-DIMENSION: ESTILOS MAESTROS DE SUBASTAS DE CARTAS (VISTA DEDICADA)
+ * Estructura y márgenes idénticos a Tienda con diseño Cyber Neón sobrio, bordes rectos y @media responsive.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --subasta-bg: #030712;
+    --subasta-card-bg: #091326;
+    --subasta-border: rgba(0, 240, 255, 0.25);
+    --subasta-cyan: #00f0ff;
+    --subasta-gold: #ffd700;
+    --subasta-emerald: #00ff88;
+    --subasta-crimson: #ff0055;
+    --subasta-purple: #a855f7;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-color: #020408 !important;
+    background-image: linear-gradient(rgba(2, 4, 8, 0.65), rgba(2, 4, 8, 0.75)), url('/assets/images/backgrounds/lobby.jpg') !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* ==========================================================================
+   CONTENEDOR DE PÁGINA (ESTRUCTURA EXACTA DE TIENDA)
+   ========================================================================== */
+.subasta-page-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-bottom: calc(42px + max(env(safe-area-inset-bottom, 0px), 0px)) !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    color: #fff;
+    position: relative;
+}
+
+/* HEADER SUPERIOR FIJO */
+.subasta-header {
+    width: 100% !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+    padding: 6px 16px !important;
+    background: #091122 !important;
+    border-bottom: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box !important;
+    z-index: 10;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+}
+
+.subasta-title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.subasta-title-box img {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+}
+
+.subasta-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 1.3vw, 14px);
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.6px;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.subasta-subtitle {
+    font-size: 9px;
+    color: #94a3b8;
+    font-weight: 400;
+    margin-top: 1px;
+}
+
+.subasta-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.subasta-header-badge {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    padding: 4px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-subasta-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 26px;
+    padding: 0 12px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: #00f0ff;
+    text-decoration: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-subasta-back:hover {
+    background: #00f0ff;
+    color: #020617;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+/* SUB-BARRA DE REGLAS / ESTADO */
+.subasta-info-bar {
+    width: 100% !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+    padding: 5px 16px !important;
+    background: #060b16 !important;
+    border-bottom: 1.2px solid rgba(0, 240, 255, 0.25) !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 10px;
+    color: #cbd5e1;
+    box-sizing: border-box !important;
+    z-index: 10;
+}
+
+/* CONTENIDO SCROLL PRINCIPAL */
+.subasta-scroll-content {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 16px 40px 16px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.subasta-scroll-content::-webkit-scrollbar {
+    width: 5px;
+}
+.subasta-scroll-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.3);
+}
+
+/* ==========================================================================
+   SELECTOR DE SUBASTAS ACTIVAS EN PARALELO (MULTI-SUBASTA STRIP)
+   ========================================================================== */
+.subasta-active-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.subasta-active-strip::-webkit-scrollbar {
+    height: 4px;
+}
+.subasta-active-strip::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.4);
+}
+
+.subasta-strip-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: rgba(9, 19, 38, 0.9);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.subasta-strip-item:hover, .subasta-strip-item.active {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: #00f0ff;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.subasta-strip-item img {
+    width: 24px;
+    height: 35px;
+    object-fit: cover;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.subasta-strip-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #fff;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.subasta-strip-price {
+    font-size: 9px;
+    color: #ffd700;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.subasta-strip-timer {
+    font-size: 8px;
+    color: #00ff88;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL DE SUBASTA (OCUPA EL MÁXIMO DE ANCHO)
+   ========================================================================== */
+.subasta-main-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 100% !important;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* COLUMNA IZQUIERDA: TARJETA DE CARTA */
+.subasta-card-display {
+    background: rgba(9, 19, 38, 0.95);
+    border: 1px solid var(--subasta-border);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+}
+
+.subasta-card-img-wrap {
+    width: 170px;
+    height: 248px;
+    position: relative;
+    margin: 8px 0 10px 0;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+}
+
+.subasta-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: 1px solid var(--subasta-cyan);
+    background: #020617;
+}
+
+.subasta-card-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.subasta-card-meta {
+    font-size: 9.5px;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.subasta-card-rarity-pill {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    padding: 1px 6px;
+    background: rgba(255, 215, 0, 0.15);
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    display: inline-block;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+
+/* COLUMNA DERECHA: ESTADO, PUJA E HISTORIAL */
+.subasta-details-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* TARJETA DE ESTADO ACTUAL */
+.subasta-status-card {
+    background: rgba(9, 19, 38, 0.95);
+    border: 1px solid var(--subasta-border);
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.subasta-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.subasta-stat-label {
+    font-size: 8.5px;
+    color: #94a3b8;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.subasta-stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.subasta-stat-value.gold {
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.subasta-stat-value.cyan {
+    color: #00f0ff;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.subasta-stat-value.timer {
+    color: #00ff88;
+    font-size: 15px;
+}
+
+/* CAJA DE ACCIÓN PARA PUJAR */
+.subasta-bidding-box {
+    background: rgba(6, 12, 24, 0.95);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.subasta-bidding-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subasta-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.subasta-bid-input {
+    flex: 1;
+    min-width: 120px;
+    height: 34px;
+    background: #040813;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 10px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.subasta-bid-input:focus {
+    border-color: var(--subasta-cyan);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.btn-bid-submit {
+    height: 34px;
+    padding: 0 16px;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.3), rgba(0, 240, 255, 0.15));
+    border: 1px solid var(--subasta-cyan);
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.15s ease;
+}
+
+.btn-bid-submit:hover:not(:disabled) {
+    background: var(--subasta-cyan);
+    color: #000;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.btn-bid-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #64748b;
+}
+
+.subasta-quick-bids {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.btn-quick-bid {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8.5px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-quick-bid:hover {
+    background: rgba(0, 240, 255, 0.2);
+    border-color: var(--subasta-cyan);
+    color: #ffffff;
+}
+
+.subasta-escrow-note {
+    font-size: 9.5px;
+    color: #94a3b8;
+    line-height: 1.35;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 8px;
+    border-left: 2px solid var(--subasta-cyan);
+}
+
+/* HISTORIAL DE PUJAS EN VIVO */
+.subasta-history-card {
+    background: rgba(9, 19, 38, 0.95);
+    border: 1px solid var(--subasta-border);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.subasta-history-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 6px;
+}
+
+.subasta-bids-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.subasta-bids-list::-webkit-scrollbar {
+    width: 4px;
+}
+.subasta-bids-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.25);
+}
+
+.subasta-bid-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    background: #050c18;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 10.5px;
+}
+
+.subasta-bid-row.is-highest {
+    border-color: rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.06);
+}
+
+.subasta-bid-user {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ffffff;
+}
+
+.subasta-bid-amount {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: #ffd700;
+    font-size: 10px;
+}
+
+.subasta-bid-status {
+    font-size: 8px;
+    padding: 1px 5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+}
+
+.subasta-bid-status.held {
+    background: rgba(0, 240, 255, 0.2);
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
+}
+
+.subasta-bid-status.refunded {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    border: 1px solid #64748b;
+}
+
+.subasta-bid-status.won {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+    border: 1px solid #00ff88;
+}
+
+/* ESTADO VACÍO */
+.subasta-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    background: rgba(9, 19, 38, 0.8);
+    border: 1px dashed rgba(0, 240, 255, 0.25);
+    max-width: 500px;
+    margin: 30px auto;
+}
+
+/* ==========================================================================
+   TABLA DE GESTIÓN ADMINISTRADOR DE SUBASTAS
+   ========================================================================== */
+.admin-subasta-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10.5px;
+}
+
+.admin-subasta-table th {
+    background: #040914;
+    color: #00f0ff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    padding: 7px 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+    white-space: nowrap;
+}
+
+.admin-subasta-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(6, 12, 24, 0.6);
+    vertical-align: middle;
+}
+
+.admin-subasta-table tr:hover td {
+    background: rgba(0, 240, 255, 0.08);
+}
+
+.btn-table-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.btn-table-action.edit {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: #00f0ff;
+    color: #00f0ff;
+}
+.btn-table-action.edit:hover {
+    background: #00f0ff;
+    color: #000;
+}
+
+.btn-table-action.finish {
+    background: rgba(0, 255, 136, 0.15);
+    border-color: #00ff88;
+    color: #00ff88;
+}
+.btn-table-action.finish:hover {
+    background: #00ff88;
+    color: #000;
+}
+
+.btn-table-action.cancel {
+    background: rgba(255, 0, 85, 0.15);
+    border-color: #ff0055;
+    color: #ff0055;
+}
+.btn-table-action.cancel:hover {
+    background: #ff0055;
+    color: #fff;
+}
+
+/* ==========================================================================
+   TOAST NOTIFICACIONES
+   ========================================================================== */
+.subasta-toast {
+    position: fixed;
+    top: 55px;
+    right: 16px;
+    z-index: 999999;
+    padding: 8px 14px;
+    background: #091326;
+    border: 1px solid #00f0ff;
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 240, 255, 0.3);
+    border-radius: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.subasta-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.subasta-toast.success {
+    border-color: #00ff88;
+    color: #00ff88;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.subasta-toast.error {
+    border-color: #ff0055;
+    color: #ff0055;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 0, 85, 0.3);
+}
+
+.subasta-toast.warning {
+    border-color: #ffd700;
+    color: #ffd700;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES (@media)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .subasta-main-layout {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+
+    .subasta-card-display {
+        flex-direction: row;
+        gap: 14px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .subasta-card-img-wrap {
+        width: 110px;
+        height: 160px;
+        margin: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .subasta-header {
+        padding: 4px 10px !important;
+    }
+
+    .subasta-title {
+        font-size: 11px;
+    }
+
+    .subasta-subtitle {
+        display: none;
+    }
+
+    .subasta-info-bar {
+        font-size: 8.5px;
+        padding: 4px 10px !important;
+    }
+
+    .subasta-card-display {
+        flex-direction: column;
+    }
+
+    .subasta-status-card {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .subasta-input-row {
+        flex-direction: column;
+    }
+
+    .subasta-bid-input, .btn-bid-submit {
+        width: 100%;
+    }
+}

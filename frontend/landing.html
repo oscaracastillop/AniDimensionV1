@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Ani Dimension Online | El Metaverso de Duelos Anime en Tiempo Real</title>
+    <meta name="description" content="Juega Ani Dimension Online gratis. Duelos en tiempo real con motor Core Dimension propio, más de 14,700 cartas oficiales, 193 duelistas en 12 Eras de Aventura, sistema de clanes, subastas y ranking mundial en tiempo real.">
+    <meta name="keywords" content="Yu-Gi-Oh, Ani Dimension, anime duels, juego de cartas online, Core Dimension, ranking duelos anime, simulator yugioh">
+    
+    <!-- Open Graph / Meta Social -->
+    <meta property="og:title" content="Ani Dimension Online - Duelos Anime en Tiempo Real">
+    <meta property="og:description" content="Desafía a duelistas de todo el mundo y a los 193 maestros de anime. Motor nativo Core Dimension. Descarga el APK o juega directo en el navegador.">
+    <meta property="og:image" content="/assets/images/logo.png">
+    <meta property="og:url" content="https://anidimension.online">
+
+    <link rel="icon" type="image/png" href="/assets/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Rajdhani:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --primary-glow: rgba(0, 240, 255, 0.45);
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.4);
+            --purple: #8b5cf6;
+            --purple-glow: rgba(139, 92, 246, 0.4);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.4);
+            --ruby: #f43f5e;
+            --dark-bg: #070a12;
+            --card-bg: rgba(14, 20, 36, 0.85);
+            --card-border: rgba(0, 240, 255, 0.18);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --font-title: 'Orbitron', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.16) 0%, transparent 60%),
+                radial-gradient(circle at 10% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 70%, rgba(245, 158, 11, 0.08) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 240, 255, 0.025) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 240, 255, 0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Barra de Navegación */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 10px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(7, 10, 18, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.18);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-logo {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 12px var(--primary-glow));
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-brand-title {
+            font-family: var(--font-title);
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .nav-brand-sub {
+            font-size: 9.5px;
+            color: var(--primary);
+            font-family: var(--font-tech);
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 22px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Botones Refinados y Elegantes */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 8px 16px;
+            font-family: var(--font-title);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid transparent;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.3), rgba(2, 132, 199, 0.6));
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.5), rgba(2, 132, 199, 0.8));
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-apk {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(21, 128, 61, 0.6));
+            border-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-apk:hover {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.5), rgba(21, 128, 61, 0.8));
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* Sección Hero */
+        .hero {
+            padding: 100px 32px 50px 32px;
+            position: relative;
+            z-index: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 0.95fr;
+            align-items: center;
+            gap: 36px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 20px;
+            font-size: 10px;
+            font-family: var(--font-title);
+            color: var(--primary);
+            margin-bottom: 14px;
+            letter-spacing: 0.6px;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #22c55e;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .hero-title {
+            font-family: var(--font-title);
+            font-size: clamp(1.4rem, 2.7vw, 2.1rem);
+            font-weight: 900;
+            line-height: 1.22;
+            letter-spacing: 0.8px;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 13px;
+            line-height: 1.55;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            max-width: 620px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        /* Grid de Métricas Reales Directas de SQL Server */
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 650px;
+        }
+
+        .metric-card {
+            background: rgba(14, 20, 36, 0.7);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 10px 14px;
+            border-radius: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary);
+            background: rgba(14, 20, 36, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .metric-num {
+            font-family: var(--font-title);
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.1;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-top: 3px;
+            font-family: var(--font-tech);
+        }
+
+        /* Visual del Dragón */
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dragon-preview {
+            width: 100%;
+            max-width: 420px;
+            filter: drop-shadow(0 0 35px rgba(0, 240, 255, 0.25));
+            animation: floatDragon 5s ease-in-out infinite;
+        }
+
+        @keyframes floatDragon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Secciones Generales */
+        .section {
+            padding: 55px 32px;
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .section-tag {
+            font-family: var(--font-title);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--primary);
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-family: var(--font-title);
+            font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* =========================================================================
+           SECCIÓN: SISTEMA DE PROGRESIÓN Y ATRIBUTOS DEL AVATAR
+           ========================================================================= */
+        .stat-caps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .stat-cap-card {
+            background: var(--card-bg);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 20px 22px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-cap-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .stat-cap-card.exp { border-color: rgba(0, 240, 255, 0.35); }
+        .stat-cap-card.exp:hover { border-color: var(--primary); box-shadow: 0 0 25px var(--primary-glow); }
+        .stat-cap-card.starships { border-color: rgba(245, 158, 11, 0.35); }
+        .stat-cap-card.starships:hover { border-color: var(--gold); box-shadow: 0 0 25px var(--gold-glow); }
+        .stat-cap-card.luck { border-color: rgba(16, 185, 129, 0.35); }
+        .stat-cap-card.luck:hover { border-color: var(--emerald); box-shadow: 0 0 25px var(--emerald-glow); }
+
+        .stat-cap-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-cap-icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-cap-badge {
+            font-family: var(--font-title);
+            font-size: 11px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-cap-title {
+            font-family: var(--font-title);
+            font-size: 15px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: 0.6px;
+        }
+
+        .stat-meter-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .stat-meter-bar {
+            height: 100%;
+            border-radius: 4px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .stat-meter-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10.5px;
+            color: #94a3b8;
+            font-family: var(--font-tech);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .stat-cap-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .stat-benefit-box {
+            background: rgba(2, 6, 23, 0.7);
+            border-left: 3px solid var(--primary);
+            padding: 10px 12px;
+            font-size: 11.5px;
+            color: #e2e8f0;
+            line-height: 1.45;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .stat-benefit-box strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Banner de Fórmula de Bonificación y Ejemplo */
+        .formula-showcase-box {
+            background: linear-gradient(135deg, rgba(14, 20, 36, 0.95), rgba(7, 10, 18, 0.98));
+            border: 1.5px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+            border-radius: 8px;
+            padding: 22px 26px;
+            margin-bottom: 28px;
+        }
+
+        .formula-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .formula-icon {
+            font-size: 28px;
+            color: var(--primary);
+            background: rgba(0, 240, 255, 0.12);
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .formula-title {
+            font-family: var(--font-title);
+            font-size: 14.5px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.6px;
+        }
+
+        .formula-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .formula-equation {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-family: var(--font-tech);
+            font-size: 15px;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px dashed rgba(0, 240, 255, 0.25);
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .eq-term {
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .eq-term.base { color: var(--gold); background: rgba(245, 158, 11, 0.15); }
+        .eq-term.bonus { color: var(--primary); background: rgba(0, 240, 255, 0.15); }
+        .eq-op { color: #94a3b8; }
+        .eq-parenthesis { color: #cbd5e1; font-weight: 900; }
+
+        .formula-example-card {
+            background: rgba(14, 22, 40, 0.7);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 6px;
+            padding: 14px 18px;
+        }
+
+        .example-badge {
+            font-family: var(--font-title);
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .example-text {
+            font-size: 12.5px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .example-math {
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .example-total {
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .example-note {
+            font-size: 11px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Fuentes de Progresión */
+        .sources-title-box {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .sources-header-title {
+            font-family: var(--font-title);
+            font-size: 15px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .sources-header-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .progression-sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .source-card {
+            background: var(--card-bg);
+            border: 1.2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 18px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .source-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .source-card.boosters { border-color: rgba(0, 240, 255, 0.3); }
+        .source-card.boosters:hover { border-color: var(--primary); }
+        .source-card.medals { border-color: rgba(139, 92, 246, 0.3); }
+        .source-card.medals:hover { border-color: var(--purple); }
+        .source-card.vip { border-color: rgba(245, 158, 11, 0.3); }
+        .source-card.vip:hover { border-color: var(--gold); }
+
+        .source-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .source-tag {
+            font-family: var(--font-tech);
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+
+        .source-title {
+            font-family: var(--font-title);
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: 0.4px;
+        }
+
+        .source-desc {
+            font-size: 11.5px;
+            color: #cbd5e1;
+            line-height: 1.45;
+            margin-bottom: 12px;
+        }
+
+        .source-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .source-features li {
+            font-size: 11px;
+            color: #94a3b8;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .source-features li strong {
+            color: #ffffff;
+        }
+
+        /* =========================================================================
+           SECCIÓN: MODO AVENTURA (REGLAMENTO & EXCLUSIVIDAD)
+           ========================================================================= */
+        .adventure-rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .adventure-rule-card {
+            background: var(--card-bg);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 22px 24px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .adventure-rule-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .adventure-rule-card.requirement {
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+        .adventure-rule-card.requirement:hover {
+            border-color: #ef4444;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+        }
+
+        .adventure-rule-card.progression {
+            border-color: rgba(0, 240, 255, 0.35);
+        }
+        .adventure-rule-card.progression:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        .adventure-rule-card.legendary {
+            border-color: rgba(245, 158, 11, 0.45);
+        }
+        .adventure-rule-card.legendary:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .rule-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .rule-badge {
+            font-family: var(--font-title);
+            font-size: 10px;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .rule-title {
+            font-family: var(--font-title);
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            line-height: 1.35;
+        }
+
+        .rule-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .rule-detail-box {
+            background: rgba(2, 6, 23, 0.65);
+            border-left: 3px solid #ef4444;
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .condition-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-tech);
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(239, 68, 68, 0.15);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+
+        .condition-badge span {
+            color: #f87171;
+            font-family: var(--font-mono);
+        }
+
+        .rule-points-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rule-points-list li {
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .rule-points-list li strong {
+            color: #ffffff;
+        }
+
+        .adventure-overview-banner {
+            background: linear-gradient(135deg, rgba(14, 20, 36, 0.95), rgba(7, 10, 18, 0.98));
+            border: 1.5px solid var(--gold);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+            border-radius: 8px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .overview-banner-icon {
+            font-size: 36px;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .overview-banner-title {
+            font-family: var(--font-title);
+            font-size: 14px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .overview-banner-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        /* =========================================================================
+           SECCIÓN: SALÓN DE LA FAMA & RANKING (100% DATOS REALES DE SQL SERVER)
+           ========================================================================= */
+        .ranking-container {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .ranking-podium {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .podium-card {
+            background: var(--card-bg);
+            border: 1.5px solid var(--card-border);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .podium-card.rank-1 {
+            border-color: var(--gold);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+            transform: translateY(-8px);
+        }
+
+        .podium-card.rank-2 {
+            border-color: #cbd5e1;
+        }
+
+        .podium-card.rank-3 {
+            border-color: #d97706;
+        }
+
+        .podium-card.vacant {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        .podium-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 3px 12px;
+            font-family: var(--font-title);
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 12px;
+            background: var(--dark-bg);
+            border: 1px solid currentColor;
+        }
+
+        .podium-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            margin: 8px auto 10px auto;
+            display: block;
+            box-shadow: 0 0 14px var(--primary-glow);
+        }
+
+        .podium-name {
+            font-family: var(--font-title);
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .podium-country {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .podium-elo {
+            font-family: var(--font-tech);
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .podium-stats {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        /* Tabla de Clasificación */
+        .ranking-table-wrapper {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+            text-align: left;
+        }
+
+        .ranking-table th {
+            background: rgba(2, 6, 23, 0.85);
+            padding: 10px 14px;
+            font-family: var(--font-title);
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            color: var(--primary);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        .ranking-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+
+        .ranking-table tr:hover {
+            background: rgba(0, 240, 255, 0.04);
+        }
+
+        .duelist-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .duelist-mini-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--primary);
+        }
+
+        .badge-online {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #22c55e;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .badge-offline {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #64748b;
+            font-size: 10px;
+        }
+
+        /* =========================================================================
+           SECCIÓN: TOP CLANES OFICIALES (100% DATOS REALES)
+           ========================================================================= */
+        .clans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .clan-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 6px;
+            padding: 14px 16px;
+            transition: all 0.25s ease;
+        }
+
+        .clan-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.15);
+        }
+
+        .clan-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .clan-tag-badge {
+            font-family: var(--font-mono);
+            font-size: 9.5px;
+            font-weight: 800;
+            color: var(--gold);
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+
+        .clan-name {
+            font-family: var(--font-title);
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .clan-stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        .empty-state-card {
+            background: rgba(14, 20, 36, 0.5);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 24px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+            grid-column: 1 / -1;
+        }
+
+        /* Footer */
+        footer {
+            background: #03060d;
+            border-top: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 28px 32px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-logo {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+        }
+
+        @media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; }
+            .hero-visual { display: none; }
+            .ranking-podium { grid-template-columns: 1fr; }
+            .navbar { padding: 10px 16px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-grid"></div>
+
+    <!-- Barra de Navegación Oficial -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <img src="/assets/images/logo.png" alt="Ani Dimension Logo" class="nav-logo" onerror="this.src='/assets/images/logo.png'">
+            <div class="nav-brand-text">
+                <span class="nav-brand-title">ANI DIMENSION</span>
+                <span class="nav-brand-sub">Card Simulator • Multiverse</span>
+            </div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#metricas"><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Métricas</a></li>
+            <li><a href="#progresion"><i class="fa-solid fa-bolt" style="color:var(--primary);"></i> Progresión Avatar</a></li>
+            <li><a href="#aventura"><i class="fa-solid fa-map" style="color:var(--gold);"></i> Modo Aventura</a></li>
+            <li><a href="#ranking"><i class="fa-solid fa-trophy" style="color:var(--gold);"></i> Ranking</a></li>
+            <li><a href="#clanes"><i class="fa-solid fa-shield-halved" style="color:var(--emerald);"></i> Clanes</a></li>
+            <li><a href="#descarga"><i class="fa-solid fa-download"></i> Descargas</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <a href="/views/login/login.html" class="btn btn-secondary">
+                <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+            </a>
+            <a href="/views/login/login.html" class="btn btn-primary">
+                <i class="fa-solid fa-play"></i> JUGAR YA
+            </a>
+        </div>
+    </nav>
+
+    <!-- Sección Principal Hero -->
+    <header class="hero" id="metricas">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    <span id="hero-server-status">SERVIDORES OFICIALES ONLINE • CORE DIMENSION NATIVO</span>
+                </div>
+
+                <h1 class="hero-title">
+                    EL METAVERSO DE <span>DUELOS ANIME</span> EN TIEMPO REAL
+                </h1>
+
+                <p class="hero-desc">
+                    Experimenta el simulador de duelos impulsado por el motor propio <strong>Core Dimension</strong> (100% nativo). Colecciona más de 14,700 cartas oficiales, supera a los 193 duelistas en 12 Eras temáticas del anime y compite en el ranking mundial PvP en tiempo real.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="/views/login/login.html" class="btn btn-primary" id="btn-play-web">
+                        <i class="fa-solid fa-gamepad"></i> JUGAR EN NAVEGADOR (PC / WEB)
+                    </a>
+                    
+                    <a href="/download/AniDimension.apk" class="btn btn-apk" id="btn-download-apk" onclick="showInstallModal(event)">
+                        <i class="fa-brands fa-android"></i> DESCARGAR APK (ANDROID)
+                    </a>
+                </div>
+
+                <!-- 6 Métricas 100% Reales Consultadas en Vivo de SQL Server -->
+                <div class="hero-metrics">
+                    <div class="metric-card">
+                        <div class="metric-num" id="metric-users">1</div>
+                        <div class="metric-label">Cuentas Creadas</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-num" id="metric-online" style="color:#22c55e;">1</div>
+                        <div class="metric-label">Jugadores Online</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-num" id="metric-duels">10</div>
+                        <div class="metric-label">Duelos Jugados</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-num" id="metric-cards">14,759</div>
+                        <div class="metric-label">Cartas Oficiales</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-num" id="metric-npcs" style="color:var(--gold);">193</div>
+                        <div class="metric-label">Duelistas (12 Eras)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-num" id="metric-clans">0</div>
+                        <div class="metric-label">Clanes Activos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico 3D Hero -->
+            <div class="hero-visual">
+                <img src="/assets/blue_eyes_dragon.png" alt="Dragón Blanco de Ojos Azules" class="dragon-preview" onerror="this.src='/assets/images/logo.png'">
+            </div>
+        </div>
+    </header>
+
+    <!-- =========================================================================
+         SECCIÓN: SISTEMA DE PROGRESIÓN Y ATRIBUTOS DEL AVATAR
+         ========================================================================= -->
+    <section class="section" id="progresion">
+        <div class="section-header">
+            <span class="section-tag"><i class="fa-solid fa-chart-line"></i> ATRIBUTOS DEL AVATAR & MULTIPLICADORES</span>
+            <h2 class="section-title">SISTEMA DE PROGRESIÓN DEL AVATAR</h2>
+            <p class="section-subtitle">
+                Tu avatar cuenta con 3 estadísticas fundamentales que multiplican directamente las recompensas base obtenidas en duelos contra jugadores (PvP) y duelistas del juego (PvM / NPCs). Maximiza tus atributos hasta su límite absoluto combinando Potenciadores en tienda, Medallas permanentes de Aventura y Pases VIP.
+            </p>
+        </div>
+
+        <!-- 1. Los 3 Atributos Principales con sus Topes Máximos -->
+        <div class="stat-caps-grid">
+            <!-- Estadística 1: EXP (Tope 300%) -->
+            <div class="stat-cap-card exp">
+                <div class="stat-cap-header">
+                    <div class="stat-cap-icon-box" style="background:rgba(0,240,255,0.15); color:var(--primary);">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <span class="stat-cap-badge" style="background:rgba(0,240,255,0.18); color:var(--primary); border:1px solid var(--primary);">
+                        TOPE MÁXIMO: 300% EXP
+                    </span>
+                </div>
+                <div class="stat-cap-title">EXPERIENCIA (EXP)</div>
+                <div class="stat-meter-container">
+                    <div class="stat-meter-bar" style="width: 100%; background: linear-gradient(90deg, #00f0ff, #38bdf8);"></div>
+                </div>
+                <div class="stat-meter-labels">
+                    <span>Base: 0%</span>
+                    <span style="color:var(--primary);">Tope Máximo: 300%</span>
+                </div>
+                <div class="stat-cap-desc">
+                    Multiplica directamente la ganancia de experiencia base obtenida tras cada victoria en duelos con PvP y contra NPCs.
+                </div>
+                <div class="stat-benefit-box" style="border-left-color:var(--primary);">
+                    <strong>Impacto en juego:</strong> Eleva el nivel de tu Avatar a gran velocidad, desbloqueando el acceso reglamentario a duelistas de mayor nivel en el Modo Aventura, mejores cartas y títulos honoríficos.
+                </div>
+            </div>
+
+            <!-- Estadística 2: ESTRELLAS (Tope 300%) -->
+            <div class="stat-cap-card starships">
+                <div class="stat-cap-header">
+                    <div class="stat-cap-icon-box" style="background:rgba(245,158,11,0.15); color:var(--gold);">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="stat-cap-badge" style="background:rgba(245,158,11,0.18); color:var(--gold); border:1px solid var(--gold);">
+                        TOPE MÁXIMO: 300% ESTRELLAS
+                    </span>
+                </div>
+                <div class="stat-cap-title">ESTRELLAS (STARSHIPS)</div>
+                <div class="stat-meter-container">
+                    <div class="stat-meter-bar" style="width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+                </div>
+                <div class="stat-meter-labels">
+                    <span>Base: 0%</span>
+                    <span style="color:var(--gold);">Tope Máximo: 300%</span>
+                </div>
+                <div class="stat-cap-desc">
+                    Incrementa las Estrellas base otorgadas por cada victoria en duelos PvP y PvM sumando el porcentaje de bonificación activo.
+                </div>
+                <div class="stat-benefit-box" style="border-left-color:var(--gold);">
+                    <strong>Impacto en juego:</strong> Moneda oficial indispensable para comprar sobres de expansión en la tienda, cartas singles legendarias en el mercado, fundas exclusivas y tapetes para tu tablero.
+                </div>
+            </div>
+
+            <!-- Estadística 3: SUERTE (Tope 100%) -->
+            <div class="stat-cap-card luck">
+                <div class="stat-cap-header">
+                    <div class="stat-cap-icon-box" style="background:rgba(16,185,129,0.15); color:var(--emerald);">
+                        <i class="fa-solid fa-clover"></i>
+                    </div>
+                    <span class="stat-cap-badge" style="background:rgba(16,185,129,0.18); color:var(--emerald); border:1px solid var(--emerald);">
+                        TOPE MÁXIMO: 100% SUERTE
+                    </span>
+                </div>
+                <div class="stat-cap-title">PROBABILIDAD DE SUERTE (LUCK)</div>
+                <div class="stat-meter-container">
+                    <div class="stat-meter-bar" style="width: 100%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                </div>
+                <div class="stat-meter-labels">
+                    <span>Base: 0%</span>
+                    <span style="color:var(--emerald);">Tope Máximo: 100%</span>
+                </div>
+                <div class="stat-cap-desc">
+                    Regula la probabilidad de drop de cartas al ganar duelos. <strong style="color:#34d399;">Al contar con el 100% de Suerte, SIEMPRE obtendrás una carta al azar al ganar cualquier duelo PvP o PvM.</strong>
+                </div>
+                <div class="stat-benefit-box" style="border-left-color:var(--emerald); background:rgba(16,185,129,0.08);">
+                    <strong style="color:var(--emerald);"><i class="fa-solid fa-sparkles"></i> 100% Drop Garantizado:</strong> Con 100% de Suerte recibes una carta al azar garantizada tras cada victoria sin importar el rival, construyendo tu colección a paso firme.
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Caja Demostrativa de Fórmula y Ejemplo de Cálculo -->
+        <div class="formula-showcase-box">
+            <div class="formula-header">
+                <div class="formula-icon"><i class="fa-solid fa-calculator"></i></div>
+                <div>
+                    <div class="formula-title">¿CÓMO SE APLICAN LAS BONIFICACIONES EN DUELO?</div>
+                    <div class="formula-subtitle">Fórmula reglamentaria aplicada sobre las recompensas base obtenidas en duelos PvP y PvM</div>
+                </div>
+            </div>
+            <div class="formula-body">
+                <div class="formula-equation">
+                    <span class="eq-term">Recompensa Total</span>
+                    <span class="eq-op">=</span>
+                    <span class="eq-term base">Recompensa Base</span>
+                    <span class="eq-op">+</span>
+                    <span class="eq-parenthesis">(</span>
+                    <span class="eq-term base">Recompensa Base</span>
+                    <span class="eq-op">×</span>
+                    <span class="eq-term bonus">% Bonificación Avatar</span>
+                    <span class="eq-parenthesis">)</span>
+                </div>
+                <div class="formula-example-card">
+                    <div class="example-badge"><i class="fa-solid fa-lightbulb"></i> EJEMPLO PRÁCTICO EN DUELO</div>
+                    <div class="example-text">
+                        Si en un duelo obtienes <strong>100 Estrellas de base</strong> y tu avatar cuenta con <strong>+300% de bonificación en Estrellas</strong>:
+                    </div>
+                    <div class="example-math">
+                        100 Base + (100 × 300%) = 100 + 300 = <strong class="example-total">400 Estrellas Obtenidas</strong>
+                    </div>
+                    <div class="example-note">
+                        *El mismo cálculo aplica idénticamente para la ganancia de <strong>EXP</strong> en cada victoria, multiplicando tu velocidad de subida de nivel.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Fuentes para Customizar y Llevar el Avatar a Full Stats -->
+        <div class="sources-title-box">
+            <h3 class="sources-header-title"><i class="fa-solid fa-sliders"></i> CÓMO CUSTOMIZAR TU AVATAR HASTA EL TOPE MÁXIMO</h3>
+            <p class="sources-header-desc">Combina las 3 vías del juego para alcanzar el 300% EXP, 300% Estrellas y 100% Suerte:</p>
+        </div>
+
+        <div class="progression-sources-grid">
+            <!-- Fuente 1: Potenciadores en Tienda -->
+            <div class="source-card boosters">
+                <div class="source-icon" style="background:rgba(0,240,255,0.12); color:var(--primary);"><i class="fa-solid fa-cubes-stacked"></i></div>
+                <div class="source-tag">TIENDA VIRTUAL</div>
+                <div class="source-title">POTENCIADORES DE AVATAR</div>
+                <div class="source-desc">
+                    Puedes personalizar tu Avatar comprando Potenciadores de EXP, Estrellas y Suerte en la tienda para alcanzar el nivel máximo permitido en sus estadísticas y hacerlo full.
+                </div>
+                <ul class="source-features">
+                    <li><i class="fa-solid fa-check" style="color:var(--primary);"></i> Personalización libre para llevar tu avatar a <strong>Full Stats</strong></li>
+                    <li><i class="fa-solid fa-check" style="color:var(--primary);"></i> Permanentes y vinculados directamente a tu perfil</li>
+                </ul>
+            </div>
+
+            <!-- Fuente 2: Medallas del Modo Aventura -->
+            <div class="source-card medals">
+                <div class="source-icon" style="background:rgba(139,92,246,0.12); color:var(--purple);"><i class="fa-solid fa-medal"></i></div>
+                <div class="source-tag" style="color:var(--purple); border-color:var(--purple);">MODO AVENTURA</div>
+                <div class="source-title">MEDALLAS PASIVAS PERMANENTES</div>
+                <div class="source-desc">
+                    Derrotar a cada duelista NPC en el Modo Aventura te otorga su Medalla de victoria. Cada medalla posee bonificaciones que <strong>se suman permanentemente</strong> a tus estadísticas globales.
+                </div>
+                <ul class="source-features">
+                    <li><i class="fa-solid fa-check" style="color:var(--purple);"></i> Bonificaciones pasivas de por vida acumulables</li>
+                    <li><i class="fa-solid fa-check" style="color:var(--purple);"></i> Recompensa directa por superar a cada maestro del anime</li>
+                </ul>
+            </div>
+
+            <!-- Fuente 3: Pases VIP Temporales -->
+            <div class="source-card vip">
+                <div class="source-icon" style="background:rgba(245,158,11,0.12); color:var(--gold);"><i class="fa-solid fa-crown"></i></div>
+                <div class="source-tag" style="color:var(--gold); border-color:var(--gold);">MEMBRESÍA</div>
+                <div class="source-title">PASES VIP TEMPORALES</div>
+                <div class="source-desc">
+                    Obtén bonificaciones temporales adquiriendo Pases VIP. Incrementan tus porcentajes activos durante su vigencia para acelerar el farmeo en temporadas competitivas.
+                </div>
+                <ul class="source-features">
+                    <li><i class="fa-solid fa-check" style="color:var(--gold);"></i> Multiplicadores temporales de alto rendimiento</li>
+                    <li><i class="fa-solid fa-check" style="color:var(--gold);"></i> Acelera el progreso en eventos especiales y torneos</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================================
+         SECCIÓN: MODO AVENTURA (REGLAMENTO & EXCLUSIVIDAD DE CARTAS)
+         ========================================================================= -->
+    <section class="section" id="aventura">
+        <div class="section-header">
+            <span class="section-tag"><i class="fa-solid fa-map-location-dot"></i> CAMPAÑA & DESAFÍO HISTÓRICO</span>
+            <h2 class="section-title">MODO AVENTURA: REGLAMENTO & FUNCIONAMIENTO</h2>
+            <p class="section-subtitle">
+                El Modo Aventura está diseñado como el motor central de progreso del avatar y la adquisición de cartas exclusivas. Enfréntate a los duelistas canónicos bajo un riguroso sistema de jerarquía y nivel.
+            </p>
+        </div>
+
+        <div class="adventure-rules-grid">
+            <!-- Regla 1: Requisito de Nivel de Avatar -->
+            <div class="adventure-rule-card requirement">
+                <div class="rule-icon-box" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3);">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="rule-badge" style="background:rgba(239,68,68,0.18); color:#ef4444; border:1px solid #ef4444;">
+                    REQUISITO ESTRICTO
+                </div>
+                <div class="rule-title">NIVEL DE AVATAR IGUAL O MAYOR AL DUELISTA</div>
+                <div class="rule-desc">
+                    <strong>No puedes combatir a ningún duelista NPC sin tener un nivel de Avatar igual o mayor al nivel requerido por ese rival.</strong>
+                </div>
+                <div class="rule-detail-box">
+                    <div class="condition-badge">
+                        <i class="fa-solid fa-lock"></i> Condición de Duelo: <span>Nivel Avatar ≥ Nivel Duelista</span>
+                    </div>
+                    <p style="margin:8px 0 0 0; font-size:11px; color:#cbd5e1; line-height:1.45;">
+                        Si tu nivel es inferior al del duelista, el combate permanecerá bloqueado. Deberás subir de nivel en duelos previos o PvP para desbloquear el derecho a retarlo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Regla 2: Diseñado para Progreso y Adquisición de Cartas -->
+            <div class="adventure-rule-card progression">
+                <div class="rule-icon-box" style="background:rgba(0,240,255,0.15); color:var(--primary); border:1px solid rgba(0,240,255,0.3);">
+                    <i class="fa-solid fa-stairs"></i>
+                </div>
+                <div class="rule-badge" style="background:rgba(0,240,255,0.18); color:var(--primary); border:1px solid var(--primary);">
+                    PROPÓSITO CENTRAL
+                </div>
+                <div class="rule-title">DISEÑADO PARA PROGRESO Y ADQUISICIÓN DE CARTAS</div>
+                <div class="rule-desc">
+                    El Modo Aventura es el camino fundamental de todo duelista para forjar su baraja paso a paso, adquirir experiencia y obtener cartas por victoria.
+                </div>
+                <div class="rule-detail-box" style="border-left-color:var(--primary);">
+                    <ul class="rule-points-list">
+                        <li><i class="fa-solid fa-award" style="color:var(--primary);"></i> <strong>Medallas por Victoria:</strong> Al derrotar a cada NPC obtendrás su Medalla única con bonificaciones que se suman permanentemente a tus estadísticas.</li>
+                        <li><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> <strong>Experiencia y Oro:</strong> Farmea EXP para subir de nivel y acumula Estrellas para potenciar tu cuenta.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Regla 3: Cartas Legendarias Exclusivas -->
+            <div class="adventure-rule-card legendary">
+                <div class="rule-icon-box" style="background:rgba(245,158,11,0.15); color:var(--gold); border:1px solid rgba(245,158,11,0.4);">
+                    <i class="fa-solid fa-gem"></i>
+                </div>
+                <div class="rule-badge" style="background:rgba(245,158,11,0.18); color:var(--gold); border:1px solid var(--gold);">
+                    EXCLUSIVIDAD TOTAL
+                </div>
+                <div class="rule-title">CARTAS LEGENDARIAS ÚNICAMENTE POR DERROTA DE DUELISTAS</div>
+                <div class="rule-desc">
+                    Existen cartas legendarias que <strong>se obtienen ÚNICAMENTE derrotando a los duelistas en el Modo Aventura</strong>.
+                </div>
+                <div class="rule-detail-box" style="border-left-color:var(--gold); background:rgba(245,158,11,0.06);">
+                    <div style="font-size:11.5px; color:#fde047; font-weight:700; margin-bottom:4px;">
+                        <i class="fa-solid fa-ban" style="color:#ef4444;"></i> NO DISPONIBLES EN SOBRES DE LA TIENDA
+                    </div>
+                    <p style="margin:0; font-size:11px; color:#e2e8f0; line-height:1.45;">
+                        Estas cartas legendarias exclusivas no se pueden conseguir comprando sobres en la tienda virtual: la única manera de sumarlas a tu baraja es venciendo a sus duelistas custodios en el Modo Aventura.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leyenda General de las 12 Eras y los Duelistas -->
+        <div class="adventure-overview-banner">
+            <div class="overview-banner-icon">
+                <i class="fa-solid fa-book-atlas"></i>
+            </div>
+            <div class="overview-banner-content">
+                <div class="overview-banner-title">LEYENDA DEL MULTIVERSO: 12 ERAS HISTÓRICAS DE DUELO</div>
+                <p class="overview-banner-desc">
+                    A través de tres sagas generacionales (<strong>Yu-Gi-Oh! Clásico, GX y 5D's</strong>), los duelistas canónicos se encuentran organizados cronológicamente desde Ciudad Domino hasta Neo Domino. Cada rival posee su mazo temático original, su nivel de combate reglamentario y custodia cartas y medallas exclusivas preparadas para premiar a quienes demuestren verdadera maestría en el campo de batalla.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================================
+         SECCIÓN: SALÓN DE LA FAMA & RANKING (100% DATOS REALES DE SQL SERVER)
+         ========================================================================= -->
+    <section class="section" id="ranking">
+        <div class="section-header">
+            <span class="section-tag"><i class="fa-solid fa-trophy"></i> CLASIFICACIÓN MUNDIAL</span>
+            <h2 class="section-title">SALÓN DE LA FAMA • TOP DUELISTAS</h2>
+            <p class="section-subtitle">
+                Rating ELO y victorias calculados 100% en tiempo real directamente desde la base de datos oficial.
+            </p>
+        </div>
+
+        <div class="ranking-container">
+            <!-- Podio Dinámico -->
+            <div class="ranking-podium" id="ranking-podium">
+                <div class="podium-card rank-2 vacant" id="podium-2">
+                    <div class="podium-badge">🥈 2</div>
+                    <img src="/assets/images/avatars/AVA-001.png" alt="Avatar" class="podium-avatar">
+                    <div class="podium-name"><span>Puesto Disponible</span></div>
+                    <div class="podium-country">🌐 Mundial</div>
+                    <div class="podium-elo">— ELO</div>
+                    <div class="podium-stats">Sin duelos registrados</div>
+                </div>
+
+                <div class="podium-card rank-1" id="podium-1">
+                    <div class="podium-badge">👑 1</div>
+                    <img src="/assets/images/avatars/AVA-001.png" alt="Avatar" class="podium-avatar">
+                    <div class="podium-name"><span id="p1-username">Admin</span></div>
+                    <div class="podium-country" id="p1-country">🇨🇴 Colombia</div>
+                    <div class="podium-elo" id="p1-elo">120 ELO</div>
+                    <div class="podium-stats" id="p1-stats">Nv. 1 • 0 Victorias</div>
+                </div>
+
+                <div class="podium-card rank-3 vacant" id="podium-3">
+                    <div class="podium-badge">🥉 3</div>
+                    <img src="/assets/images/avatars/AVA-001.png" alt="Avatar" class="podium-avatar">
+                    <div class="podium-name"><span>Puesto Disponible</span></div>
+                    <div class="podium-country">🌐 Mundial</div>
+                    <div class="podium-elo">— ELO</div>
+                    <div class="podium-stats">Sin duelos registrados</div>
+                </div>
+            </div>
+
+            <!-- Tabla de Clasificación Oficial -->
+            <div class="ranking-table-wrapper">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px; text-align: center;">Puesto</th>
+                            <th>Duelista</th>
+                            <th>País</th>
+                            <th>Nivel</th>
+                            <th>Victorias</th>
+                            <th>Duelos</th>
+                            <th>Rating ELO</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-table-body">
+                        <!-- Generado 100% dinámicamente desde SQL Server -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="/views/login/login.html" class="btn btn-primary">
+                    <i class="fa-solid fa-fire"></i> ¡ENTRA AL JUEGO Y ESCALA EL RANKING MUNDIAL!
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================================
+         SECCIÓN: TOP CLANES (100% DATOS REALES DE SQL SERVER)
+         ========================================================================= -->
+    <section class="section" id="clanes">
+        <div class="section-header">
+            <span class="section-tag"><i class="fa-solid fa-shield-halved"></i> HERMANDADES DE DUELO</span>
+            <h2 class="section-title">TOP CLANES DEL MULTIVERSO</h2>
+            <p class="section-subtitle">
+                Clanes oficiales registrados en Ani Dimension. Funda tu hermandad, recluta miembros y disputa los trofeos de clan.
+            </p>
+        </div>
+
+        <div class="clans-grid" id="clans-grid-container">
+            <div class="empty-state-card">
+                <i class="fa-solid fa-shield-halved" style="font-size:24px; color:var(--gold); margin-bottom:8px; display:block;"></i>
+                0 Clanes fundados actualmente en la base de datos.<br>
+                <strong style="color:#ffffff;">¡Sé el primero en crear tu propio Clan en Ani Dimension!</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- Caja de Descarga y Cross-Play -->
+    <section class="section" id="descarga" style="background: rgba(14, 20, 36, 0.4); border-radius: 8px; border: 1px solid rgba(0, 240, 255, 0.15); margin-bottom: 40px;">
+        <div class="section-header" style="margin-bottom: 20px;">
+            <span class="section-tag"><i class="fa-brands fa-android"></i> MULTIPLATAFORMA</span>
+            <h2 class="section-title">JUEGA EN CUALQUIER DISPOSITIVO</h2>
+            <p class="section-subtitle">
+                Instala el APK nativo en tu dispositivo Android o ingresa instantáneamente desde cualquier computadora o navegador web sin descargas pesadas. Ambas versiones comparten tu misma cuenta, cartas y progreso.
+            </p>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+            <a href="/views/login/login.html" class="btn btn-primary" style="padding:10px 22px;">
+                <i class="fa-solid fa-gamepad"></i> JUGAR EN NAVEGADOR
+            </a>
+            <a href="/download/AniDimension.apk" class="btn btn-apk" style="padding:10px 22px;" onclick="showInstallModal(event)">
+                <i class="fa-brands fa-android"></i> DESCARGAR APK (ANDROID)
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer Oficial & Créditos -->
+    <footer id="estado">
+        <img src="/assets/images/logo.png" alt="Ani Dimension Logo" class="footer-logo">
+        <p style="font-family:var(--font-title); font-size:12px; font-weight:800; color:#ffffff; letter-spacing:0.8px;">
+            ANI DIMENSION ONLINE &copy; 2026
+        </p>
+        <p style="margin-top: 6px; font-size: 12px; color: #94a3b8;">
+            Desarrollado por <strong style="color: #00f0ff;">Ani Dimension</strong> • Creado y programado por <strong style="color: #ffd700;">Oscar Castillo</strong>
+        </p>
+        <p style="margin-top: 6px; font-size: 11px; color: #64748b;">
+            Motor de Duelos Nativo Core Dimension (100% Propio) • Servidores de Producción: anidimension.online • Todos los derechos reservados.
+        </p>
+    </footer>
+
+    <!-- Sincronización 100% Real con SQL Server (Cero datos quemados) -->
+    <script>
+        function showInstallModal(e) {
+            // Permite descarga directa de APK
+        }
+
+        function formatNumber(num) {
+            return Number(num || 0).toLocaleString();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        // Cargar datos 100% REALES desde SQL Server
+        async function loadLandingRealData() {
+            try {
+                const res = await fetch('/api/landing-data');
+                if (!res.ok) throw new Error('Respuesta inválida');
+                const data = await res.json();
+
+                if (data.success && data.kpis) {
+                    // 1. Actualizar Métricas Reales en el Hero
+                    const k = data.kpis;
+                    const elUsers = document.getElementById('metric-users');
+                    const elOnline = document.getElementById('metric-online');
+                    const elDuels = document.getElementById('metric-duels');
+                    const elCards = document.getElementById('metric-cards');
+                    const elNpcs = document.getElementById('metric-npcs');
+                    const elClans = document.getElementById('metric-clans');
+
+                    if (elUsers) elUsers.textContent = formatNumber(k.totalUsers);
+                    if (elOnline) elOnline.textContent = formatNumber(k.onlinePlayers);
+                    if (elDuels) elDuels.textContent = formatNumber(k.totalDuels);
+                    if (elCards) elCards.textContent = formatNumber(k.totalCards);
+                    if (elNpcs) elNpcs.textContent = `${formatNumber(k.totalNpcs)}`;
+                    if (elClans) elClans.textContent = formatNumber(k.totalClans);
+
+                    // 2. Renderizar Podio Dinámico 100% Real
+                    renderRealPodium(data.ranking || []);
+
+                    // 3. Renderizar Tabla de Ranking Real
+                    renderRealRankingTable(data.ranking || []);
+
+                    // 4. Renderizar Top Clanes
+                    renderRealClans(data.topClans || []);
+                }
+            } catch (err) {
+                console.warn('[LANDING] Error sincronizando datos reales:', err.message);
+            }
+        }
+
+        function renderRealPodium(rankings) {
+            const p1 = rankings[0];
+            const p2 = rankings[1];
+            const p3 = rankings[2];
+
+            // Puesto 1 (Top 1)
+            const pod1 = document.getElementById('podium-1');
+            if (pod1 && p1) {
+                pod1.classList.remove('vacant');
+                document.getElementById('p1-username').textContent = p1.username;
+                document.getElementById('p1-country').textContent = `${p1.flagEmoji || '🌐'} ${p1.countryName || 'Mundial'}`;
+                document.getElementById('p1-elo').textContent = `${formatNumber(p1.elo)} ELO`;
+                document.getElementById('p1-stats').textContent = `Nv. ${p1.nivel} • ${p1.victorias} Victorias`;
+                const img = pod1.querySelector('.podium-avatar');
+                if (img && p1.avatar) img.src = `/assets/images/avatars/${p1.avatar}.png`;
+            }
+
+            // Puesto 2
+            const pod2 = document.getElementById('podium-2');
+            if (pod2) {
+                if (p2) {
+                    pod2.classList.remove('vacant');
+                    pod2.querySelector('.podium-name span').textContent = p2.username;
+                    pod2.querySelector('.podium-country').textContent = `${p2.flagEmoji || '🌐'} ${p2.countryName || 'Mundial'}`;
+                    pod2.querySelector('.podium-elo').textContent = `${formatNumber(p2.elo)} ELO`;
+                    pod2.querySelector('.podium-stats').textContent = `Nv. ${p2.nivel} • ${p2.victorias} Victorias`;
+                    const img = pod2.querySelector('.podium-avatar');
+                    if (img && p2.avatar) img.src = `/assets/images/avatars/${p2.avatar}.png`;
+                } else {
+                    pod2.classList.add('vacant');
+                }
+            }
+
+            // Puesto 3
+            const pod3 = document.getElementById('podium-3');
+            if (pod3) {
+                if (p3) {
+                    pod3.classList.remove('vacant');
+                    pod3.querySelector('.podium-name span').textContent = p3.username;
+                    pod3.querySelector('.podium-country').textContent = `${p3.flagEmoji || '🌐'} ${p3.countryName || 'Mundial'}`;
+                    pod3.querySelector('.podium-elo').textContent = `${formatNumber(p3.elo)} ELO`;
+                    pod3.querySelector('.podium-stats').textContent = `Nv. ${p3.nivel} • ${p3.victorias} Victorias`;
+                    const img = pod3.querySelector('.podium-avatar');
+                    if (img && p3.avatar) img.src = `/assets/images/avatars/${p3.avatar}.png`;
+                } else {
+                    pod3.classList.add('vacant');
+                }
+            }
+        }
+
+        function renderRealRankingTable(rankings) {
+            const tbody = document.getElementById('ranking-table-body');
+            if (!tbody) return;
+
+            if (rankings.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding:20px; color:#94a3b8;">
+                            Sin duelistas clasificados aún en la base de datos. ¡Sé el primero en entrar al ranking!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = rankings.map(u => {
+                const avatarUrl = u.avatar ? `/assets/images/avatars/${u.avatar}.png` : '/assets/images/avatars/AVA-001.png';
+                const statusBadge = u.isOnline 
+                    ? `<span class="badge-online"><i class="fa-solid fa-circle" style="font-size:7px;"></i> ONLINE</span>`
+                    : `<span class="badge-offline"><i class="fa-regular fa-circle" style="font-size:7px;"></i> Desconectado</span>`;
+
+                let posDisplay = u.rank;
+                if (u.rank === 1) posDisplay = '🥇 1';
+                else if (u.rank === 2) posDisplay = '🥈 2';
+                else if (u.rank === 3) posDisplay = '🥉 3';
+
+                return `
+                    <tr>
+                        <td style="text-align:center; font-weight:800; font-family:var(--font-title);">${posDisplay}</td>
+                        <td>
+                            <div class="duelist-cell">
+                                <img src="${avatarUrl}" alt="${u.username}" class="duelist-mini-avatar" onerror="this.src='/assets/images/avatars/AVA-001.png'">
+                                <div>
+                                    <div style="font-weight:700; color:#fff;">${escapeHtml(u.username)}</div>
+                                    <div style="font-size:10px; color:#94a3b8;">${u.duelosTotales || 0} duelos totales</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${u.flagEmoji || '🌐'} ${escapeHtml(u.countryName || 'Mundial')}</td>
+                        <td><strong style="color:var(--primary);">Nv. ${u.nivel}</strong></td>
+                        <td><strong style="color:#22c55e;">${formatNumber(u.victorias)}</strong></td>
+                        <td>${formatNumber(u.duelosTotales)}</td>
+                        <td><strong style="color:var(--gold); font-family:var(--font-tech); font-size:14px;">${formatNumber(u.elo)}</strong></td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderRealClans(clans) {
+            const container = document.getElementById('clans-grid-container');
+            if (!container) return;
+
+            if (clans.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state-card">
+                        <i class="fa-solid fa-shield-halved" style="font-size:24px; color:var(--gold); margin-bottom:8px; display:block;"></i>
+                        0 Clanes fundados actualmente en la base de datos.<br>
+                        <strong style="color:#ffffff;">¡Sé el primero en fundar tu Clan en Ani Dimension y dominar el multiverso!</strong>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = clans.map(c => `
+                <div class="clan-card">
+                    <div class="clan-card-header">
+                        <span class="clan-tag-badge">[${escapeHtml(c.tag || 'CLAN')}]</span>
+                        <span style="font-size:10px; color:var(--primary); font-family:var(--font-title);">Nv. ${c.level || 1}</span>
+                    </div>
+                    <div class="clan-name">${escapeHtml(c.name)}</div>
+                    <div style="font-size:11px; color:#cbd5e1;">Líder: <b>${escapeHtml(c.leaderName || 'Líder')}</b></div>
+                    <div class="clan-stats-row">
+                        <span><i class="fa-solid fa-users"></i> ${c.totalMiembros || 1} miembros</span>
+                        <span style="color:var(--gold); font-weight:700;"><i class="fa-solid fa-trophy"></i> ${formatNumber(c.trophies || 0)} trofeos</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cargar datos reales al abrir la página
+        document.addEventListener('DOMContentLoaded', loadLandingRealData);
+    </script>
+</body>
+</html>

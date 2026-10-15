@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ani-Dimension - Editor de Torneo (Admin)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/global.css?v=5.0">
+    <link rel="stylesheet" href="../../../css/admin.css?v=5.0">
+    <link rel="stylesheet" href="../../../css/admin-eventos.css?v=5.0">
+    <link rel="stylesheet" href="../../../css/navbar.css?v=5.0">
+    <style>
+        .tournament-panels-layout {
+            display: grid;
+            grid-template-columns: 320px 1.4fr 1.1fr;
+            gap: 16px;
+            align-items: stretch;
+            min-height: calc(100vh - 120px);
+        }
+
+        @media (max-width: 1200px) {
+            .tournament-panels-layout {
+                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        .panel-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 0;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .panel-box-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            color: #00f0ff;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .round-schedule-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 10px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        .preset-pill {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .preset-pill:hover {
+            background: #ffd700;
+            color: #020617;
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; color:#fff; font-family:'Outfit', sans-serif;">
+
+    <div class="admin-page-container">
+        
+        <!-- HEADER FIJO SUPERIOR -->
+        <div class="admin-header">
+            <div class="admin-title-box">
+                <img src="/assets/images/logo.png" alt="Ani-Dimension Logo" style="height:32px; width:auto; object-fit:contain; filter:drop-shadow(0 0 8px rgba(0,240,255,0.5));">
+                <div>
+                    <h1 class="admin-title" id="editor-torneo-page-title">CREAR NUEVO TORNEO OFICIAL</h1>
+                    <div class="admin-subtitle">CONFIGURACIÓN COMPLETA DE FORMATO, CRONOGRAMA DE RONDAS, ARTWORK Y PREMIACIÓN</div>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+                <a href="torneos.html" class="btn-shop-back" style="display:flex; align-items:center; justify-content:center; height:28px; padding:0 14px; background:rgba(255,255,255,0.08); border:1.2px solid rgba(255,255,255,0.25); color:#fff; text-decoration:none; font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700;">
+                    VOLVER AL LISTADO
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR PRINCIPAL DESLIZABLE (FORMULARIO HORIZONTAL MULTI-PANEL) -->
+        <div class="admin-scroll-content">
+            <form id="form-tournament-editor" onsubmit="onSaveTournamentForm(event)">
+                <input type="hidden" id="editor-torneo-id" value="">
+
+                <div class="tournament-panels-layout">
+
+                    <!-- =========================================================================
+                         PANEL 1: ARTWORK Y SUBIDA DE BANNER
+                         ========================================================================= -->
+                    <div class="panel-box">
+                        <div class="panel-box-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px; height:14px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            <span>1. BANNER & ARTWORK (16:9)</span>
+                        </div>
+
+                        <!-- PREVIEW DE BANNER -->
+                        <div style="width:100%; height:160px; background:#000; border:1.2px solid rgba(0,240,255,0.4); position:relative; overflow:hidden; box-shadow:0 0 15px rgba(0,240,255,0.15);">
+                            <img id="editor-banner-preview" src="/assets/images/duels/pvp.jpg" alt="Preview Banner" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+
+                        <!-- SUBIDA DIRECTA DE ARCHIVO AL SERVIDOR -->
+                        <div class="admin-form-group" style="margin:0;">
+                            <label class="admin-form-label" style="font-size:8.5px !important; color:#00f0ff;">📁 SUBIR IMAGEN DESDE TU DISPOSITIVO *</label>
+                            <input type="file" id="editor-banner-file" accept="image/*" class="admin-form-input" onchange="onBannerFileSelected(this)" style="padding:5px 8px; font-size:10px;">
+                        </div>
+
+                        <!-- RUTA O URL EN SERVIDOR -->
+                        <div class="admin-form-group" style="margin:0;">
+                            <label class="admin-form-label" style="font-size:8.5px !important;">O RUTA / URL DEL SERVIDOR</label>
+                            <input type="text" id="editor-banner-url" class="admin-form-input" style="font-size:10px; padding:6px 8px;" value="/assets/images/duels/pvp.jpg" oninput="onBannerUrlChange()">
+                        </div>
+
+                        <div style="font-size:10px; color:#94a3b8; line-height:1.4; background:rgba(0,0,0,0.3); padding:8px; border-left:2px solid #00f0ff;">
+                            💡 La imagen seleccionada se subirá automáticamente a la carpeta de torneos del servidor al guardar.
+                        </div>
+                    </div>
+
+                    <!-- =========================================================================
+                         PANEL 2: PARÁMETROS, FORMATOS OCG Y CRONOGRAMA DE FECHAS/HORAS
+                         ========================================================================= -->
+                    <div class="panel-box">
+                        <div class="panel-box-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px; height:14px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>2. FORMATO & CRONOGRAMA DE RONDAS</span>
+                        </div>
+
+                        <!-- TÍTULO DEL TORNEO -->
+                        <div class="admin-form-group" style="margin:0;">
+                            <label class="admin-form-label">TÍTULO DEL TORNEO *</label>
+                            <input type="text" id="editor-titulo" class="admin-form-input" style="font-size:11.5px; font-weight:700; color:#00f0ff;" placeholder="Ej: Copa Kaiba Corp - Gran Torneo Cyber" required>
+                        </div>
+
+                        <!-- FORMATO Y PARTICIPANTES -->
+                        <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:10px;">
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">FORMATO DE COMPETENCIA *</label>
+                                <select id="editor-formato" class="admin-form-input" style="font-size:10.5px; font-weight:700;" onchange="onFormatOrCapacityChange()">
+                                    <option value="BO1" selected>Eliminación Directa (Duelo Único - BO1)</option>
+                                    <option value="BO3">Ida y Vuelta / Al Mejor de 3 (BO3 Desempate)</option>
+                                    <option value="DOBLE_ELIMINACION">Doble Eliminación (Winners + Losers)</option>
+                                    <option value="SUIZO">Fase Suiza + Top Cut Final</option>
+                                </select>
+                            </div>
+
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">CANTIDAD DE DUELISTAS *</label>
+                                <select id="editor-max-part" class="admin-form-input" style="font-size:10.5px; font-weight:700;" onchange="onFormatOrCapacityChange()">
+                                    <option value="4">Top 4 (4 Duelistas - Rápido)</option>
+                                    <option value="8" selected>Top 8 (8 Duelistas - Estándar)</option>
+                                    <option value="16">Top 16 (16 Duelistas - Copa Mayor)</option>
+                                    <option value="32">Top 32 (32 Duelistas - Gran Campeonato)</option>
+                                    <option value="64">Top 64 (64 Duelistas - Liga Master)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- NIVELES Y COSTO EN STARSHIPS -->
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">NIVEL MÍNIMO</label>
+                                <input type="number" id="editor-min-lvl" class="admin-form-input" value="1" min="1" max="999">
+                            </div>
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">NIVEL MÁXIMO</label>
+                                <input type="number" id="editor-max-lvl" class="admin-form-input" value="999" min="1" max="999">
+                            </div>
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">COSTO (★ STARSHIPS)</label>
+                                <input type="number" id="editor-costo" class="admin-form-input" value="0" min="0" placeholder="0 = Gratis">
+                            </div>
+                        </div>
+
+                        <!-- FECHAS GENERALES (APERTURA, CIERRE E INICIO) -->
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:2px;">
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">APERTURA DE INSCRIPCIONES *</label>
+                                <input type="datetime-local" id="editor-fecha-reg-inicio" class="admin-form-input" style="font-size:10.5px;">
+                            </div>
+                            <div class="admin-form-group" style="margin:0;">
+                                <label class="admin-form-label">CIERRE DE INSCRIPCIONES / INICIO *</label>
+                                <input type="datetime-local" id="editor-fecha-reg-fin" class="admin-form-input" style="font-size:10.5px;">
+                            </div>
+                        </div>
+
+                        <!-- PROGRAMACIÓN DE FECHAS Y HORAS POR CADA RONDA -->
+                        <div style="margin-top:4px;">
+                            <div style="font-family:'Orbitron', sans-serif; font-size:9.5px; font-weight:800; color:#38bdf8; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                                <span>📅 HORARIOS EXACTOS POR CADA RONDA:</span>
+                                <span style="font-size:8px; color:#94a3b8; font-weight:500;">Generado automáticamente según cupos</span>
+                            </div>
+
+                            <div id="rounds-schedule-container" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; padding-right:4px;">
+                                <!-- Se generan dinámicamente con editor-torneo.js -->
+                            </div>
+                        </div>
+
+                        <!-- DESCRIPCIÓN Y REGLAS -->
+                        <div class="admin-form-group" style="margin:0;">
+                            <label class="admin-form-label">DESCRIPCIÓN / REGLAS ESPECIALES</label>
+                            <textarea id="editor-desc" class="admin-form-input" rows="2" style="font-size:10.5px; padding:6px 8px;" placeholder="Reglas del torneo: tiempo de 2 min por turno, límite de desconexión 35s, mazo permitido..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- =========================================================================
+                         PANEL 3: RECOMPENSAS & PREMIOS CONFIGURABLES POR EL ADMIN
+                         ========================================================================= -->
+                    <div class="panel-box" style="border-color:rgba(255,215,0,0.35);">
+                        <div class="panel-box-title" style="color:#ffd700; border-color:rgba(255,215,0,0.25);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px; height:14px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            <span>3. PREMIOS & RECOMPENSAS (TEXTO LIBRE ADMIN)</span>
+                        </div>
+
+                        <!-- PLANTILLAS RÁPIDAS DE PREMIOS -->
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span style="font-size:9px; color:#94a3b8; font-family:'Orbitron',sans-serif;">Plantillas:</span>
+                            <button type="button" class="preset-pill" onclick="applyPrizePreset('ORO')">Copa Oro (50k ★)</button>
+                            <button type="button" class="preset-pill" onclick="applyPrizePreset('PLATINO')">Copa Platino (100k ★)</button>
+                            <button type="button" class="preset-pill" onclick="applyPrizePreset('DIAMANTE')">Copa Diamante (250k ★)</button>
+                        </div>
+
+                        <!-- ÁREA DE TEXTO LIBRE DE PREMIOS -->
+                        <div class="admin-form-group" style="margin:0; flex:1; display:flex; flex-direction:column;">
+                            <label class="admin-form-label" style="color:#ffd700;">DETALLE COMPLETO DE PREMIOS *</label>
+                            <textarea id="editor-texto-premios" class="admin-form-input" style="flex:1; min-height:180px; font-size:11px; color:#fef08a; padding:10px; line-height:1.5; font-family:'Outfit', sans-serif;" placeholder="Indica detalladamente los premios que entregarás como Administrador:&#10;🥇 1er Lugar: 50,000 Starships + Título Campeón Supremo + Dragón Blanco de Ojos Azules&#10;🥈 2do Lugar: 25,000 Starships + Funda Exclusiva Cyber&#10;🥉 3er Lugar: 10,000 Starships&#10;🏅 4to al 8vo Lugar: 2,500 Starships por participación" required></textarea>
+                        </div>
+
+                        <div style="font-size:10px; color:#cbd5e1; background:rgba(255,215,0,0.08); border:1px dashed rgba(255,215,0,0.3); padding:8px 10px; border-radius:4px; line-height:1.4;">
+                            ℹ️ <b>Entrega Directa:</b> Estos premios serán mostrados en la tarjeta pública del torneo y en el Salón de la Fama. Al finalizar la final, podrás registrarlos y confirmarlos directamente en el panel de entrega.
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN PRINCIPALES -->
+                        <div style="display:flex; gap:8px; margin-top:auto; padding-top:10px;">
+                            <button type="submit" class="btn-shop-back" style="flex:1; height:36px; background:#00f0ff; color:#020617; border:none; font-family:'Orbitron', sans-serif; font-size:11px; font-weight:800; cursor:pointer;">
+                                💾 GUARDAR TORNEO
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIOR FIJO -->
+    <div id="navbar-container"></div>
+
+    <!-- SCRIPTS CORE -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../../js/core/session.js"></script>
+    <script src="../../../js/core/socket.js"></script>
+    <script src="../../../js/core/navbar.js"></script>
+    <script src="../../../js/admin/editor-torneo.js?v=5.0"></script>
+</body>
+</html>
