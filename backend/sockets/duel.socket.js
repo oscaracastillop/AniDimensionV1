@@ -41,6 +41,33 @@ setNpcTurnExecutor(executeNpcTurn);
 
 let isChatMuted = false;
 
+const DEFAULT_STARTER_DECK = [
+    32274490, 32274490, 32274490, 76103675, 80813021, 53293545, 89091579, 36121917, 36121917, 90357090,
+    76184692, 32452818, 9159938, 1784619, 57305373, 75356564, 75356564, 75356564, 20060230, 44287299,
+    85705804, 85705804, 85705804, 72842870, 53375573, 2863439, 17535588, 85639257, 33064647, 96851799,
+    56283725, 80770678, 43500484, 16353197, 76211194, 73134081, 46130346, 63102017, 51482758, 50045299
+];
+
+function normalizeDeck(deck) {
+    if (!deck) return { mainDeck: [...DEFAULT_STARTER_DECK], extraDeck: [], sideDeck: [] };
+    if (Array.isArray(deck)) {
+        let cards = deck.map(c => typeof c === 'object' ? (c.code || c.id || c.card_id) : c).filter(Boolean);
+        if (cards.length < 40) {
+            cards = [...cards, ...DEFAULT_STARTER_DECK.slice(0, 40 - cards.length)];
+        }
+        return { mainDeck: cards, extraDeck: [], sideDeck: [] };
+    }
+    let main = Array.isArray(deck.mainDeck) ? deck.mainDeck.map(c => typeof c === 'object' ? (c.code || c.id || c.card_id) : c).filter(Boolean) : [];
+    if (main.length < 40) {
+        main = [...main, ...DEFAULT_STARTER_DECK.slice(0, 40 - main.length)];
+    }
+    return {
+        mainDeck: main,
+        extraDeck: Array.isArray(deck.extraDeck) ? deck.extraDeck : [],
+        sideDeck: Array.isArray(deck.sideDeck) ? deck.sideDeck : []
+    };
+}
+
 // Almacén de Salas PvP, Temporizadores de Turno (120s) y Temporizadores de Reconexión (35s)
 const pvpRooms = new Map();
 const duelTurnTimers = new Map();
@@ -625,14 +652,17 @@ function initDuelSockets(io) {
                     const player2Name = room.guest.username;
                     const firstPlayer = Math.random() < 0.5 ? 'player1' : 'player2';
 
+                    const p0Deck = normalizeDeck(room.host.deck);
+                    const p1Deck = normalizeDeck(room.guest.deck);
+
                     const duelState = createInitialDuelState(
                         roomId, 
                         player1Name, 
                         player2Name, 
                         room.host.sleeve, 
                         firstPlayer, 
-                        room.host.deck,
-                        room.guest.deck,
+                        p0Deck,
+                        p1Deck,
                         room.guest.sleeve,
                         room.host.mat || 'default_mat',
                         room.guest.mat || 'kaiba_mat'
@@ -646,8 +676,8 @@ function initDuelSockets(io) {
 
                     // Registrar e inicializar en el Árbitro Oficial Project Ignis (puerto 7001) para PvP
                     try {
-                        const p0DeckCodes = (room.host.deck && room.host.deck.mainDeck) ? room.host.deck.mainDeck : [];
-                        const p1DeckCodes = (room.guest.deck && room.guest.deck.mainDeck) ? room.guest.deck.mainDeck : [];
+                        const p0DeckCodes = p0Deck.mainDeck;
+                        const p1DeckCodes = p1Deck.mainDeck;
                         duelBridge.createDuel({
                             duelId: roomId,
                             player0Deck: p0DeckCodes,
@@ -1344,8 +1374,8 @@ function initDuelSockets(io) {
 
         // 11. Inicio directo / vs NPC (DUEL_START)
         socket.on('DUEL_START', async (data) => {
-            const roomId = (data && data.room_id) || 'ROOM_DEMO';
-            const playerName = (data && data.player_name) || socket.user.username || 'Admin';
+            const roomId = (data && (data.room_id || data.roomId)) || 'ROOM_DEMO';
+            const playerName = (data && (data.player_name || data.playerName || (data.user && data.user.username))) || socket.user.username || 'Admin';
             if (playerName) socket.user.username = playerName;
 
             socket.currentDuelRoomId = roomId;
@@ -1371,10 +1401,13 @@ function initDuelSockets(io) {
             }
 
             const firstPlayerChoice = (data && data.first_player) ? data.first_player : 'player1';
-            let playerDeckToUse = (data && data.player_deck) ? data.player_deck : null;
+            let rawDeck = (data && (data.player_deck || data.deck || (data.user && data.user.deck))) || (socket.user && socket.user.deck);
+            let playerDeckToUse = null;
 
-            // Consultar mazo oficial en SQL Server si no viene completo
-            if (!playerDeckToUse || !Array.isArray(playerDeckToUse.mainDeck) || playerDeckToUse.mainDeck.length < 40) {
+            if (rawDeck) {
+                playerDeckToUse = normalizeDeck(rawDeck);
+            } else {
+                // Consultar mazo oficial en SQL Server si no viene en el payload
                 try {
                     const pool = await getPool();
                     if (!uid && socket.user.username) {
@@ -1388,11 +1421,11 @@ function initDuelSockets(io) {
                             .input('uid', sql.Int, uid)
                             .query('SELECT TOP 1 MainDeckJson, ExtraDeckJson, SideDeckJson FROM dbo.Decks WHERE UsuarioId = @uid AND EsActivo = 1');
                         if (dRes.recordset && dRes.recordset[0]) {
-                            playerDeckToUse = {
+                            playerDeckToUse = normalizeDeck({
                                 mainDeck: JSON.parse(dRes.recordset[0].MainDeckJson || '[]'),
                                 extraDeck: JSON.parse(dRes.recordset[0].ExtraDeckJson || '[]'),
                                 sideDeck: JSON.parse(dRes.recordset[0].SideDeckJson || '[]')
-                            };
+                            });
                         }
                     }
                 } catch (e) {
@@ -1400,18 +1433,12 @@ function initDuelSockets(io) {
                 }
             }
 
-            const mainCardCount = playerDeckToUse && Array.isArray(playerDeckToUse.mainDeck) ? playerDeckToUse.mainDeck.length : 0;
-            if (mainCardCount < 40) {
-                console.warn(`[DUEL_START] Rechazado para ${playerName}: mazo insuficiente (${mainCardCount} cartas).`);
-                socket.emit('DUEL_ERROR', {
-                    code: 'INVALID_DECK',
-                    message: `Tu mazo actual tiene ${mainCardCount} cartas. Debes armar y activar un mazo reglamentario (mínimo 40 cartas) en el Constructor de Mazos antes de iniciar un duelo.`
-                });
-                return;
+            if (!playerDeckToUse) {
+                playerDeckToUse = normalizeDeck(null);
             }
 
             let opponentName = (data && data.opponent_name) || 'NPC Principiante (Nv. 1)';
-            let customOpponentDeck = (data && data.opponent_deck) ? data.opponent_deck : null;
+            let customOpponentDeck = (data && (data.opponent_deck || data.npcDeck)) ? normalizeDeck(data.opponent_deck || data.npcDeck) : null;
             let npcId = (data && data.npc_id) ? parseInt(data.npc_id, 10) : null;
             let npcAvatar = 'AVA-002';
 
@@ -1478,8 +1505,8 @@ function initDuelSockets(io) {
 
             // Registrar e inicializar en el Árbitro Oficial Project Ignis (puerto 7001)
             try {
-                const p0DeckCodes = (playerDeckToUse && playerDeckToUse.mainDeck) ? playerDeckToUse.mainDeck : [];
-                const p1DeckCodes = (customOpponentDeck && customOpponentDeck.mainDeck) ? customOpponentDeck.mainDeck : [];
+                const p0DeckCodes = (playerDeckToUse && playerDeckToUse.mainDeck && playerDeckToUse.mainDeck.length >= 40) ? playerDeckToUse.mainDeck : DEFAULT_STARTER_DECK;
+                const p1DeckCodes = (customOpponentDeck && customOpponentDeck.mainDeck && customOpponentDeck.mainDeck.length >= 40) ? customOpponentDeck.mainDeck : DEFAULT_STARTER_DECK;
                 duelBridge.createDuel({
                     duelId: roomId,
                     player0Deck: p0DeckCodes,

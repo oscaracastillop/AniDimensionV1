@@ -513,15 +513,27 @@ end
     const name = prompt.constructor.name;
 
     if (actionType === 'SUMMON' && name === 'YGOProMsgSelectIdleCmd') {
-      const seq = action.sequence !== undefined ? Number(action.sequence) : 0;
       const code = action.code ? Number(action.code) : undefined;
-      resp = prompt.prepareResponse(IdleCmdType.SUMMON, { sequence: seq, code });
+      const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
+      let matchIdx = -1;
+      if (prompt.summonableCards && Array.isArray(prompt.summonableCards)) {
+        if (code) matchIdx = prompt.summonableCards.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.summonableCards.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.summonableCards.length === 1) matchIdx = 0;
+      }
+      if (matchIdx !== -1) {
+        resp = prompt.prepareResponse(IdleCmdType.SUMMON, { index: matchIdx });
+      } else {
+        resp = prompt.prepareResponse(IdleCmdType.SUMMON, { sequence: seq !== undefined ? seq : 0, code });
+      }
     } else if ((actionType === 'SPSUMMON' || actionType === 'SPECIAL_SUMMON' || actionType === 'SYNCHRO_SUMMON') && name === 'YGOProMsgSelectIdleCmd') {
       const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
       const code = action.code ? Number(action.code) : undefined;
       let matchIdx = -1;
       if (prompt.spSummonableCards && Array.isArray(prompt.spSummonableCards)) {
-        matchIdx = prompt.spSummonableCards.findIndex(c => (code && c.code === code) || (seq !== undefined && c.sequence === seq));
+        if (code) matchIdx = prompt.spSummonableCards.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.spSummonableCards.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.spSummonableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
         resp = prompt.prepareResponse(IdleCmdType.SPSUMMON, { index: matchIdx });
@@ -529,24 +541,79 @@ end
         resp = prompt.prepareResponse(IdleCmdType.SPSUMMON, { sequence: seq !== undefined ? seq : 0, code });
       }
     } else if ((actionType === 'REPOS' || actionType === 'CHANGE_POSITION') && name === 'YGOProMsgSelectIdleCmd') {
-      const seq = action.sequence !== undefined ? Number(action.sequence) : 0;
-      resp = prompt.prepareResponse(IdleCmdType.REPOS, { sequence: seq });
+      const code = action.code ? Number(action.code) : undefined;
+      const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
+      let matchIdx = -1;
+      if (prompt.reposableCards && Array.isArray(prompt.reposableCards)) {
+        if (code) matchIdx = prompt.reposableCards.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.reposableCards.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.reposableCards.length === 1) matchIdx = 0;
+      }
+      if (matchIdx !== -1) {
+        resp = prompt.prepareResponse(IdleCmdType.REPOS, { index: matchIdx });
+      } else {
+        resp = prompt.prepareResponse(IdleCmdType.REPOS, { sequence: seq !== undefined ? seq : 0 });
+      }
     } else if (actionType === 'MSET' && name === 'YGOProMsgSelectIdleCmd') {
-      const seq = action.sequence !== undefined ? Number(action.sequence) : 0;
-      resp = prompt.prepareResponse(IdleCmdType.MSET, { sequence: seq });
+      const code = action.code ? Number(action.code) : undefined;
+      const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
+      let matchIdx = -1;
+      if (prompt.msetableCards && Array.isArray(prompt.msetableCards)) {
+        if (code) matchIdx = prompt.msetableCards.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.msetableCards.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.msetableCards.length === 1) matchIdx = 0;
+      }
+      if (matchIdx !== -1) {
+        resp = prompt.prepareResponse(IdleCmdType.MSET, { index: matchIdx });
+      } else {
+        resp = prompt.prepareResponse(IdleCmdType.MSET, { sequence: seq !== undefined ? seq : 0 });
+      }
     } else if (actionType === 'SSET' && name === 'YGOProMsgSelectIdleCmd') {
-      const seq = action.sequence !== undefined ? Number(action.sequence) : 0;
-      resp = prompt.prepareResponse(IdleCmdType.SSET, { sequence: seq });
+      const code = action.code ? Number(action.code) : undefined;
+      const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
+      let matchIdx = -1;
+      if (prompt.ssetableCards && Array.isArray(prompt.ssetableCards)) {
+        if (code) matchIdx = prompt.ssetableCards.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.ssetableCards.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.ssetableCards.length === 1) matchIdx = 0;
+      }
+      if (matchIdx !== -1) {
+        resp = prompt.prepareResponse(IdleCmdType.SSET, { index: matchIdx });
+      } else {
+        resp = prompt.prepareResponse(IdleCmdType.SSET, { sequence: seq !== undefined ? seq : 0 });
+      }
     } else if (actionType === 'ACTIVATE') {
-      const seq = action.sequence !== undefined ? Number(action.sequence) : 0;
+      const code = action.code ? Number(action.code) : undefined;
+      const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
       if (name === 'YGOProMsgSelectIdleCmd') {
-        resp = prompt.prepareResponse(IdleCmdType.ACTIVATE, { sequence: seq, desc: action.desc });
+        let matchIdx = -1;
+        if (prompt.activatableCards && Array.isArray(prompt.activatableCards)) {
+          if (code) matchIdx = prompt.activatableCards.findIndex(c => Number(c.code) === code);
+          if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.activatableCards.findIndex(c => Number(c.sequence) === seq);
+          if (matchIdx === -1 && prompt.activatableCards.length === 1) matchIdx = 0;
+        }
+        if (matchIdx !== -1) {
+          resp = prompt.prepareResponse(IdleCmdType.ACTIVATE, { index: matchIdx });
+        } else {
+          resp = prompt.prepareResponse(IdleCmdType.ACTIVATE, { sequence: seq !== undefined ? seq : 0, desc: action.desc });
+        }
       } else if (name === 'YGOProMsgSelectBattleCmd') {
-        resp = prompt.prepareResponse(BattleCmdType.ACTIVATE, { sequence: seq, desc: action.desc });
+        resp = prompt.prepareResponse(BattleCmdType.ACTIVATE, { sequence: seq !== undefined ? seq : 0, desc: action.desc });
       }
     } else if (actionType === 'ATTACK' && name === 'YGOProMsgSelectBattleCmd') {
-      const seq = action.attackerSeq !== undefined ? Number(action.attackerSeq) : (action.sequence !== undefined ? Number(action.sequence) : 0);
-      resp = prompt.prepareResponse(BattleCmdType.ATTACK, { sequence: seq });
+      const seq = action.attackerSeq !== undefined ? Number(action.attackerSeq) : (action.sequence !== undefined ? Number(action.sequence) : undefined);
+      const code = action.code ? Number(action.code) : undefined;
+      let matchIdx = -1;
+      if (prompt.attackableCards && Array.isArray(prompt.attackableCards)) {
+        if (code) matchIdx = prompt.attackableCards.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.attackableCards.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.attackableCards.length === 1) matchIdx = 0;
+      }
+      if (matchIdx !== -1) {
+        resp = prompt.prepareResponse(BattleCmdType.ATTACK, { index: matchIdx });
+      } else {
+        resp = prompt.prepareResponse(BattleCmdType.ATTACK, { sequence: seq !== undefined ? seq : 0 });
+      }
     } else if (actionType === 'CHANGE_PHASE' || actionType === 'PHASE_CHANGE') {
       const target = (action.targetPhase || action.phase || '').toUpperCase();
       if (name === 'YGOProMsgSelectIdleCmd') {
