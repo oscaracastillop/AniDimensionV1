@@ -33,6 +33,8 @@ const {
     finalizeTurnHandoffToRival
 } = require('./npc-ai');
 
+const duelBridge = require('../services/duel-engine-bridge');
+
 const OFFICIAL_PHASES = ['DRAW', 'STANDBY', 'MAIN_1', 'BATTLE', 'MAIN_2', 'END'];
 
 function isDragonMonster(m, duelState = null) {
@@ -255,6 +257,90 @@ async function handleDuelAction(socket, data) {
             }
             return false;
         };
+
+        // =====================================================================
+        // ENRUTAMIENTO DIRECTO AL MOTOR OFICIAL PROJECT IGNIS / EDO PRO (7001)
+        // =====================================================================
+        if (duelState.officialIgnisSession && duelState.officialIgnisSession.active) {
+            let ignisAction = null;
+            const upperType = (actionType || '').toUpperCase();
+
+            let resolvedSeq = data.sequence;
+            if (resolvedSeq === undefined) {
+                if (data.from_hand && p1.hand && cardId) {
+                    const hIdx = p1.hand.findIndex(c => c && Number(c.id || c.card_id || (c.card_data && c.card_data.id)) === Number(cardId));
+                    if (hIdx !== -1) resolvedSeq = hIdx;
+                } else if (data.slot_index !== undefined) {
+                    resolvedSeq = Number(data.slot_index);
+                } else if (cardId && p1.hand) {
+                    const hIdx = p1.hand.findIndex(c => c && Number(c.id || c.card_id || (c.card_data && c.card_data.id)) === Number(cardId));
+                    if (hIdx !== -1) resolvedSeq = hIdx;
+                }
+            }
+            if (resolvedSeq === undefined) resolvedSeq = 0;
+
+            if (upperType === 'SUMMON' || upperType === 'CLIENT_SUMMON') {
+                ignisAction = { type: 'SUMMON', sequence: resolvedSeq, code: cardId };
+            } else if (upperType === 'MSET' || (upperType === 'SET' && (zoneType === 'P_M' || !data.is_spell_trap))) {
+                ignisAction = { type: 'MSET', sequence: resolvedSeq, code: cardId };
+            } else if (upperType === 'SSET' || (upperType === 'SET' && (zoneType === 'P_S' || data.is_spell_trap))) {
+                ignisAction = { type: 'SSET', sequence: resolvedSeq, code: cardId };
+            } else if (upperType === 'ACTIVATE' || upperType === 'OCG_ACTIVATE_CARD') {
+                ignisAction = { type: 'ACTIVATE', sequence: resolvedSeq, code: cardId, desc: data.desc };
+            } else if (upperType === 'CLIENT_ATTACK' || upperType === 'ATTACK') {
+                const atkSlot = data.attacker_slot !== undefined ? data.attacker_slot : (data.attackerSeq !== undefined ? data.attackerSeq : resolvedSeq);
+                ignisAction = { type: 'ATTACK', sequence: atkSlot, attackerSeq: atkSlot };
+            } else if (upperType === 'SET_PHASE' || upperType === 'CHANGE_PHASE' || upperType === 'PHASE_CHANGE') {
+                ignisAction = { type: 'CHANGE_PHASE', targetPhase: data.target_phase || data.targetPhase || data.phase };
+            } else if (upperType === 'PASS_CHAIN' || upperType === 'CHAIN_PASS') {
+                ignisAction = { type: 'PASS_CHAIN' };
+            } else if (upperType === 'CHAIN_ACTIVATE' || upperType === 'CHAIN') {
+                ignisAction = { type: 'CHAIN_ACTIVATE', sequence: resolvedSeq, code: cardId, desc: data.desc };
+            } else if (upperType === 'SELECT_PLACE') {
+                ignisAction = { type: 'SELECT_PLACE', sequence: data.sequence !== undefined ? data.sequence : resolvedSeq };
+            } else if (upperType === 'SELECT_POSITION') {
+                ignisAction = { type: 'SELECT_POSITION', position: data.position === 'DEF' ? 0x4 : 0x1 };
+            } else if (upperType === 'SELECT_CARDS' || upperType === 'SELECT_TRIBUTE') {
+                ignisAction = { type: 'SELECT_CARDS', cards: data.cards || data.tribute_slots };
+            } else if (upperType === 'SPECIAL_SUMMON' || upperType === 'SYNCHRO_SUMMON' || upperType === 'SPSUMMON') {
+                ignisAction = { type: 'SPSUMMON', sequence: resolvedSeq, code: cardId || data.synchro_card_id };
+            } else if (upperType === 'CHANGE_POSITION' || upperType === 'REPOS' || upperType === 'CHANGE_POS') {
+                ignisAction = { type: 'REPOS', sequence: resolvedSeq };
+            } else if (upperType === 'YESNO') {
+                ignisAction = { type: 'YESNO', answer: Boolean(data.answer) };
+            }
+
+            if (ignisAction) {
+                try {
+                    console.log(`[IGNIS BRIDGE] Enviando acción oficial ${ignisAction.type} (Sala ${roomId})...`);
+                    const ignisRes = await duelBridge.executeAction({ duelId: roomId, action: ignisAction });
+                    if (ignisRes && ignisRes.success) {
+                        duelBridge.syncStateFromIgnis(duelState, ignisRes);
+                        enrichDuelStateForBroadcast(duelState);
+
+                        const io = getIo();
+                        if (io) {
+                            io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                            if (ignisRes.pendingPrompt) {
+                                io.to(roomId).emit('DUEL_PROMPT', ignisRes.pendingPrompt);
+                            }
+                            if (Array.isArray(ignisRes.logs)) {
+                                ignisRes.logs.forEach(log => emitDuelLog(roomId, log, 'system'));
+                            }
+                        }
+
+                        if (ignisRes.isGameOver || ignisRes.status === 'finished') {
+                            const winnerKey = ignisRes.winner === 0 ? 'player1' : 'player2';
+                            const loserKey = ignisRes.winner === 0 ? 'player2' : 'player1';
+                            await processDuelGameOver(roomId, duelState, winnerKey, loserKey, 'OFFICIAL_OCG_VICTORY');
+                        }
+                        return;
+                    }
+                } catch (ignisErr) {
+                    console.warn(`[IGNIS BRIDGE ERROR] ${ignisErr.message}. Ejecutando fallback local.`);
+                }
+            }
+        }
 
         // =====================================================================
         // INVOCACIÓN ESPECIAL MODULAR (SPECIAL_SUMMON & SPECIAL_SUMMON_GATE_GUARDIAN)

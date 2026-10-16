@@ -644,6 +644,36 @@ function initDuelSockets(io) {
                     duelRooms.set(roomId, duelState);
                     enrichDuelStateForBroadcast(duelState);
 
+                    // Registrar e inicializar en el Árbitro Oficial Project Ignis (puerto 7001) para PvP
+                    try {
+                        const p0DeckCodes = (room.host.deck && room.host.deck.mainDeck) ? room.host.deck.mainDeck : [];
+                        const p1DeckCodes = (room.guest.deck && room.guest.deck.mainDeck) ? room.guest.deck.mainDeck : [];
+                        duelBridge.createDuel({
+                            duelId: roomId,
+                            player0Deck: p0DeckCodes,
+                            player1Deck: p1DeckCodes,
+                            lp: 8000,
+                            isNpc: false
+                        }).then(officialRes => {
+                            console.log(`[PROJECT IGNIS ARBITRO PVP] Sala ${roomId} sincronizada en el motor oficial.`);
+                            duelState.officialIgnisSession = {
+                                active: true,
+                                duelId: roomId,
+                                initialEvents: officialRes.events
+                            };
+                            duelBridge.syncStateFromIgnis(duelState, officialRes);
+                            enrichDuelStateForBroadcast(duelState);
+                            io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                            if (officialRes.pendingPrompt) {
+                                io.to(roomId).emit('DUEL_PROMPT', officialRes.pendingPrompt);
+                            }
+                        }).catch(err => {
+                            console.warn(`[PROJECT IGNIS ARBITRO NOTICE PVP] Fallback local: ${err.message}`);
+                        });
+                    } catch (bridgeErr) {
+                        console.warn('[PROJECT IGNIS ARBITRO NOTICE PVP]', bridgeErr.message);
+                    }
+
                     io.to(roomId).emit('PVP_DUEL_START_NOW', {
                         roomId: roomId,
                         player1: player1Name,
@@ -655,23 +685,6 @@ function initDuelSockets(io) {
 
                     // Iniciar el temporizador reglamentario de 2 minutos (120s)
                     startDuelTurnTimer(roomId, io);
-
-                    // Secuencia reglamentaria sincronizada Turno 1: DRAW -> STANDBY -> MAIN_1
-                    setTimeout(() => {
-                        const current = duelRooms.get(roomId);
-                        if (!current || current.isGameOver || current.turnNumber !== 1 || current.phase !== 'DRAW') return;
-                        current.phase = 'STANDBY';
-                        enrichDuelStateForBroadcast(current);
-                        io.to(roomId).emit('DUEL_STATE_UPDATE', current);
-
-                        setTimeout(() => {
-                            const current2 = duelRooms.get(roomId);
-                            if (!current2 || current2.isGameOver || current2.turnNumber !== 1 || current2.phase !== 'STANDBY') return;
-                            current2.phase = 'MAIN_1';
-                            enrichDuelStateForBroadcast(current2);
-                            io.to(roomId).emit('DUEL_STATE_UPDATE', current2);
-                        }, 1200);
-                    }, 1300);
                 }, 3200);
             }
         });
@@ -1471,7 +1484,8 @@ function initDuelSockets(io) {
                     duelId: roomId,
                     player0Deck: p0DeckCodes,
                     player1Deck: p1DeckCodes,
-                    lp: 8000
+                    lp: 8000,
+                    isNpc: true
                 }).then(officialRes => {
                     console.log(`[PROJECT IGNIS ARBITRO] Sala ${roomId} sincronizada y activa en el motor oficial ocgcore.`);
                     duelState.officialIgnisSession = {
@@ -1479,6 +1493,16 @@ function initDuelSockets(io) {
                         duelId: roomId,
                         initialEvents: officialRes.events
                     };
+                    duelBridge.syncStateFromIgnis(duelState, officialRes);
+                    enrichDuelStateForBroadcast(duelState);
+                    io.to(roomId).emit('DUEL_STATE_UPDATE', duelState);
+                    socket.emit('DUEL_STATE_UPDATE', duelState);
+                    if (officialRes.pendingPrompt) {
+                        io.to(roomId).emit('DUEL_PROMPT', officialRes.pendingPrompt);
+                    }
+                    if (Array.isArray(officialRes.logs)) {
+                        officialRes.logs.forEach(l => emitDuelLog(roomId, l, 'system'));
+                    }
                 }).catch(err => {
                     console.warn(`[PROJECT IGNIS ARBITRO NOTICE] Fallback a árbitro local: ${err.message}`);
                 });
@@ -1493,31 +1517,6 @@ function initDuelSockets(io) {
 
             // Iniciar temporizador de 120s para el turno inicial
             startDuelTurnTimer(roomId, io);
-
-            // Secuencia reglamentaria sincronizada Turno 1: DRAW -> STANDBY -> MAIN_1
-            setTimeout(() => {
-                const current = duelRooms.get(roomId);
-                if (!current || current.isGameOver || current.turnNumber !== 1 || current.phase !== 'DRAW') return;
-                current.phase = 'STANDBY';
-                enrichDuelStateForBroadcast(current);
-                io.to(roomId).emit('DUEL_STATE_UPDATE', current);
-
-                setTimeout(() => {
-                    const current2 = duelRooms.get(roomId);
-                    if (!current2 || current2.isGameOver || current2.turnNumber !== 1 || current2.phase !== 'STANDBY') return;
-                    current2.phase = 'MAIN_1';
-                    enrichDuelStateForBroadcast(current2);
-                    io.to(roomId).emit('DUEL_STATE_UPDATE', current2);
-
-                    // Si el rival (NPC) inicia de primeras en el Turno 1, activar su IA automáticamente una vez en MAIN_1
-                    if (isNpcOpponent(current2.player2) && current2.turnPlayer === current2.player2.username) {
-                        console.log(`[NPC AI] Turno 1 asignado al NPC (${current2.turnPlayer}). Iniciando en MAIN_1 en 800ms...`);
-                        setTimeout(() => {
-                            executeNpcTurn(roomId);
-                        }, 800);
-                    }
-                }, 1200);
-            }, 1300);
         });
 
         // 12. Desconexión de socket (Lobby y Duelo Activo)

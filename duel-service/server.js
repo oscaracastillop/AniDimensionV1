@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 7001;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -22,7 +22,7 @@ app.get('/health', (req, res) => {
 // Create and initialize a duel
 app.post('/duel/create', (req, res) => {
   try {
-    const { duelId, player0Deck, player1Deck, lp, startHand, drawCount, seed } = req.body;
+    const { duelId, player0Deck, player1Deck, lp, startHand, drawCount, seed, isNpc } = req.body;
     if (!duelId) {
       return res.status(400).json({ error: 'duelId is required' });
     }
@@ -33,7 +33,8 @@ app.post('/duel/create', (req, res) => {
       lp: lp || 8000,
       startHand: startHand || 5,
       drawCount: drawCount || 1,
-      seed: seed || Math.floor(Math.random() * 1000000)
+      seed: seed || Math.floor(Math.random() * 1000000),
+      isNpc: isNpc !== undefined ? Boolean(isNpc) : true
     });
     res.json(result);
   } catch (err) {
@@ -42,7 +43,22 @@ app.post('/duel/create', (req, res) => {
   }
 });
 
-// Submit a player response/action (e.g., card selection, command, chain decision)
+// Execute semantic duel action (SUMMON, SET, ACTIVATE, ATTACK, CHANGE_PHASE, etc.)
+app.post('/duel/action', (req, res) => {
+  try {
+    const { duelId, action } = req.body;
+    if (!duelId) return res.status(400).json({ error: 'duelId is required' });
+    if (!action) return res.status(400).json({ error: 'action payload is required' });
+
+    const result = engine.executeAction(duelId, action);
+    res.json(result);
+  } catch (err) {
+    console.error('Error executing action:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Submit a player response/action fallback
 app.post('/duel/response', (req, res) => {
   try {
     const { duelId, response } = req.body;
@@ -62,7 +78,14 @@ app.get('/duel/:duelId', (req, res) => {
   try {
     const { duelId } = req.params;
     const field = engine.getFieldState(duelId);
-    res.json({ duelId, field });
+    const session = engine.activeDuels.get(duelId);
+    res.json({
+      duelId,
+      status: session ? (session.isGameOver ? 'finished' : 'active') : 'not_found',
+      winner: session ? session.winner : null,
+      pendingPrompt: session ? session.pendingQuestion : null,
+      field
+    });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }

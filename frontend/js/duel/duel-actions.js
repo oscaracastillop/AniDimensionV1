@@ -856,6 +856,105 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                 event.stopPropagation();
                 const cardName = cardObj ? cardObj.name : `Carta #${cardId}`;
                 const numId = Number(cardId || (cardObj && (cardObj.card_id || cardObj.id)) || 0);
+
+                if (window.currentDuelPrompt) {
+                    const prompt = window.currentDuelPrompt;
+                    const cSeq = (cardObj && cardObj.sequence !== undefined) ? cardObj.sequence : index;
+                    const cCode = Number(cardId || (cardObj && (cardObj.card_id || cardObj.id || cardObj.code)) || 0);
+
+                    const isSummonable = prompt.summonableCards && prompt.summonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const isMSetable = prompt.msetableCards && prompt.msetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const isSSetable = prompt.ssetableCards && prompt.ssetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const isActivatable = prompt.activatableCards && prompt.activatableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+
+                    const promptActions = [];
+                    if (isSummonable) {
+                        promptActions.push({
+                            label: '⚔️ Invocar (Normal Summon)',
+                            onClick: () => {
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('CLIENT_SUMMON', {
+                                        room_id: getActiveDuelRoomId(),
+                                        player_name: myUsername,
+                                        card_id: cCode,
+                                        sequence: cSeq,
+                                        slot_index: 0,
+                                        position: 'ATK'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    if (isMSetable) {
+                        promptActions.push({
+                            label: '🛡️ Colocar Monstruo (Set)',
+                            onClick: () => {
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('CLIENT_SET', {
+                                        room_id: getActiveDuelRoomId(),
+                                        player_name: myUsername,
+                                        card_id: cCode,
+                                        sequence: cSeq,
+                                        slot_index: 0,
+                                        position: 'DEF'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    if (isSSetable) {
+                        promptActions.push({
+                            label: '🛡️ Colocar Carta (Set)',
+                            onClick: () => {
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('CLIENT_SET', {
+                                        room_id: getActiveDuelRoomId(),
+                                        player_name: myUsername,
+                                        card_id: cCode,
+                                        sequence: cSeq,
+                                        slot_index: 0,
+                                        is_spell_trap: true,
+                                        position: 'DEF'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    if (isActivatable) {
+                        const actCard = prompt.activatableCards.find(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                        promptActions.push({
+                            label: '⚡ Activar Efecto',
+                            onClick: () => {
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('OCG_ACTIVATE_CARD', {
+                                        room_id: getActiveDuelRoomId(),
+                                        player_name: myUsername,
+                                        card_id: cCode,
+                                        sequence: cSeq,
+                                        slot_index: cSeq,
+                                        from_hand: true,
+                                        desc: actCard ? actCard.desc : undefined
+                                    });
+                                }
+                            }
+                        });
+                    }
+
+                    if (promptActions.length > 0) {
+                        promptActions.push({
+                            label: 'ℹ️ Ver Detalles',
+                            onClick: () => {
+                                if (typeof inspectCardById === 'function') inspectCardById(cCode);
+                            }
+                        });
+                        return showContextMenu(event, `${cardObj ? cardObj.name : 'Carta'} (Mano)`, promptActions);
+                    }
+                }
+
                 const actions = [];
 
                 if (isMonsterCard) {

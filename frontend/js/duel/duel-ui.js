@@ -1649,7 +1649,9 @@ function inspectCardDirectly() {}
                     const isSwordsLocked = rivalHasSwords;
                     const hasAttacked = !!m.hasAttacked;
                     const isMyTurn = (typeof isPlayerTurnActive === 'function') ? isPlayerTurnActive() : true;
-                    const canAttackGlow = (isMyTurn && state.phase === 'BATTLE' && !isDef && !isFaceDown && !hasAttacked && !isTrapped && !isSwordsLocked) ? 'field-card-activatable' : '';
+                    const canAttackGlow = (window.currentDuelPrompt && window.currentDuelPrompt.attackableCards)
+                        ? (window.currentDuelPrompt.attackableCards.some(ac => ac.sequence === i || ac.code === Number(cId)) ? 'field-card-activatable' : '')
+                        : ((isMyTurn && state.phase === 'BATTLE' && !isDef && !isFaceDown && !hasAttacked && !isTrapped && !isSwordsLocked) ? 'field-card-activatable' : '');
 
                     let attachedBadgeHtml = '';
                     if (isTrapped || (m.attachedEffects && m.attachedEffects.length > 0)) {
@@ -1875,6 +1877,20 @@ function inspectCardDirectly() {}
             // 10. Renderizado de la Mano del Jugador Local (Aura Dorada Activables estilo Master Duel)
             function isHandCardPlayable(card, duelState, localPlayer) {
                 if (!card || !duelState || !localPlayer) return false;
+                const prompt = window.currentDuelPrompt;
+                if (prompt) {
+                    const cSeq = card.sequence !== undefined ? card.sequence : -1;
+                    const cCode = Number(card.id || card.card_id || card.code || (card.card_data && card.card_data.id) || 0);
+
+                    const inSummon = prompt.summonableCards && prompt.summonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const inMSet = prompt.msetableCards && prompt.msetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const inSSet = prompt.ssetableCards && prompt.ssetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const inAct = prompt.activatableCards && prompt.activatableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+
+                    if (inSummon || inMSet || inSSet || inAct) return true;
+                    return false;
+                }
+
                 const isMyTurn = (typeof isPlayerTurnActive === 'function') ? isPlayerTurnActive() : true;
                 const phase = (duelState.phase || '').toUpperCase();
                 const isMainPhase = phase === 'MAIN_1' || phase === 'MAIN_2';
@@ -2021,7 +2037,237 @@ function inspectCardDirectly() {}
                 window.showGameOverModal(data);
             }
         });
+
+        stateSocket.off('DUEL_PROMPT');
+        stateSocket.on('DUEL_PROMPT', (prompt) => {
+            console.log('[DUEL_PROMPT RECEIVED]', prompt);
+            window.currentDuelPrompt = prompt;
+            handleOcgPrompt(prompt);
+        });
         }
+
+        let selectedOcgPromptCards = [];
+        let ocgCardPromptConfig = { min: 1, max: 1 };
+
+        function handleOcgPrompt(prompt) {
+            if (!prompt) return;
+            const pType = prompt.promptType;
+
+            // 1. Actualizar banner de estado OCG superior
+            const statusBanner = document.getElementById('ocg-status-prompt-banner');
+            const statusText = document.getElementById('ocg-prompt-text');
+            const statusIcon = document.getElementById('ocg-prompt-icon');
+            if (statusBanner && statusText) {
+                statusText.textContent = `${prompt.title || 'ACCIÓN'}: ${prompt.description || ''}`;
+                if (statusIcon) {
+                    statusIcon.textContent = pType === 'BATTLE_CMD' ? '⚔️' : (pType === 'SELECT_CHAIN' ? '⛓️' : '⚡');
+                }
+                statusBanner.style.display = 'flex';
+            }
+
+            // 2. Control de botones de fases
+            const bpBtn = document.getElementById('phase-btn-p-BATTLE');
+            const m2Btn = document.getElementById('phase-btn-p-MAIN_2');
+            const epBtn = document.getElementById('phase-btn-p-END');
+
+            if (pType === 'IDLE_CMD') {
+                if (bpBtn) bpBtn.classList.toggle('phase-btn-legal', Boolean(prompt.canBp));
+                if (epBtn) epBtn.classList.toggle('phase-btn-legal', Boolean(prompt.canEp));
+            } else if (pType === 'BATTLE_CMD') {
+                if (m2Btn) m2Btn.classList.toggle('phase-btn-legal', Boolean(prompt.canM2));
+                if (epBtn) epBtn.classList.toggle('phase-btn-legal', Boolean(prompt.canEp));
+            }
+
+            // 3. Ventana de Cadena Oficial OCG
+            const chainModal = document.getElementById('chain-prompt-modal');
+            if (pType === 'SELECT_CHAIN') {
+                if (chainModal) {
+                    const descElem = document.getElementById('chain-prompt-text');
+                    if (descElem) descElem.textContent = prompt.description || '¿Deseas activar una carta o efecto rápido en respuesta?';
+                    const allowedContainer = document.getElementById('chain-allowed-cards');
+                    if (allowedContainer) {
+                        allowedContainer.innerHTML = '';
+                        (prompt.activatableCards || []).forEach(c => {
+                            const cId = c.code || c.id || c.card_id;
+                            const item = document.createElement('div');
+                            item.className = 'chain-card-item';
+                            item.style.backgroundImage = `url('/api/cards/${cId}/image'), url('/assets/card_back.jpg')`;
+                            item.title = c.name;
+                            item.innerHTML = `<span class="item-title">${c.name}</span>`;
+                            item.onclick = () => {
+                                chainModal.style.display = 'none';
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('CMD_ACTION', {
+                                        room_id: getActiveDuelRoomId(),
+                                        action_type: 'CHAIN_ACTIVATE',
+                                        sequence: c.sequence,
+                                        card_id: cId,
+                                        desc: c.desc
+                                    });
+                                }
+                            };
+                            allowedContainer.appendChild(item);
+                        });
+                    }
+                    chainModal.style.display = 'flex';
+                }
+            } else {
+                if (chainModal) chainModal.style.display = 'none';
+            }
+
+            // 4. Modal Sí/No (Confirmación de Efecto)
+            const yesNoModal = document.getElementById('ocg-prompt-yesno-modal');
+            if (pType === 'SELECT_YESNO') {
+                if (yesNoModal) {
+                    const titleEl = document.getElementById('ocg-yesno-title');
+                    const descEl = document.getElementById('ocg-yesno-desc');
+                    if (titleEl) titleEl.textContent = prompt.title || 'CONFIRMACIÓN OCG';
+                    if (descEl) descEl.textContent = prompt.description || '¿Deseas activar este efecto?';
+                    yesNoModal.style.display = 'flex';
+                }
+            } else {
+                if (yesNoModal) yesNoModal.style.display = 'none';
+            }
+
+            // 5. Modal Selección de Posición (ATK/DEF)
+            const posModal = document.getElementById('ocg-prompt-position-modal');
+            if (pType === 'SELECT_POSITION') {
+                if (posModal) posModal.style.display = 'flex';
+            } else {
+                if (posModal) posModal.style.display = 'none';
+            }
+
+            // 6. Modal Selección de Cartas / Tributos
+            const selectModal = document.getElementById('ocg-prompt-card-select-modal');
+            if (pType === 'SELECT_CARD' || pType === 'SELECT_TRIBUTE') {
+                if (selectModal) {
+                    selectedOcgPromptCards = [];
+                    ocgCardPromptConfig = { min: prompt.min || 1, max: prompt.max || 1 };
+                    const titleEl = document.getElementById('ocg-select-title');
+                    const descEl = document.getElementById('ocg-select-desc');
+                    const gridEl = document.getElementById('ocg-select-cards-grid');
+                    const countEl = document.getElementById('ocg-select-count-badge');
+                    const cancelBtn = document.getElementById('ocg-select-cancel-btn');
+                    const confirmBtn = document.getElementById('ocg-select-confirm-btn');
+
+                    if (titleEl) titleEl.textContent = prompt.title || 'SELECCIÓN DE CARTAS';
+                    if (descEl) descEl.textContent = prompt.description || `Selecciona entre ${ocgCardPromptConfig.min} y ${ocgCardPromptConfig.max} carta(s).`;
+                    if (cancelBtn) cancelBtn.style.display = prompt.canPass ? 'block' : 'none';
+                    if (confirmBtn) confirmBtn.disabled = true;
+                    if (countEl) countEl.textContent = `Seleccionadas: 0 / Min: ${ocgCardPromptConfig.min} - Max: ${ocgCardPromptConfig.max}`;
+
+                    if (gridEl) {
+                        gridEl.innerHTML = '';
+                        (prompt.selectableCards || []).forEach((c, idx) => {
+                            const cId = c.code || c.id || c.card_id;
+                            const cardDiv = document.createElement('div');
+                            cardDiv.className = 'chain-card-item';
+                            cardDiv.style.backgroundImage = `url('/api/cards/${cId}/image'), url('/assets/card_back.jpg')`;
+                            cardDiv.title = c.name;
+                            cardDiv.innerHTML = `<span class="item-title">${c.name}</span>`;
+                            cardDiv.onclick = () => {
+                                const pos = selectedOcgPromptCards.indexOf(c);
+                                if (pos !== -1) {
+                                    selectedOcgPromptCards.splice(pos, 1);
+                                    cardDiv.style.outline = 'none';
+                                } else {
+                                    if (selectedOcgPromptCards.length < ocgCardPromptConfig.max) {
+                                        selectedOcgPromptCards.push(c);
+                                        cardDiv.style.outline = '3px solid #ffd700';
+                                    }
+                                }
+                                if (countEl) {
+                                    countEl.textContent = `Seleccionadas: ${selectedOcgPromptCards.length} / Min: ${ocgCardPromptConfig.min} - Max: ${ocgCardPromptConfig.max}`;
+                                }
+                                if (confirmBtn) {
+                                    confirmBtn.disabled = !(selectedOcgPromptCards.length >= ocgCardPromptConfig.min && selectedOcgPromptCards.length <= ocgCardPromptConfig.max);
+                                }
+                            };
+                            gridEl.appendChild(cardDiv);
+                        });
+                    }
+                    selectModal.style.display = 'flex';
+                }
+            } else {
+                if (selectModal) selectModal.style.display = 'none';
+            }
+
+            // Refrescar iluminaciones de la mano y campo
+            if (lastDuelState) {
+                const local = lastDuelState[window.localPlayerRoleKey || 'player1'] || lastDuelState.player1;
+                const handContainer = document.getElementById('player-hand');
+                if (handContainer && local && local.hand) {
+                    handContainer.querySelectorAll('.hand-card').forEach((elem, idx) => {
+                        const c = local.hand[idx];
+                        if (c) {
+                            const isPlayable = isHandCardPlayable(c, lastDuelState, local);
+                            elem.classList.toggle('hand-card-activatable', isPlayable);
+                        }
+                    });
+                }
+            }
+        }
+
+        window.respondOcgYesNo = function(answer) {
+            const yesNoModal = document.getElementById('ocg-prompt-yesno-modal');
+            if (yesNoModal) yesNoModal.style.display = 'none';
+            const activeSocket = getActiveSocket();
+            if (activeSocket) {
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: getActiveDuelRoomId(),
+                    action_type: 'YESNO',
+                    answer: Boolean(answer)
+                });
+            }
+        };
+
+        window.respondOcgPosition = function(pos) {
+            const posModal = document.getElementById('ocg-prompt-position-modal');
+            if (posModal) posModal.style.display = 'none';
+            const activeSocket = getActiveSocket();
+            if (activeSocket) {
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: getActiveDuelRoomId(),
+                    action_type: 'SELECT_POSITION',
+                    position: Number(pos)
+                });
+            }
+        };
+
+        window.confirmOcgCardSelection = function() {
+            const selectModal = document.getElementById('ocg-prompt-card-select-modal');
+            if (selectModal) selectModal.style.display = 'none';
+            const activeSocket = getActiveSocket();
+            if (activeSocket) {
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: getActiveDuelRoomId(),
+                    action_type: 'SELECT_CARDS',
+                    cards: selectedOcgPromptCards.map(c => ({
+                        sequence: c.sequence,
+                        location: c.location,
+                        controller: c.controller,
+                        code: c.code
+                    }))
+                });
+            }
+            selectedOcgPromptCards = [];
+        };
+
+        window.cancelOcgCardSelection = function() {
+            const selectModal = document.getElementById('ocg-prompt-card-select-modal');
+            if (selectModal) selectModal.style.display = 'none';
+            const activeSocket = getActiveSocket();
+            if (activeSocket) {
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: getActiveDuelRoomId(),
+                    action_type: 'SELECT_CARDS',
+                    cards: []
+                });
+            }
+            selectedOcgPromptCards = [];
+        };
+
         bindDuelUiSocketEvents();
         if (typeof window !== 'undefined') {
             window.bindDuelUiSocketEvents = bindDuelUiSocketEvents;

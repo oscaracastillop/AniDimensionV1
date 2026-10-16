@@ -29,6 +29,7 @@ async function runOfficialDuelEngineTest() {
     'debug_utility.lua',
     'cards_specific_functions.lua',
     'proc_fusion.lua',
+    'proc_fusion_spell.lua',
     'proc_ritual.lua',
     'proc_synchro.lua',
     'proc_union.lua',
