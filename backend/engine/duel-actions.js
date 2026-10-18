@@ -199,11 +199,11 @@ function triggerOnSpellActivationHooks(duelState, spellCardData, actingKey = 'pl
 async function handleDuelAction(socket, data) {
     if (!data) return;
 
-    const roomId = data.room_id || socket.currentDuelRoomId || socket.currentPvpRoomId || 'ROOM_DEMO';
+    const roomId = data.room_id || data.roomId || socket.currentDuelRoomId || socket.currentPvpRoomId || 'ROOM_DEMO';
     try {
-        const actionType = data.action_type || 'SUMMON';
-        let slotIndex = data.slot_index !== undefined ? parseInt(data.slot_index, 10) : 0;
-        const cardId = parseInt(data.card_id || 0, 10);
+        const actionType = data.action_type || data.action || data.type || 'SUMMON';
+        let slotIndex = data.slot_index !== undefined ? parseInt(data.slot_index, 10) : (data.index !== undefined ? parseInt(data.index, 10) : 0);
+        const cardId = parseInt(data.card_id || data.cardId || 0, 10);
         const targetPosition = data.position || 'ATK';
 
         let duelState = duelRooms.get(roomId);

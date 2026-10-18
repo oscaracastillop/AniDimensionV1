@@ -90,11 +90,13 @@ async function runE2ETest() {
                     slotIndex: 0,
                     position: 'ATK'
                 });
-            } else if (prompt.type === 'YGOProMsgSelectChain') {
+            } else if (prompt.type === 'YGOProMsgSelectChain' || prompt.promptType === 'SELECT_CHAIN' || prompt.rawName === 'YGOProMsgSelectChain') {
                 console.log('⛓ Chain prompt received, passing chain priority...');
                 socket.emit('DUEL_ACTION', {
                     roomId,
-                    action: 'PASS_CHAIN'
+                    room_id: roomId,
+                    action: 'PASS_CHAIN',
+                    action_type: 'PASS_CHAIN'
                 });
             }
         });
