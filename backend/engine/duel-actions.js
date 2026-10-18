@@ -301,11 +301,21 @@ async function handleDuelAction(socket, data) {
             } else if (upperType === 'SELECT_POSITION') {
                 ignisAction = { type: 'SELECT_POSITION', position: data.position === 'DEF' ? 0x4 : 0x1 };
             } else if (upperType === 'SELECT_CARDS' || upperType === 'SELECT_TRIBUTE') {
-                ignisAction = { type: 'SELECT_CARDS', cards: data.cards || data.tribute_slots };
+                ignisAction = { type: 'SELECT_CARDS', cards: data.cards || data.tribute_slots, indices: data.indices, cancel: data.cancel, pass: data.pass };
+            } else if (upperType === 'SELECT_UNSELECT_CARD' || upperType === 'FINISH_SELECT') {
+                ignisAction = { type: 'SELECT_UNSELECT_CARD', index: data.index, code: cardId, sequence: resolvedSeq, finish: data.finish, cancel: data.cancel, pass: data.pass };
+            } else if (upperType === 'SELECT_SUM') {
+                ignisAction = { type: 'SELECT_SUM', indices: data.indices, cards: data.cards };
+            } else if (upperType === 'SELECT_OPTION') {
+                ignisAction = { type: 'SELECT_OPTION', index: data.index !== undefined ? data.index : data.option };
+            } else if (upperType === 'ANNOUNCE_NUMBER') {
+                ignisAction = { type: 'ANNOUNCE_NUMBER', number: data.number };
+            } else if (upperType === 'ANNOUNCE_CARD') {
+                ignisAction = { type: 'ANNOUNCE_CARD', code: data.code || cardId };
             } else if (upperType === 'SPECIAL_SUMMON' || upperType === 'SYNCHRO_SUMMON' || upperType === 'SPSUMMON') {
                 ignisAction = { type: 'SPSUMMON', sequence: resolvedSeq, code: cardId || data.synchro_card_id };
             } else if (upperType === 'CHANGE_POSITION' || upperType === 'REPOS' || upperType === 'CHANGE_POS') {
-                ignisAction = { type: 'REPOS', sequence: resolvedSeq };
+                ignisAction = { type: 'REPOS', sequence: resolvedSeq, code: cardId };
             } else if (upperType === 'YESNO') {
                 ignisAction = { type: 'YESNO', answer: Boolean(data.answer) };
             }
@@ -328,6 +338,7 @@ async function handleDuelAction(socket, data) {
                                 ignisRes.logs.forEach(log => emitDuelLog(roomId, log, 'system'));
                             }
                         }
+                        socket.emit('DUEL_ACTION_RESULT', { success: true, action: ignisAction.type });
 
                         if (ignisRes.isGameOver || ignisRes.status === 'finished') {
                             const winnerKey = ignisRes.winner === 0 ? 'player1' : 'player2';

@@ -2,9 +2,13 @@ const { io } = require('socket.io-client');
 
 async function runE2ETest() {
     console.log('--- STARTING E2E DUEL INTEGRATION TEST ---');
-    const socket = io('http://localhost:3006', {
-        transports: ['websocket'],
+    const socket = io('http://127.0.0.1:3006', {
+        transports: ['polling', 'websocket'],
         reconnection: false
+    });
+
+    socket.on('connect_error', (err) => {
+        console.error('❌ Socket connect_error:', err.message);
     });
 
     const roomId = 'TEST_E2E_' + Date.now();
@@ -74,7 +78,7 @@ async function runE2ETest() {
             receivedPrompt = true;
 
             // If we have an Idle prompt, test summoning Celtic Guardian!
-            if (prompt.type === 'YGOProMsgSelectIdleCmd' && prompt.summonableCards && prompt.summonableCards.length > 0) {
+            if ((prompt.type === 'YGOProMsgSelectIdleCmd' || prompt.promptType === 'IDLE_CMD' || prompt.rawName === 'YGOProMsgSelectIdleCmd') && prompt.summonableCards && prompt.summonableCards.length > 0) {
                 const targetCard = prompt.summonableCards[0];
                 console.log('🎯 Dispatching test summon of card:', targetCard.name || targetCard.code);
                 

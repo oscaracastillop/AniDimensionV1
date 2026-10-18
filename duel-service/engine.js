@@ -334,14 +334,17 @@ end
         return prompt.prepareResponse(0x1); // Attack
       }
       if (name === 'YGOProMsgSelectIdleCmd') {
+        if (prompt.spSummonableCards && prompt.spSummonableCards.length > 0) {
+          return prompt.prepareResponse(IdleCmdType.SPSUMMON, IndexResponse(0));
+        }
         if (prompt.summonableCards && prompt.summonableCards.length > 0) {
-          const c = prompt.summonableCards[0];
-          return prompt.prepareResponse(IdleCmdType.SUMMON, {
-            code: c.code,
-            controller: c.controller,
-            location: c.location,
-            sequence: c.sequence
-          });
+          return prompt.prepareResponse(IdleCmdType.SUMMON, IndexResponse(0));
+        }
+        if (prompt.msetableCards && prompt.msetableCards.length > 0) {
+          return prompt.prepareResponse(IdleCmdType.MSET, IndexResponse(0));
+        }
+        if (prompt.activatableCards && prompt.activatableCards.length > 0) {
+          return prompt.prepareResponse(IdleCmdType.ACTIVATE, IndexResponse(0));
         }
         if (prompt.canBp) {
           return prompt.prepareResponse(IdleCmdType.TO_BP);
@@ -352,19 +355,29 @@ end
       }
       if (name === 'YGOProMsgSelectBattleCmd') {
         if (prompt.attackableCards && prompt.attackableCards.length > 0) {
-          const c = prompt.attackableCards[0];
-          return prompt.prepareResponse(BattleCmdType.ATTACK, {
-            code: c.code,
-            controller: c.controller,
-            location: c.location,
-            sequence: c.sequence
-          });
+          return prompt.prepareResponse(BattleCmdType.ATTACK, IndexResponse(0));
         }
         if (prompt.canEp) {
           return prompt.prepareResponse(BattleCmdType.TO_EP);
         }
         if (prompt.canM2) {
           return prompt.prepareResponse(BattleCmdType.TO_M2);
+        }
+      }
+      if (name === 'YGOProMsgSelectOption') {
+        return prompt.prepareResponse(IndexResponse(0));
+      }
+      if (name === 'YGOProMsgSelectUnselectCard') {
+        if (prompt.finishable || prompt.cancelable) {
+          return prompt.prepareResponse(null);
+        }
+        if (prompt.cards && prompt.cards.length > 0) {
+          return prompt.prepareResponse(IndexResponse(0));
+        }
+      }
+      if (name === 'YGOProMsgSelectCard' || name === 'YGOProMsgSelectTribute' || name === 'YGOProMsgSelectSum') {
+        if (prompt.cards && prompt.cards.length > 0) {
+          return prompt.prepareResponse([ IndexResponse(0) ]);
         }
       }
       if (prompt.defaultResponse) {
@@ -382,6 +395,7 @@ end
     const pNum = prompt.player !== undefined ? prompt.player : (prompt.responsePlayer ? prompt.responsePlayer() : 0);
 
     const base = {
+      type: name,
       player: pNum,
       rawName: name,
       promptType: 'UNKNOWN',
@@ -392,22 +406,40 @@ end
       canEp: false,
       canPass: false,
       summonableCards: [],
+      spSummonableCards: [],
+      reposableCards: [],
       msetableCards: [],
       ssetableCards: [],
       activatableCards: [],
       attackableCards: [],
       selectablePlaces: [],
-      selectableCards: []
+      selectableCards: [],
+      options: [],
+      numbers: []
     };
 
     if (name === 'YGOProMsgSelectIdleCmd') {
       base.promptType = 'IDLE_CMD';
       base.title = 'TU TURNO (MAIN PHASE)';
-      base.description = 'Puedes Invocar, Colocar cartas, Activar efectos o cambiar de Fase.';
+      base.description = 'Puedes Invocar, Invocación Especial, Colocar cartas, Activar efectos o cambiar de Fase.';
       base.canBp = Boolean(prompt.canBp);
       base.canEp = Boolean(prompt.canEp);
 
       base.summonableCards = (prompt.summonableCards || []).map(c => ({
+        ...this.getCardDetails(c.code),
+        sequence: c.sequence,
+        location: c.location,
+        controller: c.controller
+      }));
+
+      base.spSummonableCards = (prompt.spSummonableCards || []).map(c => ({
+        ...this.getCardDetails(c.code),
+        sequence: c.sequence,
+        location: c.location,
+        controller: c.controller
+      }));
+
+      base.reposableCards = (prompt.reposableCards || []).map(c => ({
         ...this.getCardDetails(c.code),
         sequence: c.sequence,
         location: c.location,
@@ -495,6 +527,43 @@ end
       base.promptType = 'SELECT_YESNO';
       base.title = 'CONFIRMACIÓN DE EFECTO';
       base.description = '¿Deseas activar el efecto de esta carta?';
+    } else if (name === 'YGOProMsgSelectOption') {
+      base.promptType = 'SELECT_OPTION';
+      base.title = 'SELECCIONA UNA OPCIÓN';
+      base.description = 'Elige una de las opciones del efecto.';
+      base.options = (prompt.options || []).map((opt, idx) => ({ index: idx, desc: opt }));
+    } else if (name === 'YGOProMsgSelectUnselectCard') {
+      base.promptType = 'SELECT_UNSELECT_CARD';
+      base.title = 'SELECCIÓN DE MATERIALES';
+      base.description = 'Selecciona una carta o confirma la selección.';
+      base.finishable = Boolean(prompt.finishable);
+      base.cancelable = Boolean(prompt.cancelable);
+      base.canPass = Boolean(prompt.finishable || prompt.cancelable);
+      base.selectableCards = (prompt.cards || []).map(c => ({
+        ...this.getCardDetails(c.code),
+        sequence: c.sequence,
+        location: c.location,
+        controller: c.controller
+      }));
+    } else if (name === 'YGOProMsgSelectSum') {
+      base.promptType = 'SELECT_SUM';
+      base.title = 'SELECCIÓN POR NIVEL / RANGO';
+      base.description = `Selecciona cartas requeridas (requisito: ${prompt.acc || 0}).`;
+      base.selectableCards = (prompt.cards || []).map(c => ({
+        ...this.getCardDetails(c.code),
+        sequence: c.sequence,
+        location: c.location,
+        controller: c.controller
+      }));
+    } else if (name === 'YGOProMsgAnnounceNumber') {
+      base.promptType = 'ANNOUNCE_NUMBER';
+      base.title = 'DECLARAR NÚMERO';
+      base.description = 'Selecciona un número.';
+      base.numbers = prompt.numbers || [];
+    } else if (name === 'YGOProMsgAnnounceCard') {
+      base.promptType = 'ANNOUNCE_CARD';
+      base.title = 'DECLARAR CARTA';
+      base.description = 'Declara el nombre o código de la carta.';
     }
 
     return base;
@@ -522,7 +591,7 @@ end
         if (matchIdx === -1 && prompt.summonableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
-        resp = prompt.prepareResponse(IdleCmdType.SUMMON, { index: matchIdx });
+        resp = prompt.prepareResponse(IdleCmdType.SUMMON, IndexResponse(matchIdx));
       } else {
         resp = prompt.prepareResponse(IdleCmdType.SUMMON, { sequence: seq !== undefined ? seq : 0, code });
       }
@@ -536,7 +605,7 @@ end
         if (matchIdx === -1 && prompt.spSummonableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
-        resp = prompt.prepareResponse(IdleCmdType.SPSUMMON, { index: matchIdx });
+        resp = prompt.prepareResponse(IdleCmdType.SPSUMMON, IndexResponse(matchIdx));
       } else {
         resp = prompt.prepareResponse(IdleCmdType.SPSUMMON, { sequence: seq !== undefined ? seq : 0, code });
       }
@@ -550,7 +619,7 @@ end
         if (matchIdx === -1 && prompt.reposableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
-        resp = prompt.prepareResponse(IdleCmdType.REPOS, { index: matchIdx });
+        resp = prompt.prepareResponse(IdleCmdType.REPOS, IndexResponse(matchIdx));
       } else {
         resp = prompt.prepareResponse(IdleCmdType.REPOS, { sequence: seq !== undefined ? seq : 0 });
       }
@@ -564,7 +633,7 @@ end
         if (matchIdx === -1 && prompt.msetableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
-        resp = prompt.prepareResponse(IdleCmdType.MSET, { index: matchIdx });
+        resp = prompt.prepareResponse(IdleCmdType.MSET, IndexResponse(matchIdx));
       } else {
         resp = prompt.prepareResponse(IdleCmdType.MSET, { sequence: seq !== undefined ? seq : 0 });
       }
@@ -578,7 +647,7 @@ end
         if (matchIdx === -1 && prompt.ssetableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
-        resp = prompt.prepareResponse(IdleCmdType.SSET, { index: matchIdx });
+        resp = prompt.prepareResponse(IdleCmdType.SSET, IndexResponse(matchIdx));
       } else {
         resp = prompt.prepareResponse(IdleCmdType.SSET, { sequence: seq !== undefined ? seq : 0 });
       }
@@ -593,12 +662,22 @@ end
           if (matchIdx === -1 && prompt.activatableCards.length === 1) matchIdx = 0;
         }
         if (matchIdx !== -1) {
-          resp = prompt.prepareResponse(IdleCmdType.ACTIVATE, { index: matchIdx });
+          resp = prompt.prepareResponse(IdleCmdType.ACTIVATE, IndexResponse(matchIdx));
         } else {
           resp = prompt.prepareResponse(IdleCmdType.ACTIVATE, { sequence: seq !== undefined ? seq : 0, desc: action.desc });
         }
       } else if (name === 'YGOProMsgSelectBattleCmd') {
-        resp = prompt.prepareResponse(BattleCmdType.ACTIVATE, { sequence: seq !== undefined ? seq : 0, desc: action.desc });
+        let matchIdx = -1;
+        if (prompt.activatableCards && Array.isArray(prompt.activatableCards)) {
+          if (code) matchIdx = prompt.activatableCards.findIndex(c => Number(c.code) === code);
+          if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.activatableCards.findIndex(c => Number(c.sequence) === seq);
+          if (matchIdx === -1 && prompt.activatableCards.length === 1) matchIdx = 0;
+        }
+        if (matchIdx !== -1) {
+          resp = prompt.prepareResponse(BattleCmdType.ACTIVATE, IndexResponse(matchIdx));
+        } else {
+          resp = prompt.prepareResponse(BattleCmdType.ACTIVATE, { sequence: seq !== undefined ? seq : 0, desc: action.desc });
+        }
       }
     } else if (actionType === 'ATTACK' && name === 'YGOProMsgSelectBattleCmd') {
       const seq = action.attackerSeq !== undefined ? Number(action.attackerSeq) : (action.sequence !== undefined ? Number(action.sequence) : undefined);
@@ -610,23 +689,27 @@ end
         if (matchIdx === -1 && prompt.attackableCards.length === 1) matchIdx = 0;
       }
       if (matchIdx !== -1) {
-        resp = prompt.prepareResponse(BattleCmdType.ATTACK, { index: matchIdx });
+        resp = prompt.prepareResponse(BattleCmdType.ATTACK, IndexResponse(matchIdx));
       } else {
         resp = prompt.prepareResponse(BattleCmdType.ATTACK, { sequence: seq !== undefined ? seq : 0 });
       }
     } else if (actionType === 'CHANGE_PHASE' || actionType === 'PHASE_CHANGE') {
       const target = (action.targetPhase || action.phase || '').toUpperCase();
       if (name === 'YGOProMsgSelectIdleCmd') {
-        if (target.includes('BATTLE') || target === 'BP') {
+        if ((target.includes('BATTLE') || target === 'BP') && prompt.canBp) {
           resp = prompt.prepareResponse(IdleCmdType.TO_BP);
-        } else {
+        } else if (prompt.canEp) {
           resp = prompt.prepareResponse(IdleCmdType.TO_EP);
+        } else if (prompt.canBp) {
+          resp = prompt.prepareResponse(IdleCmdType.TO_BP);
         }
       } else if (name === 'YGOProMsgSelectBattleCmd') {
-        if (target.includes('MAIN') || target === 'M2') {
+        if ((target.includes('MAIN') || target === 'M2') && prompt.canM2) {
           resp = prompt.prepareResponse(BattleCmdType.TO_M2);
-        } else {
+        } else if (prompt.canEp) {
           resp = prompt.prepareResponse(BattleCmdType.TO_EP);
+        } else if (prompt.canM2) {
+          resp = prompt.prepareResponse(BattleCmdType.TO_M2);
         }
       }
     } else if (actionType === 'PASS_CHAIN' || actionType === 'CHAIN_PASS') {
@@ -634,8 +717,19 @@ end
         resp = prompt.prepareResponse(null);
       }
     } else if (actionType === 'CHAIN_ACTIVATE' && name === 'YGOProMsgSelectChain') {
-      const seq = action.sequence !== undefined ? Number(action.sequence) : 0;
-      resp = prompt.prepareResponse({ sequence: seq, desc: action.desc });
+      const seq = action.sequence !== undefined ? Number(action.sequence) : undefined;
+      const code = action.code ? Number(action.code) : undefined;
+      let matchIdx = -1;
+      if (prompt.chains && Array.isArray(prompt.chains)) {
+        if (code) matchIdx = prompt.chains.findIndex(c => Number(c.code) === code);
+        if (matchIdx === -1 && seq !== undefined) matchIdx = prompt.chains.findIndex(c => Number(c.sequence) === seq);
+        if (matchIdx === -1 && prompt.chains.length === 1) matchIdx = 0;
+      }
+      if (matchIdx !== -1) {
+        resp = prompt.prepareResponse(IndexResponse(matchIdx));
+      } else {
+        resp = prompt.prepareResponse({ sequence: seq !== undefined ? seq : 0, desc: action.desc });
+      }
     } else if (actionType === 'SELECT_PLACE' && name === 'YGOProMsgSelectPlace') {
       const places = prompt.getSelectablePlaces();
       let chosen = places[0];
@@ -644,8 +738,57 @@ end
         if (found) chosen = found;
       }
       resp = prompt.prepareResponse([ chosen ]);
-    } else if (actionType === 'SELECT_CARDS') {
-      resp = prompt.prepareResponse(action.cards || null);
+    } else if (actionType === 'SELECT_CARDS' || actionType === 'SELECT_TRIBUTE') {
+      if (action.cards === null || action.cancel || action.pass) {
+        resp = prompt.prepareResponse(null);
+      } else if (Array.isArray(action.indices)) {
+        resp = prompt.prepareResponse(action.indices.map(i => IndexResponse(Number(i))));
+      } else if (Array.isArray(action.cards)) {
+        const respList = [];
+        for (const item of action.cards) {
+          if (typeof item === 'number') {
+            const idx = prompt.cards ? prompt.cards.findIndex(c => Number(c.code) === item) : -1;
+            if (idx !== -1) respList.push(IndexResponse(idx));
+            else respList.push({ code: item });
+          } else if (item && typeof item === 'object') {
+            if (item.index !== undefined) respList.push(IndexResponse(Number(item.index)));
+            else respList.push(item);
+          }
+        }
+        resp = prompt.prepareResponse(respList.length > 0 ? respList : null);
+      } else {
+        resp = prompt.prepareResponse(null);
+      }
+    } else if (actionType === 'SELECT_UNSELECT_CARD' || actionType === 'FINISH_SELECT') {
+      if (action.finish || action.cancel || action.cards === null || action.pass) {
+        resp = prompt.prepareResponse(null);
+      } else if (action.index !== undefined) {
+        resp = prompt.prepareResponse(IndexResponse(Number(action.index)));
+      } else if (action.code) {
+        const idx = prompt.cards ? prompt.cards.findIndex(c => Number(c.code) === Number(action.code)) : -1;
+        if (idx !== -1) {
+          resp = prompt.prepareResponse(IndexResponse(idx));
+        } else {
+          resp = prompt.prepareResponse({ code: Number(action.code), sequence: action.sequence !== undefined ? Number(action.sequence) : undefined });
+        }
+      } else {
+        resp = prompt.prepareResponse(null);
+      }
+    } else if (actionType === 'SELECT_SUM') {
+      if (Array.isArray(action.indices)) {
+        resp = prompt.prepareResponse(action.indices.map(i => IndexResponse(Number(i))));
+      } else if (Array.isArray(action.cards)) {
+        resp = prompt.prepareResponse(action.cards);
+      }
+    } else if (actionType === 'SELECT_OPTION') {
+      const idx = action.index !== undefined ? Number(action.index) : (action.option !== undefined ? Number(action.option) : 0);
+      resp = prompt.prepareResponse(IndexResponse(idx));
+    } else if (actionType === 'ANNOUNCE_NUMBER') {
+      const num = action.number !== undefined ? Number(action.number) : 0;
+      resp = prompt.prepareResponse(IndexResponse(num));
+    } else if (actionType === 'ANNOUNCE_CARD') {
+      const code = action.code !== undefined ? Number(action.code) : 0;
+      resp = prompt.prepareResponse(code);
     } else if (actionType === 'SELECT_POSITION' && name === 'YGOProMsgSelectPosition') {
       resp = prompt.prepareResponse(Number(action.position || 0x1));
     } else if (actionType === 'YESNO') {
@@ -741,6 +884,8 @@ end
     const p1GraveQuery = session.duel.queryFieldCard({ player: 1, location: 0x10, queryFlag: 0xffffffff });
     const p0BanishedQuery = session.duel.queryFieldCard({ player: 0, location: 0x20, queryFlag: 0xffffffff });
     const p1BanishedQuery = session.duel.queryFieldCard({ player: 1, location: 0x20, queryFlag: 0xffffffff });
+    const p0ExtraQuery = session.duel.queryFieldCard({ player: 0, location: 0x40, queryFlag: 0xffffffff });
+    const p1ExtraQuery = session.duel.queryFieldCard({ player: 1, location: 0x40, queryFlag: 0xffffffff });
 
     const formatMonsters = (cards = []) => {
       const list = [];
@@ -867,8 +1012,10 @@ end
           spells: formatSpells(p0SpellsQuery?.cards),
           graveyard: formatCardList(p0GraveQuery?.cards),
           banished: formatCardList(p0BanishedQuery?.cards),
+          extraDeck: formatCardList(p0ExtraQuery?.cards),
           graveCount: p0Info?.graveCount ?? 0,
-          removedCount: p0Info?.removedCount ?? 0
+          removedCount: p0Info?.removedCount ?? 0,
+          extraCount: p0Info?.extraCount ?? (p0ExtraQuery?.cards?.length || 0)
         },
         {
           id: 1,
@@ -880,8 +1027,10 @@ end
           spells: formatSpells(p1SpellsQuery?.cards),
           graveyard: formatCardList(p1GraveQuery?.cards),
           banished: formatCardList(p1BanishedQuery?.cards),
+          extraDeck: formatCardList(p1ExtraQuery?.cards),
           graveCount: p1Info?.graveCount ?? 0,
-          removedCount: p1Info?.removedCount ?? 0
+          removedCount: p1Info?.removedCount ?? 0,
+          extraCount: p1Info?.extraCount ?? (p1ExtraQuery?.cards?.length || 0)
         }
       ]
     };

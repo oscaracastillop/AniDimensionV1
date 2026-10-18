@@ -3,7 +3,7 @@ const cors = require('cors');
 const engine = require('./engine');
 
 const app = express();
-const PORT = process.env.PORT || 7001;
+const PORT = process.env.DUEL_SERVICE_PORT || 7001;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));

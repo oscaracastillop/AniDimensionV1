@@ -113,6 +113,21 @@
             </div>
         </div>
 
+        <!-- MODAL SELECCIÓN DE OPCIÓN OCG (SELECT_OPTION) -->
+        <div id="ocg-prompt-option-modal" class="ocg-modal-overlay" style="display:none; z-index:99999;">
+            <div class="ocg-modal-card" style="width:480px; max-width:92vw; border-color:var(--accent-cyan); box-shadow:0 0 35px rgba(0,240,255,0.45);">
+                <div class="ocg-modal-header" style="border-bottom:1px solid rgba(0,240,255,0.3);">
+                    <div style="font-family:'Orbitron', sans-serif; font-size:14px; font-weight:800; color:var(--accent-cyan); display:flex; align-items:center; gap:8px;">
+                        <span>📋</span> <span id="ocg-option-title">SELECCIONA UNA OPCIÓN</span>
+                    </div>
+                </div>
+                <p id="ocg-option-desc" class="chain-prompt-desc" style="font-size:12px; color:#cbd5e1; text-align:center;">Elige el efecto a resolver:</p>
+                <div id="ocg-option-buttons-list" style="display:flex; flex-direction:column; gap:10px; padding:12px 6px;">
+                    <!-- Dynamically populated options -->
+                </div>
+            </div>
+        </div>
+
         <!-- MODAL DE EDICIÓN DE NICK DE USUARIO (MÁXIMO 15 CARACTERES, 1 PALABRA SIN ESPACIOS) -->
         <div id="edit-nick-modal" class="ocg-modal-overlay" style="display:none; z-index:99999;">
             <div style="background:linear-gradient(145deg, #0e1626, #070b14); border:1px solid var(--accent-cyan); box-shadow:0 0 25px rgba(0,229,255,0.3); border-radius:12px; padding:22px; width:380px; max-width:92vw; color:#fff; font-family:'Outfit', sans-serif;">

@@ -36,6 +36,143 @@ function renderCardDetailsInInspector() {}
 function inspectCardById() {}
 window.toggleCardInspector = toggleCardInspector;
 
+// 10. Verificación de jugabilidad de cartas en mano (Aura Dorada estilo Master Duel / Project Ignis)
+function isHandCardPlayable(card, duelState, localPlayer) {
+    if (!card || !duelState || !localPlayer) return false;
+    const prompt = window.currentDuelPrompt;
+    if (prompt) {
+        const cSeq = card.sequence !== undefined ? card.sequence : -1;
+        const cCode = Number(card.id || card.card_id || card.code || (card.card_data && card.card_data.id) || 0);
+
+        const inSummon = prompt.summonableCards && prompt.summonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+        const inSpSummon = prompt.spSummonableCards && prompt.spSummonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+        const inMSet = prompt.msetableCards && prompt.msetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+        const inSSet = prompt.ssetableCards && prompt.ssetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+        const inAct = prompt.activatableCards && prompt.activatableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+
+        if (inSummon || inSpSummon || inMSet || inSSet || inAct) return true;
+        return false;
+    }
+
+    const isMyTurn = (typeof isPlayerTurnActive === 'function') ? isPlayerTurnActive() : true;
+    const phase = (duelState.phase || '').toUpperCase();
+    const isMainPhase = phase === 'MAIN_1' || phase === 'MAIN_2';
+
+    const cardData = card.card_data || card;
+    const typeStr = (cardData.type || card.type || '').toLowerCase();
+    const raceStr = (cardData.race || card.race || '').toLowerCase();
+    const isMonster = typeStr.includes('monster') || (cardData.atk !== undefined && cardData.atk !== null);
+    const isSpell = typeStr.includes('spell') || raceStr.includes('spell');
+    const isTrap = typeStr.includes('trap') || raceStr.includes('trap');
+
+    if (!isMyTurn) {
+        if (Number(card.id || card.card_id) === 40640057) return true; // Kuriboh
+        return false;
+    }
+
+    if (isMainPhase) {
+        if (isMonster) {
+            const cNumId = Number(card.id || card.card_id || cardData.id || 0);
+            const desc = (cardData.desc || cardData.description || '').toLowerCase();
+            const myMons = (localPlayer.monsters || []).filter(m => m !== null && m !== undefined);
+            const oppPlayer = (duelState.player1?.username === localPlayer.username) ? duelState.player2 : duelState.player1;
+            const oppMons = (oppPlayer?.monsters || []).filter(m => m !== null && m !== undefined);
+            const hasFreeSlot = (localPlayer.monsters || []).some(m => m === null || m === undefined);
+
+            // A. Efectos de Mano (Dragón de Trueno, etc.)
+            if (cNumId === 31786629 || Boolean(cardData.isHandEffect) || desc.includes('discard this card') || desc.includes('descartar esta carta')) {
+                return true;
+            }
+
+            // B. Invocación Especial Inherente OCG
+            if (hasFreeSlot) {
+                // 1. Anciano de los Seis Samuráis (61737116) / Ciber Dragón (70095154)
+                if (cNumId === 61737116 || cNumId === 70095154 || desc.includes('opponent controls a monster and you control no monsters') || desc.includes('adversario controla un monstruo y tú no controlas ninguno')) {
+                    if (oppMons.length >= 1 && myMons.length === 0) return true;
+                }
+                // 2. Gran Shogun Shien (63176202)
+                if (cNumId === 63176202 || (desc.includes('six samurai') && (desc.includes('control 2 or more') || desc.includes('controlas 2 o más')))) {
+                    const sixSamCount = myMons.filter(m => {
+                        const mName = (m.card_data?.name || '').toLowerCase();
+                        return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown;
+                    }).length;
+                    if (sixSamCount >= 2) return true;
+                }
+                // 3. Gran Maestro de los Seis Samuráis (83039727 / 83039729)
+                if (cNumId === 83039727 || cNumId === 83039729) {
+                    const hasSixSam = myMons.some(m => {
+                        const mName = (m.card_data?.name || '').toLowerCase();
+                        return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown;
+                    });
+                    const alreadyHasGm = myMons.some(m => Number(m.card_id || m.card_data?.id) === 83039727 || Number(m.card_id || m.card_data?.id) === 83039729);
+                    if (hasSixSam && !alreadyHasGm) return true;
+                }
+                // 4. Kizan (49721904)
+                if (cNumId === 49721904) {
+                    const hasOtherSixSam = myMons.some(m => {
+                        const mName = (m.card_data?.name || '').toLowerCase();
+                        return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown && Number(m.card_id || m.card_data?.id) !== 49721904;
+                    });
+                    if (hasOtherSixSam) return true;
+                }
+                // 5. BLS (72989439) / Chaos Sorcerer (99188141)
+                if ([72989439, 99188141].includes(cNumId)) {
+                    const myGy = localPlayer.graveyard || [];
+                    const hasLight = myGy.some(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'LIGHT');
+                    const hasDark = myGy.some(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'DARK');
+                    if (hasLight && hasDark) return true;
+                }
+                // 6. Dragón Armado Oscuro (65192027)
+                if (cNumId === 65192027) {
+                    const myGy = localPlayer.graveyard || [];
+                    const darkCount = myGy.filter(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'DARK').length;
+                    if (darkCount === 3) return true;
+                }
+                // 7. Genérico con Invocación Especial inherente
+                if (card.canSpecialSummon || desc.includes('special summon this card') || desc.includes('invocar esta carta de modo especial')) {
+                    return true;
+                }
+            }
+
+            // C. Invocación Normal / Colocación
+            if (!localPlayer.normalSummonUsed) {
+                const lvl = Number(cardData.level || card.level || 0);
+                const monstersOnField = myMons.length;
+                if (lvl <= 4) return true;
+                if ((lvl === 5 || lvl === 6) && monstersOnField >= 1) return true;
+                if (lvl >= 7 && monstersOnField >= 2) return true;
+            }
+            return false;
+        }
+
+        if (isSpell) {
+            if (raceStr.includes('equip') || typeStr.includes('equip')) {
+                const anyMon = (localPlayer.monsters || []).some(m => m !== null && !m.faceDown) || 
+                               ((duelState.player2?.monsters || []).some(m => m !== null && !m.faceDown));
+                return anyMon;
+            }
+            const hasSpellSlot = (localPlayer.spells || []).some(s => s === null || s === undefined);
+            const isFieldSpell = raceStr.includes('field') || typeStr.includes('field');
+            return hasSpellSlot || isFieldSpell;
+        }
+
+        if (isTrap) {
+            const hasSpellSlot = (localPlayer.spells || []).some(s => s === null || s === undefined);
+            return hasSpellSlot;
+        }
+    }
+
+    if (phase === 'BATTLE') {
+        if (Number(card.id || card.card_id) === 40640057) return true;
+        if (isSpell && (raceStr.includes('quick-play') || typeStr.includes('quick-play'))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+window.isHandCardPlayable = isHandCardPlayable;
+
 // =========================================================================
 // VENTANA FLOTANTE HORIZONTAL: INFO CARTA (DIRECTO DESDE CARDS.CDB / DB)
 // =========================================================================
@@ -1875,139 +2012,7 @@ function inspectCardDirectly() {}
             }
 
             // 10. Renderizado de la Mano del Jugador Local (Aura Dorada Activables estilo Master Duel)
-            function isHandCardPlayable(card, duelState, localPlayer) {
-                if (!card || !duelState || !localPlayer) return false;
-                const prompt = window.currentDuelPrompt;
-                if (prompt) {
-                    const cSeq = card.sequence !== undefined ? card.sequence : -1;
-                    const cCode = Number(card.id || card.card_id || card.code || (card.card_data && card.card_data.id) || 0);
-
-                    const inSummon = prompt.summonableCards && prompt.summonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-                    const inMSet = prompt.msetableCards && prompt.msetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-                    const inSSet = prompt.ssetableCards && prompt.ssetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-                    const inAct = prompt.activatableCards && prompt.activatableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-
-                    if (inSummon || inMSet || inSSet || inAct) return true;
-                    return false;
-                }
-
-                const isMyTurn = (typeof isPlayerTurnActive === 'function') ? isPlayerTurnActive() : true;
-                const phase = (duelState.phase || '').toUpperCase();
-                const isMainPhase = phase === 'MAIN_1' || phase === 'MAIN_2';
-
-                const cardData = card.card_data || card;
-                const typeStr = (cardData.type || card.type || '').toLowerCase();
-                const raceStr = (cardData.race || card.race || '').toLowerCase();
-                const isMonster = typeStr.includes('monster') || (cardData.atk !== undefined && cardData.atk !== null);
-                const isSpell = typeStr.includes('spell') || raceStr.includes('spell');
-                const isTrap = typeStr.includes('trap') || raceStr.includes('trap');
-
-                if (!isMyTurn) {
-                    if (Number(card.id || card.card_id) === 40640057) return true; // Kuriboh
-                    return false;
-                }
-
-                if (isMainPhase) {
-                    if (isMonster) {
-                        const cNumId = Number(card.id || card.card_id || cardData.id || 0);
-                        const desc = (cardData.desc || cardData.description || '').toLowerCase();
-                        const myMons = (localPlayer.monsters || []).filter(m => m !== null && m !== undefined);
-                        const oppPlayer = (duelState.player1?.username === localPlayer.username) ? duelState.player2 : duelState.player1;
-                        const oppMons = (oppPlayer?.monsters || []).filter(m => m !== null && m !== undefined);
-                        const hasFreeSlot = (localPlayer.monsters || []).some(m => m === null || m === undefined);
-
-                        // A. Efectos de Mano (Dragón de Trueno, etc.)
-                        if (cNumId === 31786629 || Boolean(cardData.isHandEffect) || desc.includes('discard this card') || desc.includes('descartar esta carta')) {
-                            return true;
-                        }
-
-                        // B. Invocación Especial Inherente OCG
-                        if (hasFreeSlot) {
-                            // 1. Anciano de los Seis Samuráis (61737116) / Ciber Dragón (70095154)
-                            if (cNumId === 61737116 || cNumId === 70095154 || desc.includes('opponent controls a monster and you control no monsters') || desc.includes('adversario controla un monstruo y tú no controlas ninguno')) {
-                                if (oppMons.length >= 1 && myMons.length === 0) return true;
-                            }
-                            // 2. Gran Shogun Shien (63176202)
-                            if (cNumId === 63176202 || (desc.includes('six samurai') && (desc.includes('control 2 or more') || desc.includes('controlas 2 o más')))) {
-                                const sixSamCount = myMons.filter(m => {
-                                    const mName = (m.card_data?.name || '').toLowerCase();
-                                    return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown;
-                                }).length;
-                                if (sixSamCount >= 2) return true;
-                            }
-                            // 3. Gran Maestro de los Seis Samuráis (83039727 / 83039729)
-                            if (cNumId === 83039727 || cNumId === 83039729) {
-                                const hasSixSam = myMons.some(m => {
-                                    const mName = (m.card_data?.name || '').toLowerCase();
-                                    return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown;
-                                });
-                                const alreadyHasGm = myMons.some(m => Number(m.card_id || m.card_data?.id) === 83039727 || Number(m.card_id || m.card_data?.id) === 83039729);
-                                if (hasSixSam && !alreadyHasGm) return true;
-                            }
-                            // 4. Kizan (49721904)
-                            if (cNumId === 49721904) {
-                                const hasOtherSixSam = myMons.some(m => {
-                                    const mName = (m.card_data?.name || '').toLowerCase();
-                                    return (mName.includes('six samurai') || mName.includes('seis samur')) && !m.faceDown && Number(m.card_id || m.card_data?.id) !== 49721904;
-                                });
-                                if (hasOtherSixSam) return true;
-                            }
-                            // 5. BLS (72989439) / Chaos Sorcerer (99188141)
-                            if ([72989439, 99188141].includes(cNumId)) {
-                                const myGy = localPlayer.graveyard || [];
-                                const hasLight = myGy.some(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'LIGHT');
-                                const hasDark = myGy.some(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'DARK');
-                                if (hasLight && hasDark) return true;
-                            }
-                            // 6. Dragón Armado Oscuro (65192027)
-                            if (cNumId === 65192027) {
-                                const myGy = localPlayer.graveyard || [];
-                                const darkCount = myGy.filter(c => ((c.attribute || (c.card_data && c.card_data.attribute)) || '').toUpperCase() === 'DARK').length;
-                                if (darkCount === 3) return true;
-                            }
-                            // 7. Genérico con Invocación Especial inherente
-                            if (card.canSpecialSummon || desc.includes('special summon this card') || desc.includes('invocar esta carta de modo especial')) {
-                                return true;
-                            }
-                        }
-
-                        // C. Invocación Normal / Colocación
-                        if (!localPlayer.normalSummonUsed) {
-                            const lvl = Number(cardData.level || card.level || 0);
-                            const monstersOnField = myMons.length;
-                            if (lvl <= 4) return true;
-                            if ((lvl === 5 || lvl === 6) && monstersOnField >= 1) return true;
-                            if (lvl >= 7 && monstersOnField >= 2) return true;
-                        }
-                        return false;
-                    }
-
-                    if (isSpell) {
-                        if (raceStr.includes('equip') || typeStr.includes('equip')) {
-                            const anyMon = (localPlayer.monsters || []).some(m => m !== null && !m.faceDown) || 
-                                           ((duelState.player2?.monsters || []).some(m => m !== null && !m.faceDown));
-                            return anyMon;
-                        }
-                        const hasSpellSlot = (localPlayer.spells || []).some(s => s === null || s === undefined);
-                        const isFieldSpell = raceStr.includes('field') || typeStr.includes('field');
-                        return hasSpellSlot || isFieldSpell;
-                    }
-
-                    if (isTrap) {
-                        const hasSpellSlot = (localPlayer.spells || []).some(s => s === null || s === undefined);
-                        return hasSpellSlot;
-                    }
-                }
-
-                if (phase === 'BATTLE') {
-                    if (Number(card.id || card.card_id) === 40640057) return true;
-                    if (isSpell && (raceStr.includes('quick-play') || typeStr.includes('quick-play'))) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
+            // (La función isHandCardPlayable ahora está disponible a nivel de módulo)
 
             const handContainer = document.getElementById('player-hand');
             if (local.hand && Array.isArray(local.hand)) {
@@ -2138,12 +2143,14 @@ function inspectCardDirectly() {}
                 if (posModal) posModal.style.display = 'none';
             }
 
-            // 6. Modal Selección de Cartas / Tributos
+            // 6. Modal Selección de Cartas / Tributos / Materiales / Suma
             const selectModal = document.getElementById('ocg-prompt-card-select-modal');
-            if (pType === 'SELECT_CARD' || pType === 'SELECT_TRIBUTE') {
+            if (pType === 'SELECT_CARD' || pType === 'SELECT_TRIBUTE' || pType === 'SELECT_UNSELECT_CARD' || pType === 'SELECT_SUM') {
                 if (selectModal) {
                     selectedOcgPromptCards = [];
-                    ocgCardPromptConfig = { min: prompt.min || 1, max: prompt.max || 1 };
+                    const minCards = prompt.min !== undefined ? prompt.min : (pType === 'SELECT_UNSELECT_CARD' ? 0 : 1);
+                    const maxCards = prompt.max !== undefined ? prompt.max : 1;
+                    ocgCardPromptConfig = { min: minCards, max: maxCards, promptType: pType };
                     const titleEl = document.getElementById('ocg-select-title');
                     const descEl = document.getElementById('ocg-select-desc');
                     const gridEl = document.getElementById('ocg-select-cards-grid');
@@ -2154,7 +2161,10 @@ function inspectCardDirectly() {}
                     if (titleEl) titleEl.textContent = prompt.title || 'SELECCIÓN DE CARTAS';
                     if (descEl) descEl.textContent = prompt.description || `Selecciona entre ${ocgCardPromptConfig.min} y ${ocgCardPromptConfig.max} carta(s).`;
                     if (cancelBtn) cancelBtn.style.display = prompt.canPass ? 'block' : 'none';
-                    if (confirmBtn) confirmBtn.disabled = true;
+                    if (confirmBtn) {
+                        confirmBtn.textContent = pType === 'SELECT_UNSELECT_CARD' ? 'Finalizar / Confirmar' : 'Confirmar Selección';
+                        confirmBtn.disabled = !(selectedOcgPromptCards.length >= ocgCardPromptConfig.min && selectedOcgPromptCards.length <= ocgCardPromptConfig.max);
+                    }
                     if (countEl) countEl.textContent = `Seleccionadas: 0 / Min: ${ocgCardPromptConfig.min} - Max: ${ocgCardPromptConfig.max}`;
 
                     if (gridEl) {
@@ -2193,6 +2203,32 @@ function inspectCardDirectly() {}
                 if (selectModal) selectModal.style.display = 'none';
             }
 
+            // 7. Modal Selección de Opción (SELECT_OPTION)
+            const optionModal = document.getElementById('ocg-prompt-option-modal');
+            if (pType === 'SELECT_OPTION') {
+                if (optionModal) {
+                    const titleEl = document.getElementById('ocg-option-title');
+                    const descEl = document.getElementById('ocg-option-desc');
+                    const listEl = document.getElementById('ocg-option-buttons-list');
+                    if (titleEl) titleEl.textContent = prompt.title || 'SELECCIONA UNA OPCIÓN';
+                    if (descEl) descEl.textContent = prompt.description || 'Elige la opción a resolver:';
+                    if (listEl) {
+                        listEl.innerHTML = '';
+                        (prompt.options || []).forEach(opt => {
+                            const btn = document.createElement('button');
+                            btn.className = 'chain-btn';
+                            btn.style.cssText = 'background:linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,180,216,0.4)); border:1px solid #00f0ff; color:#fff; font-weight:700; padding:12px; border-radius:6px; cursor:pointer; text-align:left; font-size:12px;';
+                            btn.textContent = `👉 Opción ${opt.index + 1}: ${opt.desc || 'Efecto ' + (opt.index + 1)}`;
+                            btn.onclick = () => respondOcgOption(opt.index);
+                            listEl.appendChild(btn);
+                        });
+                    }
+                    optionModal.style.display = 'flex';
+                }
+            } else {
+                if (optionModal) optionModal.style.display = 'none';
+            }
+
             // Refrescar iluminaciones de la mano y campo
             if (lastDuelState) {
                 const local = lastDuelState[window.localPlayerRoleKey || 'player1'] || lastDuelState.player1;
@@ -2201,13 +2237,28 @@ function inspectCardDirectly() {}
                     handContainer.querySelectorAll('.hand-card').forEach((elem, idx) => {
                         const c = local.hand[idx];
                         if (c) {
-                            const isPlayable = isHandCardPlayable(c, lastDuelState, local);
+                            const isPlayable = typeof isHandCardPlayable === 'function' 
+                                ? isHandCardPlayable(c, lastDuelState, local) 
+                                : (window.isHandCardPlayable ? window.isHandCardPlayable(c, lastDuelState, local) : false);
                             elem.classList.toggle('hand-card-activatable', isPlayable);
                         }
                     });
                 }
             }
         }
+
+        window.respondOcgOption = function(idx) {
+            const optionModal = document.getElementById('ocg-prompt-option-modal');
+            if (optionModal) optionModal.style.display = 'none';
+            const activeSocket = getActiveSocket();
+            if (activeSocket) {
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: getActiveDuelRoomId(),
+                    action_type: 'SELECT_OPTION',
+                    index: Number(idx)
+                });
+            }
+        };
 
         window.respondOcgYesNo = function(answer) {
             const yesNoModal = document.getElementById('ocg-prompt-yesno-modal');
@@ -2239,10 +2290,14 @@ function inspectCardDirectly() {}
             const selectModal = document.getElementById('ocg-prompt-card-select-modal');
             if (selectModal) selectModal.style.display = 'none';
             const activeSocket = getActiveSocket();
+            const pType = ocgCardPromptConfig?.promptType || 'SELECT_CARDS';
+            const actType = pType === 'SELECT_UNSELECT_CARD' ? 'SELECT_UNSELECT_CARD' : (pType === 'SELECT_SUM' ? 'SELECT_SUM' : 'SELECT_CARDS');
+
             if (activeSocket) {
                 activeSocket.emit('CMD_ACTION', {
                     room_id: getActiveDuelRoomId(),
-                    action_type: 'SELECT_CARDS',
+                    action_type: actType,
+                    finish: selectedOcgPromptCards.length === 0,
                     cards: selectedOcgPromptCards.map(c => ({
                         sequence: c.sequence,
                         location: c.location,
@@ -2258,11 +2313,16 @@ function inspectCardDirectly() {}
             const selectModal = document.getElementById('ocg-prompt-card-select-modal');
             if (selectModal) selectModal.style.display = 'none';
             const activeSocket = getActiveSocket();
+            const pType = ocgCardPromptConfig?.promptType || 'SELECT_CARDS';
+            const actType = pType === 'SELECT_UNSELECT_CARD' ? 'SELECT_UNSELECT_CARD' : 'SELECT_CARDS';
+
             if (activeSocket) {
                 activeSocket.emit('CMD_ACTION', {
                     room_id: getActiveDuelRoomId(),
-                    action_type: 'SELECT_CARDS',
-                    cards: []
+                    action_type: actType,
+                    cancel: true,
+                    pass: true,
+                    cards: null
                 });
             }
             selectedOcgPromptCards = [];

@@ -40,6 +40,7 @@ class DuelEngineBridge {
             const duelServiceDir = path.resolve(__dirname, '../../duel-service');
             const child = spawn(process.execPath, ['server.js'], {
                 cwd: duelServiceDir,
+                env: { ...process.env, PORT: '7001', DUEL_SERVICE_PORT: '7001' },
                 stdio: 'inherit',
                 detached: true
             });
@@ -203,6 +204,8 @@ class DuelEngineBridge {
             if (Array.isArray(p0.hand)) duelState.player1.hand = p0.hand;
             if (Array.isArray(p0.graveyard)) duelState.player1.graveyard = p0.graveyard;
             if (Array.isArray(p0.banished)) duelState.player1.banished = p0.banished;
+            if (Array.isArray(p0.extraDeck)) duelState.player1.extraDeck = p0.extraDeck;
+            if (typeof p0.extraCount === 'number') duelState.player1.extraDeckCount = p0.extraCount;
         }
 
         if (p1 && duelState.player2) {
@@ -213,6 +216,8 @@ class DuelEngineBridge {
             if (Array.isArray(p1.hand)) duelState.player2.hand = p1.hand;
             if (Array.isArray(p1.graveyard)) duelState.player2.graveyard = p1.graveyard;
             if (Array.isArray(p1.banished)) duelState.player2.banished = p1.banished;
+            if (Array.isArray(p1.extraDeck)) duelState.player2.extraDeck = p1.extraDeck;
+            if (typeof p1.extraCount === 'number') duelState.player2.extraDeckCount = p1.extraCount;
         }
 
         if (ignisRes.phase) {
@@ -228,6 +233,21 @@ class DuelEngineBridge {
         }
         if (ignisRes.pendingPrompt !== undefined) {
             duelState.pendingPrompt = ignisRes.pendingPrompt;
+            if (ignisRes.pendingPrompt && ignisRes.pendingPrompt.promptType === 'IDLE_CMD') {
+                const canSummon = Boolean(ignisRes.pendingPrompt.summonableCards?.length > 0 || ignisRes.pendingPrompt.msetableCards?.length > 0);
+                if (!canSummon) {
+                    if (duelState.player1) duelState.player1.normalSummonUsed = true;
+                    duelState.normalSummonUsed = true;
+                }
+            }
+        }
+        if (Array.isArray(ignisRes.events)) {
+            const hasNewTurn = ignisRes.events.some(e => e.name === 'YGOProMsgNewTurn');
+            if (hasNewTurn) {
+                if (duelState.player1) duelState.player1.normalSummonUsed = false;
+                if (duelState.player2) duelState.player2.normalSummonUsed = false;
+                duelState.normalSummonUsed = false;
+            }
         }
     }
 }

@@ -862,12 +862,33 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                     const cSeq = (cardObj && cardObj.sequence !== undefined) ? cardObj.sequence : index;
                     const cCode = Number(cardId || (cardObj && (cardObj.card_id || cardObj.id || cardObj.code)) || 0);
 
-                    const isSummonable = prompt.summonableCards && prompt.summonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-                    const isMSetable = prompt.msetableCards && prompt.msetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-                    const isSSetable = prompt.ssetableCards && prompt.ssetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
-                    const isActivatable = prompt.activatableCards && prompt.activatableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || sc.code === cCode);
+                    const isSummonable = prompt.summonableCards && prompt.summonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+                    const isSpSummonable = prompt.spSummonableCards && prompt.spSummonableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+                    const isMSetable = prompt.msetableCards && prompt.msetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+                    const isSSetable = prompt.ssetableCards && prompt.ssetableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
+                    const isActivatable = prompt.activatableCards && prompt.activatableCards.some(sc => (cSeq >= 0 && sc.sequence === cSeq) || Number(sc.code) === cCode);
 
                     const promptActions = [];
+                    if (isSpSummonable) {
+                        promptActions.push({
+                            label: '✨ Invocación Especial (Special Summon)',
+                            onClick: () => {
+                                const activeSocket = getActiveSocket();
+                                if (activeSocket) {
+                                    activeSocket.emit('CLIENT_SUMMON', {
+                                        action_type: 'SPECIAL_SUMMON',
+                                        type: 'SPECIAL_SUMMON',
+                                        room_id: getActiveDuelRoomId(),
+                                        player_name: myUsername,
+                                        card_id: cCode,
+                                        sequence: cSeq,
+                                        slot_index: 0,
+                                        position: 'ATK'
+                                    });
+                                }
+                            }
+                        });
+                    }
                     if (isSummonable) {
                         promptActions.push({
                             label: '⚔️ Invocar (Normal Summon)',
@@ -952,6 +973,23 @@ if (typeof window !== 'undefined') window.canActivateMonsterEffectOnField = canA
                             }
                         });
                         return showContextMenu(event, `${cardObj ? cardObj.name : 'Carta'} (Mano)`, promptActions);
+                    } else if (isMonsterCard && (prompt.summonableCards?.length === 0 && prompt.msetableCards?.length === 0)) {
+                        // El árbitro oficial ocgcore ya consumió la invocación/colocación normal de este turno
+                        const disabledActions = [
+                            {
+                                label: '⛔ Invocación/Colocación Normal ya usada este turno (Máx: 1)',
+                                onClick: () => {
+                                    showRuleAlert('⚠️ [Regla Oficial Konami] Ya realizaste tu Invocación Normal o Colocación de este turno (límite: 1 por turno). Solo puedes Invocar de Modo Especial o cambiar a la Fase de Batalla.');
+                                }
+                            },
+                            {
+                                label: 'ℹ️ Ver Detalles',
+                                onClick: () => {
+                                    if (typeof inspectCardById === 'function') inspectCardById(cCode);
+                                }
+                            }
+                        ];
+                        return showContextMenu(event, `${cardObj ? cardObj.name : 'Carta'} (Mano)`, disabledActions);
                     }
                 }
 
