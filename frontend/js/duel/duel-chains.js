@@ -1610,7 +1610,7 @@ if (typeof window !== 'undefined') {
 
                     if (elapsed >= totalMs) {
                         clearInterval(chainTimerInterval);
-                        if (modal) modal.style.display = 'none';
+                        respondChainPass();
                     }
                 }, 100);
             });
@@ -1624,9 +1624,20 @@ if (typeof window !== 'undefined') {
             const myUsername = (window.currentUser && window.currentUser.username) 
                 || (window.Session && window.Session.getUser() && window.Session.getUser().username) 
                 || '';
+            const roomId = getActiveDuelRoomId();
             if (activeSocket) {
+                activeSocket.emit('DUEL_ACTION', {
+                    room_id: roomId,
+                    roomId: roomId,
+                    action_type: 'PASS_CHAIN'
+                });
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: roomId,
+                    roomId: roomId,
+                    action_type: 'PASS_CHAIN'
+                });
                 activeSocket.emit('OCG_CHAIN_RESPONSE', {
-                    room_id: getActiveDuelRoomId(),
+                    room_id: roomId,
                     player_name: myUsername,
                     action: 'PASS'
                 });
@@ -1656,9 +1667,26 @@ if (typeof window !== 'undefined') {
             const myUsername = (window.currentUser && window.currentUser.username) 
                 || (window.Session && window.Session.getUser() && window.Session.getUser().username) 
                 || '';
+            const roomId = getActiveDuelRoomId();
             if (activeSocket) {
+                activeSocket.emit('DUEL_ACTION', {
+                    room_id: roomId,
+                    roomId: roomId,
+                    action_type: 'CHAIN_ACTIVATE',
+                    card_id: cardId,
+                    slot_index: slotIndex,
+                    from_hand: fromHand
+                });
+                activeSocket.emit('CMD_ACTION', {
+                    room_id: roomId,
+                    roomId: roomId,
+                    action_type: 'CHAIN_ACTIVATE',
+                    card_id: cardId,
+                    slot_index: slotIndex,
+                    from_hand: fromHand
+                });
                 activeSocket.emit('OCG_CHAIN_RESPONSE', {
-                    room_id: getActiveDuelRoomId(),
+                    room_id: roomId,
                     player_name: myUsername,
                     action: 'CHAIN',
                     card_id: cardId,

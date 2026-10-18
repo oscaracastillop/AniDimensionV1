@@ -380,6 +380,9 @@ end
           return prompt.prepareResponse([ IndexResponse(0) ]);
         }
       }
+      if (name === 'YGOProMsgSelectYesNo' || name === 'YGOProMsgSelectEffectYn' || name.toLowerCase().includes('yesno') || name.toLowerCase().includes('effectyn')) {
+        return prompt.prepareResponse(true);
+      }
       if (prompt.defaultResponse) {
         return prompt.defaultResponse();
       }
@@ -523,10 +526,15 @@ end
       base.title = 'POSICIÓN DE COMBATE';
       base.description = 'Elige posición de ataque o defensa.';
       base.positions = prompt.positions;
-    } else if (name === 'YGOProMsgSelectYesno' || name === 'YGOProMsgSelectEffectyn') {
+    } else if (name === 'YGOProMsgSelectYesNo' || name === 'YGOProMsgSelectEffectYn' || name.toLowerCase().includes('yesno') || name.toLowerCase().includes('effectyn')) {
       base.promptType = 'SELECT_YESNO';
-      base.title = 'CONFIRMACIÓN DE EFECTO';
-      base.description = '¿Deseas activar el efecto de esta carta?';
+      base.title = name === 'YGOProMsgSelectEffectYn' ? '¿ACTIVAR EFECTO OPCIONAL?' : 'CONFIRMACIÓN DE EFECTO';
+      const code = prompt.code || (prompt.card ? prompt.card.code : 0);
+      const cardDetails = code ? this.getCardDetails(code) : null;
+      base.card = cardDetails ? { ...cardDetails, code, sequence: prompt.sequence } : null;
+      base.description = cardDetails 
+        ? `¿Deseas activar el efecto de "${cardDetails.name}"?` 
+        : '¿Deseas activar el efecto de esta carta?';
     } else if (name === 'YGOProMsgSelectOption') {
       base.promptType = 'SELECT_OPTION';
       base.title = 'SELECCIONA UNA OPCIÓN';
@@ -791,7 +799,7 @@ end
       resp = prompt.prepareResponse(code);
     } else if (actionType === 'SELECT_POSITION' && name === 'YGOProMsgSelectPosition') {
       resp = prompt.prepareResponse(Number(action.position || 0x1));
-    } else if (actionType === 'YESNO') {
+    } else if (actionType === 'YESNO' || actionType === 'SELECT_YESNO' || actionType === 'EFFECT_YN') {
       resp = prompt.prepareResponse(Boolean(action.answer));
     }
 

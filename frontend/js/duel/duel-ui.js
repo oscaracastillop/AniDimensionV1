@@ -2127,8 +2127,17 @@ function inspectCardDirectly() {}
                 if (yesNoModal) {
                     const titleEl = document.getElementById('ocg-yesno-title');
                     const descEl = document.getElementById('ocg-yesno-desc');
+                    const previewEl = document.getElementById('ocg-yesno-card-preview');
+                    const imgEl = document.getElementById('ocg-yesno-img');
                     if (titleEl) titleEl.textContent = prompt.title || 'CONFIRMACIÓN OCG';
                     if (descEl) descEl.textContent = prompt.description || '¿Deseas activar este efecto?';
+                    const cCode = prompt.card ? (prompt.card.code || prompt.card.id) : 0;
+                    if (cCode) {
+                        if (previewEl) previewEl.style.display = 'flex';
+                        if (imgEl) imgEl.style.backgroundImage = `url('/api/cards/${cCode}/image'), url('/assets/card_back.jpg')`;
+                    } else if (previewEl) {
+                        previewEl.style.display = 'none';
+                    }
                     yesNoModal.style.display = 'flex';
                 }
             } else {
@@ -2264,9 +2273,17 @@ function inspectCardDirectly() {}
             const yesNoModal = document.getElementById('ocg-prompt-yesno-modal');
             if (yesNoModal) yesNoModal.style.display = 'none';
             const activeSocket = getActiveSocket();
+            const rId = getActiveDuelRoomId();
             if (activeSocket) {
+                activeSocket.emit('DUEL_ACTION', {
+                    room_id: rId,
+                    roomId: rId,
+                    action_type: 'YESNO',
+                    answer: Boolean(answer)
+                });
                 activeSocket.emit('CMD_ACTION', {
-                    room_id: getActiveDuelRoomId(),
+                    room_id: rId,
+                    roomId: rId,
                     action_type: 'YESNO',
                     answer: Boolean(answer)
                 });
@@ -2277,9 +2294,17 @@ function inspectCardDirectly() {}
             const posModal = document.getElementById('ocg-prompt-position-modal');
             if (posModal) posModal.style.display = 'none';
             const activeSocket = getActiveSocket();
+            const rId = getActiveDuelRoomId();
             if (activeSocket) {
+                activeSocket.emit('DUEL_ACTION', {
+                    room_id: rId,
+                    roomId: rId,
+                    action_type: 'SELECT_POSITION',
+                    position: Number(pos)
+                });
                 activeSocket.emit('CMD_ACTION', {
-                    room_id: getActiveDuelRoomId(),
+                    room_id: rId,
+                    roomId: rId,
                     action_type: 'SELECT_POSITION',
                     position: Number(pos)
                 });

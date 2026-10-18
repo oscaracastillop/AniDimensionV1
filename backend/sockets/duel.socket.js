@@ -919,6 +919,22 @@ function initDuelSockets(io) {
                     roomChainTimers.delete(roomId);
                 }
 
+                // Si el duelo cuenta con árbitro oficial Ignis (EDOPro/ocgcore), delegar directamente
+                if (duelState.officialIgnisSession && duelState.officialIgnisSession.active) {
+                    const isPass = !data.action || data.action === 'PASS' || data.action === 'pass';
+                    const actType = isPass ? 'PASS_CHAIN' : 'CHAIN_ACTIVATE';
+                    await handleDuelAction(socket, {
+                        room_id: roomId,
+                        roomId: roomId,
+                        action_type: actType,
+                        card_id: data.card_id,
+                        slot_index: data.slot_index,
+                        from_hand: data.from_hand,
+                        desc: data.desc
+                    });
+                    return;
+                }
+
                 const chainPlayer = (socket.user && socket.user.username && socket.user.username !== 'Invitado') ? socket.user.username : (data.player_name || duelState.player1.username);
                 const isP2 = Boolean(duelState.player2 && duelState.player2.username && chainPlayer && chainPlayer.toLowerCase() === duelState.player2.username.toLowerCase());
                 const chainPlayerKey = isP2 ? 'player2' : 'player1';
